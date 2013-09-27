@@ -41,6 +41,7 @@ public class iKittenModel : MonoBehaviour {
 				audio.Stop();
 				audio.loop = false;
 				isEating = false;
+				animator.SetBool("Eat", isEating);
 			}
 			
 			if(timer >= timeTilSatiationDecrease) {
@@ -49,7 +50,7 @@ public class iKittenModel : MonoBehaviour {
 			}
 		}
 		
-		if(satiation <= levelToStartEating && !isEating) {
+		if(satiation <= levelToStartEating && !isEating && Food.use.foodLevel > 0) {
 			isEating = true;
 			animator.SetBool("Eat", isEating);
 			audio.clip = sounds.purrSound;
@@ -59,6 +60,8 @@ public class iKittenModel : MonoBehaviour {
 		
 		if(satiation == MAX_SATISFACTION) {
 			isEating = false;
+			audio.Stop();
+			audio.loop = false;
 			animator.SetBool("Eat", isEating);
 		}
 	}
