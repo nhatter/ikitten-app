@@ -24,8 +24,11 @@ public class iKittenController : MonoBehaviour {
 				if(touchHitInfo.collider.gameObject == this.gameObject) {
 					animator.SetBool("Meow", true);
 					sounds.randomMeow();
-				} else {
 				}
+				
+				if(touchHitInfo.collider.gameObject == Food.use.gameObject) {
+					Food.use.refillFood();
+				} 
 			}
 		} else {
 			animator.SetBool("Meow", false);
