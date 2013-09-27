@@ -2,16 +2,17 @@
 using System.Collections;
 
 public class iKittenController : MonoBehaviour {
-	public Animator animator;
-	public AudioClip[] meowSounds;
 	public float touchDistance = 0.25f;
 	
+	Animator animator;
+	iKittenSounds sounds;
 	AnimatorStateInfo stateInfo;
 	RaycastHit touchHitInfo;
 	
 	// Use this for initialization
 	void Start () {
 		animator = GetComponent<Animator>();
+		sounds = GetComponent<iKittenSounds>();
 	}
 	
 	// Update is called once per frame
@@ -22,25 +23,12 @@ public class iKittenController : MonoBehaviour {
 
 				if(touchHitInfo.collider.gameObject == this.gameObject) {
 					animator.SetBool("Meow", true);
-					audio.PlayOneShot(randomMeow());
+					sounds.randomMeow();
 				} else {
 				}
 			}
 		} else {
 			animator.SetBool("Meow", false);
 		}
-	}
-				
-	AudioClip randomMeow() {
-		int randomIndex = (int) Mathf.Round(Random.value*meowSounds.Length-1);
-		if(randomIndex > meowSounds.Length) {
-			randomIndex = meowSounds.Length;
-		}
-		
-		if(randomIndex < 0) {
-			randomIndex = 0;
-		}
-				
-		return meowSounds[randomIndex];
 	}
 }
