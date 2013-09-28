@@ -41,6 +41,10 @@ public class iKittenModel : MonoBehaviour {
 		
 		isIdle = (stateInfo.nameHash == Animator.StringToHash("Base.A_idle"));
 		
+		if(animator.GetBool("Lick")) {
+			Handheld.Vibrate();
+		}
+		
 		if(isEating && Food.use.foodLevel > 0) {
 			if(timer >= timeTilSatiationIncrease) {
 				Food.use.moveFoodDown();
