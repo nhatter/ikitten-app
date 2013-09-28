@@ -19,19 +19,24 @@ public class iKittenController : MonoBehaviour {
 	void Update () {
 		if(Input.GetMouseButtonDown(0) || Input.touchCount > 0) {
 			if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out touchHitInfo, touchDistance)) {
-									Debug.Log(touchHitInfo.collider.gameObject.name);
-
+				Debug.Log(touchHitInfo.collider.gameObject.name);
+				
+				if(touchHitInfo.collider.gameObject == Food.use.gameObject) {
+					Food.use.refillFood();
+				}
+				
+				if(touchHitInfo.collider.gameObject.name == "cu_cat_tongue") {
+					animator.SetBool("Lick", true);
+				}
+				
 				if(touchHitInfo.collider.gameObject == this.gameObject) {
 					animator.SetBool("Meow", true);
 					sounds.randomMeow();
 				}
-				
-				if(touchHitInfo.collider.gameObject == Food.use.gameObject) {
-					Food.use.refillFood();
-				} 
 			}
 		} else {
 			animator.SetBool("Meow", false);
+			animator.SetBool("Lick", false);
 		}
 	}
 }
