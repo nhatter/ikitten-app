@@ -92,11 +92,7 @@ public class iKittenController : MonoBehaviour {
 						ballForce = new Vector3(-inputX, 0, -inputY);
 						Debug.Log ("Ball force: "+ ballForce.x+","+ballForce.y+","+ballForce.z);
 						touchedObject.rigidbody.AddForce(ballForce * 50);
-						waypointController.setMoveSpeed(model.runSpeed);
-						waypointController.setLookTime(model.waypointLookTime);
-						waypointController.addWaypoint(touchedObject.transform.position);
-						waypointController.addWaypoint(touchedObject.transform.position);
-						waypointController.MoveToWaypoint();
+						touchedObject.GetComponent<Ball>().isMoving = true;
 						model.chaseBall();
 					}
 				}

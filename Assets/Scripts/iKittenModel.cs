@@ -31,12 +31,14 @@ public class iKittenModel : MonoBehaviour {
 	public int idleNameHash = Animator.StringToHash("Base.A_idle");
 	
 	GameObject ball;
+	Ball ballState;
 	public bool isChasingBall = false;
 	public bool isBallInMouth = false;
 	public float chaseBallReactionTime = 1.0f;
 	public float distanceToCatchBall = 0.01f;
 	public float chaseBallReactionTimer = 0;
 	public Vector3 ballInMouthOffset = new Vector3(0,0,0);
+	public float chasingDistance = 2.0f;
 	
 	public float runSpeed = 2.0f;
 	float runSoundTimer = 0;
@@ -49,6 +51,7 @@ public class iKittenModel : MonoBehaviour {
 		sounds = GetComponent<iKittenSounds>();
 		waypointController = GetComponent<WaypointController>();
 		ball = GameObject.Find ("WoolBall");
+		ballState = ball.GetComponent<Ball>();
 		mouthObjectPlaceholder = GameObject.Find ("MouthObjectPlaceholder");
 		ballPlaceholder = GameObject.Find("WoolBallPlaceholder");
 	}
@@ -143,9 +146,11 @@ public class iKittenModel : MonoBehaviour {
 			runSoundTimer += Time.deltaTime;
 		}
 		
-		if(isBallInMouth) {
-			//ball.transform.position = transform.position + head.transform.localPosition + ballInMouthOffset;
-			//ball.transform.rotation = head.transform.rotation;
+		if(ballState.isMoving && !isChasingBall) {
+			Debug.Log ("DIST: "+Vector3.Distance(ball.transform.position, this.gameObject.transform.position));
+			if(Vector3.Distance(ball.transform.position, this.gameObject.transform.position) > chasingDistance) {
+				chaseBall();
+			}
 		}
 		
 	} // End of Update
@@ -160,6 +165,11 @@ public class iKittenModel : MonoBehaviour {
 	
 	public void chaseBall() {
 		isChasingBall = true;
+		waypointController.setMoveSpeed(runSpeed);
+		waypointController.setLookTime(waypointLookTime);
+		waypointController.addWaypoint(ball.transform.position);
+		waypointController.addWaypoint(ball.transform.position);
+		waypointController.MoveToWaypoint();
 	}
 	
 	public void pickupBall() {
@@ -177,6 +187,7 @@ public class iKittenModel : MonoBehaviour {
 		isBallInMouth = false;
 		animator.SetBool("Run",false);
 		animator.SetBool("Idle",false);
+		ballState.isMoving = false;
 	}
 
 	public void OnTriggerStay(Collider collider) {
