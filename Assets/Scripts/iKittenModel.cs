@@ -19,17 +19,28 @@ public class iKittenModel : MonoBehaviour {
 	Animator animator;
 	AnimatorStateInfo stateInfo;
 	iKittenSounds sounds;
+	WaypointController waypointController;
 	
 	public float timer = 0.0f;
 	public float hungerAlertTimer = 0.0f;
 	bool queueTimerReset = false;
 	
 	public int idleNameHash = Animator.StringToHash("Base.A_idle");
+	
+	GameObject ball;
+	public bool isChasingBall = false;
+	public float chaseBallReactionTime = 1.0f;
+	public float distanceToCatchBall = 0.01f;
+	public float chaseBallReactionTimer = 0;
+	
+	public float runSpeed = 2.0f;
 
 	// Use this for initialization
 	void Start () {
 		animator = GetComponent<Animator>();
 		sounds = GetComponent<iKittenSounds>();
+		waypointController = GetComponent<WaypointController>();
+		ball = GameObject.Find ("WoolBall");
 	}
 	
 	// Update is called once per frame
@@ -99,5 +110,34 @@ public class iKittenModel : MonoBehaviour {
 			queueTimerReset = false;
 		}
 		
+		if(isChasingBall) {
+			animator.SetBool("Run", true);
+			animator.SetBool("Idle", false);
+			
+			chaseBallReactionTimer += Time.deltaTime;
+			
+			if(chaseBallReactionTimer > chaseBallReactionTime) {
+				waypointController.addWaypoint(ball.transform.position);
+				waypointController.MoveToWaypoint();
+				chaseBallReactionTimer = 0;
+			}
+		}
+		
 	} // End of Update
+	
+	public void catchBall() {
+		ball.rigidbody.velocity = Vector3.zero;
+		isChasingBall = false;
+		animator.SetBool("Run", false);
+		animator.SetBool("Idle", true);
+		Debug.Log("Kitten caught the ball");
+	}
+	
+	public void OnTriggerStay(Collider collider) {
+		if(collider.gameObject == ball) {
+			waypointController.clearWaypoints();
+			catchBall();
+			iTween.StopByName("waypointController");
+		}
+	}
 }

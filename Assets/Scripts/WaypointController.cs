@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 public class WaypointController : MonoBehaviour {
-	public Vector3[] waypoints;
+	public Queue<Vector3> waypoints = new Queue<Vector3>();
 	public int rate = 20;
 	public int rotateTime = 1;
 	public bool isLooping = false;
@@ -14,12 +15,15 @@ public class WaypointController : MonoBehaviour {
 	private Vector3 finalLookTarget;
 	
 	private int currentWaypoint = 0;
+	Vector3 currentWayPointPos;
+	
+	private float moveSpeed = 1.0f;
 	
 	void OnDrawGizmos(){
-		iTween.DrawLine(waypoints,Color.yellow);
+		iTween.DrawLine(waypoints.ToArray(),Color.yellow);
 	}
 	
-	public void setWaypoints(Vector3[] newWaypoints) {
+	public void setWaypoints(Queue<Vector3> newWaypoints) {
 		waypoints = newWaypoints;
 		currentWaypoint=0;
 	}
@@ -28,16 +32,20 @@ public class WaypointController : MonoBehaviour {
 		finalLookTarget = lookTarget;
 	}
 	
-	public void MoveToWaypoint(){			
-		if(currentWaypoint < waypoints.Length) {
+	public void MoveToWaypoint(){
+		if(waypoints.Count > 0) {
 			//Time = Distance / Rate:
-			float travelTime = Vector3.Distance(transform.position, waypoints[currentWaypoint])/rate;
-			if(currentWaypoint == waypoints.Length - 1 && onCompleteAction != null) {
+			currentWayPointPos = waypoints.Dequeue();
+			
+			if(currentWaypoint == waypoints.Count - 1 && onCompleteAction != null) {
 				onCompleteActionString = "onCompleteActionWrapper";
 			} else {
 				onCompleteActionString = "MoveToWaypoint";
 			}
-			iTween.MoveTo(gameObject,iTween.Hash("position",waypoints[currentWaypoint],"time",travelTime,"easetype","linear","oncomplete",onCompleteActionString,"Looktarget",waypoints[currentWaypoint],"looktime",.4));
+			
+			currentWayPointPos = new Vector3(currentWayPointPos.x, 0, currentWayPointPos.z);
+			iTween.MoveTo(gameObject,iTween.Hash("name","waypointController","position",currentWayPointPos,"time",moveSpeed,"easetype","linear","oncomplete",onCompleteActionString,"Looktarget",currentWayPointPos,"looktime",1.0f));
+			
 		} else {
 			if(finalLookTarget != null) {
 				iTween.LookTo(gameObject, finalLookTarget, rotateTime);
@@ -46,7 +54,7 @@ public class WaypointController : MonoBehaviour {
 			
 		//Move to next waypoint:
 		currentWaypoint++;
-		if(currentWaypoint>waypoints.Length-2 && isLooping){
+		if(currentWaypoint>waypoints.Count-2 && isLooping){
 			currentWaypoint=0;
 		}
 	}
@@ -58,6 +66,22 @@ public class WaypointController : MonoBehaviour {
 	public void onCompleteActionWrapper() {
 		onCompleteAction();
 		MoveToWaypoint();
+	}
+	
+	public void addWaypoint(Vector3 waypoint) {
+		waypoints.Enqueue(waypoint);
+	}
+	
+	public void clearWaypoints() {
+		waypoints = new Queue<Vector3>();
+	}
+	
+	public Vector3 getCurrentWaypoint() {
+		return waypoints.Peek();
+	}
+		
+	public void setMoveSpeed(float newMoveSpeed) {
+		moveSpeed = newMoveSpeed;
 	}
 }
 
