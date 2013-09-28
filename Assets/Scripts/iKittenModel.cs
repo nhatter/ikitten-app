@@ -64,14 +64,14 @@ public class iKittenModel : MonoBehaviour {
 				queueTimerReset = true;
 			}
 			
-			if(hungerAlertTimer >= timeTilSatiationMeow & isIdle) {
+			if(hungerAlertTimer >= timeTilSatiationMeow & isIdle && !audio.isPlaying) {
 				animator.SetBool("Meow", true);
 				sounds.randomMeow();
 				hungerAlertTimer = 0;
 			}
 		}
 		
-		if(satiation <= levelToStartEating && isIdle) {
+		if(satiation <= levelToStartEating && isIdle && !audio.isPlaying) {
 			if(!isEating && Food.use.foodLevel > 0) {
 				isEating = true;
 				animator.SetBool("Eat", isEating);

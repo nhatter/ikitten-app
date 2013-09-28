@@ -36,8 +36,9 @@ public class iKittenController : MonoBehaviour {
 					model.isIdle = false;
 				}
 				
-				if(model.isIdle && animator.GetBool("Idle")) {
+				if(model.isIdle && animator.GetBool("Idle") && !audio.isPlaying) {
 					if(touchHitInfo.collider.gameObject.name == "cu_cat_tongue") {
+						animator.SetBool("Meow", false);
 						animator.SetBool("Lick", true);
 						animator.SetBool("Idle", false);
 						audio.PlayOneShot(sounds.lickSound);
@@ -46,6 +47,7 @@ public class iKittenController : MonoBehaviour {
 					}
 					
 					if(touchHitInfo.collider.gameObject == this.gameObject) {
+						animator.SetBool("Meow", false);
 						animator.SetBool("Meow", true);
 						animator.SetBool("Idle", false);
 						sounds.randomMeow();
