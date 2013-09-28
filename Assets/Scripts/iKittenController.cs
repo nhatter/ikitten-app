@@ -29,9 +29,6 @@ public class iKittenController : MonoBehaviour {
 		animator = GetComponent<Animator>();
 		sounds = GetComponent<iKittenSounds>();
 		waypointController = GetComponent<WaypointController>();
-		waypointController.setOnCompleteAction(delegate() {
-			model.catchBall();
-		});
 	}
 	
 	// Update is called once per frame
@@ -39,7 +36,7 @@ public class iKittenController : MonoBehaviour {
 		cameraPos = Camera.main.transform.position;
 		stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 		
-		if(!model.isIdle && !animator.GetBool("Idle") && !model.isChasingBall) {
+		if(!model.isIdle && !animator.GetBool("Idle") && !model.isChasingBall && !model.isBallInMouth) {
 			model.isPlayerInteracting = false;
 			animator.SetBool("Idle", true);
 			Debug.Log ("Kitten is now idle");

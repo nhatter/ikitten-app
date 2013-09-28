@@ -21,6 +21,9 @@ public class iKittenModel : MonoBehaviour {
 	iKittenSounds sounds;
 	WaypointController waypointController;
 	
+	GameObject mouthObjectPlaceholder;
+	GameObject ballPlaceholder;
+	
 	public float timer = 0.0f;
 	public float hungerAlertTimer = 0.0f;
 	bool queueTimerReset = false;
@@ -29,9 +32,11 @@ public class iKittenModel : MonoBehaviour {
 	
 	GameObject ball;
 	public bool isChasingBall = false;
+	public bool isBallInMouth = false;
 	public float chaseBallReactionTime = 1.0f;
 	public float distanceToCatchBall = 0.01f;
 	public float chaseBallReactionTimer = 0;
+	public Vector3 ballInMouthOffset = new Vector3(0,0,0);
 	
 	public float runSpeed = 2.0f;
 	float runSoundTimer = 0;
@@ -44,6 +49,8 @@ public class iKittenModel : MonoBehaviour {
 		sounds = GetComponent<iKittenSounds>();
 		waypointController = GetComponent<WaypointController>();
 		ball = GameObject.Find ("WoolBall");
+		mouthObjectPlaceholder = GameObject.Find ("MouthObjectPlaceholder");
+		ballPlaceholder = GameObject.Find("WoolBallPlaceholder");
 	}
 	
 	// Update is called once per frame
@@ -136,26 +143,51 @@ public class iKittenModel : MonoBehaviour {
 			runSoundTimer += Time.deltaTime;
 		}
 		
+		if(isBallInMouth) {
+			//ball.transform.position = transform.position + head.transform.localPosition + ballInMouthOffset;
+			//ball.transform.rotation = head.transform.rotation;
+		}
+		
 	} // End of Update
 	
 	public void catchBall() {
-		ball.rigidbody.velocity = Vector3.zero;
+		//ball.rigidbody.velocity = Vector3.zero;
 		isChasingBall = false;
-		animator.SetBool("Run", false);
-		animator.SetBool("Idle", true);
 		audio.Stop();
+		pickupBall();
 		Debug.Log("Kitten caught the ball");
 	}
 	
 	public void chaseBall() {
 		isChasingBall = true;
 	}
+	
+	public void pickupBall() {
+		ball.rigidbody.isKinematic = true;
+		ball.transform.parent = mouthObjectPlaceholder.transform;
+		ball.transform.localPosition = Vector3.zero;
+		isBallInMouth = true;
+	}
+	
+	public void dropBall() {
+		Debug.Log ("Kitten dropped ball");
+		ball.transform.parent = null;
+		ball.rigidbody.isKinematic = false;
+		ball.rigidbody.velocity = Vector3.zero;
+		isBallInMouth = false;
+		animator.SetBool("Run",false);
+		animator.SetBool("Idle",false);
+	}
 
 	public void OnTriggerStay(Collider collider) {
-		if(collider.gameObject == ball) {
+		Debug.Log (collider.name);
+		if(collider.gameObject == ball && isChasingBall && !isBallInMouth) {
 			waypointController.clearWaypoints();
 			catchBall();
-			iTween.StopByName("waypointController");
+			//iTween.StopByName("waypointController");
+			waypointController.addWaypoint(ballPlaceholder.transform.position);
+			waypointController.setOnCompleteAction(dropBall);
+			waypointController.MoveToWaypoint();
 		}
 	}
 }

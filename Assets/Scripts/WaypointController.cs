@@ -39,7 +39,7 @@ public class WaypointController : MonoBehaviour {
 			//Time = Distance / Rate:
 			currentWayPointPos = waypoints.Dequeue();
 			
-			if(currentWaypoint == waypoints.Count - 1 && onCompleteAction != null) {
+			if(waypoints.Count == 0 && onCompleteAction != null) {
 				onCompleteActionString = "onCompleteActionWrapper";
 			} else {
 				onCompleteActionString = "MoveToWaypoint";
