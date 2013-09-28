@@ -64,7 +64,7 @@ public class iKittenModel : MonoBehaviour {
 				queueTimerReset = true;
 			}
 			
-			if(hungerAlertTimer >= timeTilSatiationMeow & isIdle && !audio.isPlaying) {
+			if(satiation <= levelToStartEating && hungerAlertTimer >= timeTilSatiationMeow & isIdle && !audio.isPlaying) {
 				animator.SetBool("Meow", true);
 				sounds.randomMeow();
 				hungerAlertTimer = 0;
