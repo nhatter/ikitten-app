@@ -12,14 +12,19 @@ public class iKittenModel : MonoBehaviour {
 	public float minTimeTilSatiationMeow = 1.0f;
 	
 	public bool isEating = false;
+	public bool isIdle = true;
+	
+	public bool isPlayerInteracting = false;
 	
 	Animator animator;
 	AnimatorStateInfo stateInfo;
 	iKittenSounds sounds;
 	
-	float timer = 0.0f;
-	float hungerAlertTimer = 0.0f;
+	public float timer = 0.0f;
+	public float hungerAlertTimer = 0.0f;
 	bool queueTimerReset = false;
+	
+	public int idleNameHash = Animator.StringToHash("Base.A_idle");
 
 	// Use this for initialization
 	void Start () {
@@ -33,6 +38,8 @@ public class iKittenModel : MonoBehaviour {
 		hungerAlertTimer += Time.deltaTime;
 		
 		stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+		
+		isIdle = (stateInfo.nameHash == Animator.StringToHash("Base.A_idle"));
 		
 		if(isEating && Food.use.foodLevel > 0) {
 			if(timer >= timeTilSatiationIncrease) {
@@ -53,14 +60,14 @@ public class iKittenModel : MonoBehaviour {
 				queueTimerReset = true;
 			}
 			
-			if(hungerAlertTimer >= timeTilSatiationMeow) {
+			if(hungerAlertTimer >= timeTilSatiationMeow & isIdle) {
 				animator.SetBool("Meow", true);
 				sounds.randomMeow();
 				hungerAlertTimer = 0;
 			}
 		}
 		
-		if(satiation <= levelToStartEating) {
+		if(satiation <= levelToStartEating && isIdle) {
 			if(!isEating && Food.use.foodLevel > 0) {
 				isEating = true;
 				animator.SetBool("Eat", isEating);
@@ -76,7 +83,7 @@ public class iKittenModel : MonoBehaviour {
 			}
 		}
 		
-		if(satiation == MAX_SATISFACTION) {
+		if(satiation == MAX_SATISFACTION && isEating) {
 			isEating = false;
 			audio.Stop();
 			audio.loop = false;

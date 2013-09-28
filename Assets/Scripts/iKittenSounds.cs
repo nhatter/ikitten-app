@@ -4,6 +4,7 @@ using System.Collections;
 public class iKittenSounds : MonoBehaviour {
 	public AudioClip[] meowSounds;
 	public AudioClip purrSound;
+	public AudioClip lickSound;
 	
 	public void randomMeow() {
 		int randomIndex = (int) Mathf.Round(Random.value*meowSounds.Length-1);
