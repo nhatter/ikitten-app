@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class WaypointController : MonoBehaviour {
 	public Queue<Vector3> waypoints = new Queue<Vector3>();
-	public int rate = 20;
+	public int rate = 50;
 	public int rotateTime = 1;
 	public bool isLooping = false;
 	
@@ -18,6 +18,8 @@ public class WaypointController : MonoBehaviour {
 	Vector3 currentWayPointPos;
 	
 	private float moveSpeed = 1.0f;
+	private float travelTime;
+	private float lookTime = 2.0f;
 	
 	void OnDrawGizmos(){
 		iTween.DrawLine(waypoints.ToArray(),Color.yellow);
@@ -43,8 +45,9 @@ public class WaypointController : MonoBehaviour {
 				onCompleteActionString = "MoveToWaypoint";
 			}
 			
+			travelTime = Vector3.Distance(transform.position, currentWayPointPos)/moveSpeed;
 			currentWayPointPos = new Vector3(currentWayPointPos.x, 0, currentWayPointPos.z);
-			iTween.MoveTo(gameObject,iTween.Hash("name","waypointController","position",currentWayPointPos,"time",moveSpeed,"easetype","linear","oncomplete",onCompleteActionString,"Looktarget",currentWayPointPos,"looktime",1.0f));
+			iTween.MoveTo(gameObject,iTween.Hash("name","waypointController","position",currentWayPointPos,"time",travelTime,"easetype","linear","oncomplete",onCompleteActionString,"Looktarget",currentWayPointPos,"looktime", lookTime));
 			
 		} else {
 			if(finalLookTarget != null) {
@@ -82,6 +85,10 @@ public class WaypointController : MonoBehaviour {
 		
 	public void setMoveSpeed(float newMoveSpeed) {
 		moveSpeed = newMoveSpeed;
+	}
+	
+	public void setLookTime(float newLookTime) {
+		lookTime = newLookTime;
 	}
 }
 

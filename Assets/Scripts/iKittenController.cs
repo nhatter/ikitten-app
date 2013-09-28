@@ -46,7 +46,11 @@ public class iKittenController : MonoBehaviour {
 		}
 		
 		if(Input.GetMouseButtonDown(0) || Input.touchCount > 0) {
-
+			
+			#if UNITY_EDITOR
+		   		inputY = -20+Random.value*40;
+				inputX = -20+Random.value*40;
+			#else
 			if(Input.GetTouch(0).phase == TouchPhase.Moved) {
 				touch = Input.GetTouch(0);
 				touchDeltaPosition = touch.deltaPosition;						 
@@ -56,6 +60,7 @@ public class iKittenController : MonoBehaviour {
 				inputX = 0;
 				inputY = 0;
 			}
+			#endif
 			
 			if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out touchHitInfo, touchDistance)) {
 				//Debug.Log(touchHitInfo.collider.gameObject.name);
@@ -91,10 +96,11 @@ public class iKittenController : MonoBehaviour {
 						Debug.Log ("Ball force: "+ ballForce.x+","+ballForce.y+","+ballForce.z);
 						touchedObject.rigidbody.AddForce(ballForce * 50);
 						waypointController.setMoveSpeed(model.runSpeed);
+						waypointController.setLookTime(model.waypointLookTime);
 						waypointController.addWaypoint(touchedObject.transform.position);
 						waypointController.addWaypoint(touchedObject.transform.position);
 						waypointController.MoveToWaypoint();
-						model.isChasingBall = true;
+						model.chaseBall();
 					}
 				}
 			}

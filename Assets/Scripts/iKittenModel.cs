@@ -34,6 +34,9 @@ public class iKittenModel : MonoBehaviour {
 	public float chaseBallReactionTimer = 0;
 	
 	public float runSpeed = 2.0f;
+	float runSoundTimer = 0;
+	public float runSoundTime = 0.2f;
+	public float waypointLookTime = 1.0f;
 
 	// Use this for initialization
 	void Start () {
@@ -121,6 +124,16 @@ public class iKittenModel : MonoBehaviour {
 				waypointController.MoveToWaypoint();
 				chaseBallReactionTimer = 0;
 			}
+
+			if(runSoundTimer > runSoundTime) {
+				runSoundTimer = 0;
+			}
+			
+			if(runSoundTimer == 0) {
+				audio.PlayOneShot(sounds.runSound);
+			}
+			
+			runSoundTimer += Time.deltaTime;
 		}
 		
 	} // End of Update
@@ -130,9 +143,14 @@ public class iKittenModel : MonoBehaviour {
 		isChasingBall = false;
 		animator.SetBool("Run", false);
 		animator.SetBool("Idle", true);
+		audio.Stop();
 		Debug.Log("Kitten caught the ball");
 	}
 	
+	public void chaseBall() {
+		isChasingBall = true;
+	}
+
 	public void OnTriggerStay(Collider collider) {
 		if(collider.gameObject == ball) {
 			waypointController.clearWaypoints();

@@ -5,6 +5,7 @@ public class iKittenSounds : MonoBehaviour {
 	public AudioClip[] meowSounds;
 	public AudioClip purrSound;
 	public AudioClip lickSound;
+	public AudioClip runSound;
 	
 	public void randomMeow() {
 		int randomIndex = (int) Mathf.Round(Random.value*meowSounds.Length-1);
