@@ -1,12 +1,12 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/iKittenModel.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/Food.cs">
     <Files>
-      <File FileName="Assets/Scripts/iKittenModel.cs" Line="53" Column="3" />
-      <File FileName="Assets/Scripts/iKittenController.cs" Line="32" Column="3" />
+      <File FileName="Assets/Scripts/iKittenModel.cs" Line="44" Column="39" />
+      <File FileName="Assets/Scripts/iKittenController.cs" Line="30" Column="28" />
       <File FileName="Assets/Scripts/AnimationMotor.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Food.cs" Line="14" Column="75" />
-      <File FileName="Assets/Scripts/iKittenModel.cs" Line="31" Column="17" />
+      <File FileName="Assets/Scripts/Food.cs" Line="31" Column="112" />
+      <File FileName="Assets/Scripts/iKittenSounds.cs" Line="6" Column="28" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

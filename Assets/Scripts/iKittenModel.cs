@@ -3,19 +3,23 @@ using System.Collections;
 
 public class iKittenModel : MonoBehaviour {
 	public int MAX_SATISFACTION = 10;
+	public float FEED_ALERT_TIME_SCALE = 2.0f;
 	public int satiation = 10;
-	public int timeTilSatiationIncrease = 5;
-	public int timeTilSatiationDecrease = 5;
-	public int levelToStartEating = 3;
+	public float timeTilSatiationIncrease = 5.0f;
+	public float timeTilSatiationDecrease = 5.0f;
+	public float levelToStartEating = 3.0f;
+	public float timeTilSatiationMeow = 10.0f;
+	public float minTimeTilSatiationMeow = 1.0f;
 	
 	public bool isEating = false;
 	
 	Animator animator;
 	AnimatorStateInfo stateInfo;
 	iKittenSounds sounds;
-
 	
-	float timer;
+	float timer = 0.0f;
+	float hungerAlertTimer = 0.0f;
+	bool queueTimerReset = false;
 
 	// Use this for initialization
 	void Start () {
@@ -26,7 +30,7 @@ public class iKittenModel : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		timer += Time.deltaTime;
-
+		hungerAlertTimer += Time.deltaTime;
 		
 		stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 		
@@ -34,7 +38,7 @@ public class iKittenModel : MonoBehaviour {
 			if(timer >= timeTilSatiationIncrease) {
 				Food.use.moveFoodDown();
 				satiation++;
-				timer = 0;
+				queueTimerReset = true;
 			}
 		} else {
 			if(isEating) {
@@ -46,16 +50,30 @@ public class iKittenModel : MonoBehaviour {
 			
 			if(timer >= timeTilSatiationDecrease) {
 				satiation--;
-				timer = 0;
+				queueTimerReset = true;
+			}
+			
+			if(hungerAlertTimer >= timeTilSatiationMeow) {
+				animator.SetBool("Meow", true);
+				sounds.randomMeow();
+				hungerAlertTimer = 0;
 			}
 		}
 		
-		if(satiation <= levelToStartEating && !isEating && Food.use.foodLevel > 0) {
-			isEating = true;
-			animator.SetBool("Eat", isEating);
-			audio.clip = sounds.purrSound;
-			audio.loop = true;
-			audio.Play();
+		if(satiation <= levelToStartEating) {
+			if(!isEating && Food.use.foodLevel > 0) {
+				isEating = true;
+				animator.SetBool("Eat", isEating);
+				audio.clip = sounds.purrSound;
+				audio.loop = true;
+				audio.Play();
+			} else {
+				if(satiation > 0) {
+					timeTilSatiationMeow = satiation*FEED_ALERT_TIME_SCALE;
+				} else {
+					timeTilSatiationMeow = minTimeTilSatiationMeow;
+				}
+			}
 		}
 		
 		if(satiation == MAX_SATISFACTION) {
@@ -64,5 +82,11 @@ public class iKittenModel : MonoBehaviour {
 			audio.loop = false;
 			animator.SetBool("Eat", isEating);
 		}
-	}
+		
+		if(queueTimerReset) {
+			timer = 0;
+			queueTimerReset = false;
+		}
+		
+	} // End of Update
 }
