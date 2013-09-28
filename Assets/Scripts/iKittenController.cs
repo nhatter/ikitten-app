@@ -93,7 +93,6 @@ public class iKittenController : MonoBehaviour {
 						Debug.Log ("Ball force: "+ ballForce.x+","+ballForce.y+","+ballForce.z);
 						touchedObject.rigidbody.AddForce(ballForce * 50);
 						touchedObject.GetComponent<Ball>().isMoving = true;
-						model.chaseBall();
 					}
 				}
 			}
