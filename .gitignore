@@ -31,9 +31,8 @@ Assembly-UnityScript-firstpass.unityproj
 Assembly-UnityScript-vs.unityproj
 Assembly-UnityScript.pidb
 Assembly-UnityScript.unityProj
-Pilgrim-csharp.sln
-Pilgrim.sln
-pilgrim.userprefs
+*.sln
+*.userprefs
 
 Assets/iTweenEditor.meta
 Assets/iTweenEditor
