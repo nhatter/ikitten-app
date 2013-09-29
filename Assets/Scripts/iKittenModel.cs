@@ -40,6 +40,7 @@ public class iKittenModel : MonoBehaviour {
 	public Vector3 ballInMouthOffset = new Vector3(0,0,0);
 	public float chasingDistance = 2.0f;
 	
+	public bool isRunning = false;
 	public float runSpeed = 2.0f;
 	float runSoundTimer = 0;
 	public float runSoundTime = 0.2f;
@@ -123,18 +124,20 @@ public class iKittenModel : MonoBehaviour {
 			queueTimerReset = false;
 		}
 		
-		if(isChasingBall) {
+		if(isRunning) {
 			animator.SetBool("Run", true);
 			animator.SetBool("Idle", false);
 			
-			chaseBallReactionTimer += Time.deltaTime;
-			
-			if(chaseBallReactionTimer > chaseBallReactionTime) {
-				waypointController.addWaypoint(ball.transform.position);
-				waypointController.MoveToWaypoint();
-				chaseBallReactionTimer = 0;
-			}
-
+			if(isChasingBall) {
+				chaseBallReactionTimer += Time.deltaTime;
+				
+				if(chaseBallReactionTimer > chaseBallReactionTime) {
+					waypointController.addWaypoint(ball.transform.position);
+					waypointController.MoveToWaypoint();
+					chaseBallReactionTimer = 0;
+				}
+			}	
+				
 			if(runSoundTimer > runSoundTime) {
 				runSoundTimer = 0;
 			}
@@ -165,6 +168,7 @@ public class iKittenModel : MonoBehaviour {
 	
 	public void chaseBall() {
 		isChasingBall = true;
+		isRunning = true;
 		waypointController.setMoveSpeed(runSpeed);
 		waypointController.setLookTime(waypointLookTime);
 		waypointController.addWaypoint(ball.transform.position);
@@ -188,6 +192,7 @@ public class iKittenModel : MonoBehaviour {
 		animator.SetBool("Run",false);
 		animator.SetBool("Idle",false);
 		ballState.isMoving = false;
+		isRunning = false;
 	}
 
 	public void OnTriggerStay(Collider collider) {

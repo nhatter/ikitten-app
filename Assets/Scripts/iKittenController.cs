@@ -36,7 +36,7 @@ public class iKittenController : MonoBehaviour {
 		cameraPos = Camera.main.transform.position;
 		stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 		
-		if(!model.isIdle && !animator.GetBool("Idle") && !model.isChasingBall && !model.isBallInMouth) {
+		if(!model.isIdle && !animator.GetBool("Idle") && !model.isRunning) {
 			model.isPlayerInteracting = false;
 			animator.SetBool("Idle", true);
 			Debug.Log ("Kitten is now idle");
@@ -68,7 +68,7 @@ public class iKittenController : MonoBehaviour {
 					model.isIdle = false;
 				}
 				
-				if(model.isIdle && animator.GetBool("Idle") && !audio.isPlaying) {
+				if(model.isIdle && animator.GetBool("Idle")) {
 					if(touchedObject.name == "cu_cat_tongue") {
 						animator.SetBool("Meow", false);
 						animator.SetBool("Lick", true);
