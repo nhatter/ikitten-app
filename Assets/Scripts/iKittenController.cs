@@ -39,6 +39,10 @@ public class iKittenController : MonoBehaviour {
 		cameraPos = Camera.main.transform.position;
 		stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 		
+		if(Input.GetKeyDown(KeyCode.Escape)) {
+			Application.Quit();
+		}
+		
 		if(!model.isIdle && !animator.GetBool("Idle") && !model.isRunning) {
 			model.isPlayerInteracting = false;
 			animator.SetBool("Idle", true);
@@ -47,7 +51,7 @@ public class iKittenController : MonoBehaviour {
 		
 		if(Input.GetMouseButtonDown(0) || Input.touchCount > 0) {
 			
-			#if UNITY_EDITOR
+			#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN
 		   		inputY = 10;
 				inputX = -10;
 			#else
