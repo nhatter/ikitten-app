@@ -15,8 +15,11 @@ public class CameraManager : MonoBehaviour {
 		// Disable all other cameras
 		foreach(Camera cam in cameras) {
 			cam.enabled = false;
+			cam.GetComponent<AudioListener>().enabled = false;
 		}
+		
 		cameras[0].enabled = true;
+		cameras[0].GetComponent<AudioListener>().enabled = true;
 		
 		iKitty = GameObject.Find("iKitty");
 		
@@ -25,6 +28,7 @@ public class CameraManager : MonoBehaviour {
 	
 	public void nextCamera() {
 		cameras[cameraIndex].enabled = false;
+		cameras[cameraIndex].GetComponent<AudioListener>().enabled = false;
 		cameraIndex++;
 		
 		if(cameraIndex == cameras.Length) {
@@ -32,6 +36,7 @@ public class CameraManager : MonoBehaviour {
 		}
 		
 		cameras[cameraIndex].enabled = true;
+		cameras[cameraIndex].GetComponent<AudioListener>().enabled = true;
 	}
 	
 	void Update() {
