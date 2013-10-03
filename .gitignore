@@ -50,3 +50,5 @@ Assets/GUI/Skins/.DS_Store
 *Editor*
 
 ProjectSettings/AudioManager.asset
+
+*.sln
