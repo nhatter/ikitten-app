@@ -3,7 +3,6 @@ using System.Collections;
 
 public class iKittenController : MonoBehaviour {
 	public float touchDistance = 2.0f;
-	public LayerMask touchLayerMask;
 	float swipeSpeed = 0.1F;
 	
 	Animator animator;
@@ -13,7 +12,6 @@ public class iKittenController : MonoBehaviour {
 	WaypointController waypointController;
 	RaycastHit touchHitInfo;
 	GameObject touchedObject;
-	GameObject iKittyFood;
 	
 	float inputX;
 	float inputY;
@@ -31,7 +29,6 @@ public class iKittenController : MonoBehaviour {
 		animator = GetComponent<Animator>();
 		sounds = GetComponent<iKittenSounds>();
 		waypointController = GetComponent<WaypointController>();
-		iKittyFood = GameObject.Find("iKittyFood");
 	}
 	
 	// Update is called once per frame
@@ -51,9 +48,9 @@ public class iKittenController : MonoBehaviour {
 		
 		if(Input.GetMouseButtonDown(0) || Input.touchCount > 0) {
 			
-			#if UNITY_EDITOR || UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN
-		   		inputY = 10;
-				inputX = -10;
+			#if UNITY_EDITOR
+		   		inputY = -20+Random.value*40;
+				inputX = -20+Random.value*40;
 			#else
 			if(Input.GetTouch(0).phase == TouchPhase.Moved) {
 				touch = Input.GetTouch(0);
@@ -66,15 +63,15 @@ public class iKittenController : MonoBehaviour {
 			}
 			#endif
 			
-			if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out touchHitInfo, touchDistance, touchLayerMask)) {
-				Debug.Log(touchHitInfo.collider.gameObject.name);
+			if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out touchHitInfo, touchDistance)) {
+				//Debug.Log(touchHitInfo.collider.gameObject.name);
 				touchedObject = touchHitInfo.collider.gameObject;
 				
-				if(touchedObject == iKittyFood) {
+				if(touchedObject == Food.use.gameObject) {
 					Food.use.refillFood();
 					model.isIdle = false;
 				}
-
+				
 				if(model.isIdle && animator.GetBool("Idle")) {
 					if(touchedObject.name == "cu_cat_tongue") {
 						animator.SetBool("Meow", false);
@@ -93,14 +90,14 @@ public class iKittenController : MonoBehaviour {
 						model.isIdle = false;
 						model.timer = 0;
 					}	
-				}
 					
-				if(touchedObject.name == "WoolBall") {
-				    Debug.Log("X, Y: " + touchDeltaPosition.x	+ ", " + touchDeltaPosition.y);
-					ballForce = new Vector3(-inputX, 0, -inputY);
-					Debug.Log ("Ball force: "+ ballForce.x+","+ballForce.y+","+ballForce.z);
-					touchedObject.rigidbody.AddForce(ballForce * 50);
-					touchedObject.GetComponent<Ball>().isMoving = true;
+					if(touchedObject.name == "WoolBall") {
+					    Debug.Log("X, Y: " + touchDeltaPosition.x	+ ", " + touchDeltaPosition.y);
+						ballForce = new Vector3(-inputX, 0, -inputY);
+						Debug.Log ("Ball force: "+ ballForce.x+","+ballForce.y+","+ballForce.z);
+						touchedObject.rigidbody.AddForce(ballForce * 50);
+						touchedObject.GetComponent<Ball>().isMoving = true;
+					}
 				}
 			}
 		} else {
