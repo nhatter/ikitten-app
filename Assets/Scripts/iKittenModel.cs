@@ -26,8 +26,8 @@ public class iKittenModel : MonoBehaviour {
 	GameObject mouthObjectPlaceholder;
 	GameObject ballPlaceholder;
 	GameObject food;
-	bool isMovingToFood = false;
-	bool isAtFoodLocation = false;
+	public bool isMovingToFood = false;
+	public bool isAtFoodLocation = false;
 	GameObject eatLocation;
 	
 	public float timer = 0.0f;
@@ -74,9 +74,11 @@ public class iKittenModel : MonoBehaviour {
 		
 		isIdle = (stateInfo.nameHash == Animator.StringToHash("Base.A_idle"));
 		
+		#if UNITY_IPHONE || UNITY_ANDROID
 		if(animator.GetBool("Lick")) {
 			Handheld.Vibrate();
 		}
+		#endif
 		
 		if(isEating && Food.use.foodLevel > 0) {
 			if(timer >= timeTilSatiationIncrease) {
@@ -219,10 +221,10 @@ public class iKittenModel : MonoBehaviour {
 			waypointController.MoveToWaypoint();
 		}
 		
-		if(other.gameObject == eatLocation) {
+		if(other.gameObject == eatLocation && !isEating) {
 			Debug.Log ("At food location");
 			if(satiation <= levelToStartEating) {
-				if(!isEating && Food.use.foodLevel > 0) {
+				if(Food.use.foodLevel > 0) {
 					eat();
 				} else {
 					if(satiation > 0) {
