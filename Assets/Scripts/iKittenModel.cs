@@ -195,6 +195,7 @@ public class iKittenModel : MonoBehaviour {
 	
 	public void eat() {
 		isEating = true;
+		isAtFoodLocation = true;
 		animator.SetBool("Eat", isEating);
 		animator.SetBool("Idle", false);
 		audio.clip = sounds.purrSound;
@@ -205,7 +206,6 @@ public class iKittenModel : MonoBehaviour {
 	public void setMovedToFood() {
 		isMovingToFood = false;
 		isRunning = false;
-		isAtFoodLocation = true;
 		animator.SetBool("Run", false);
 		animator.SetBool("Idle", true);
 	}
@@ -223,6 +223,7 @@ public class iKittenModel : MonoBehaviour {
 		
 		if(other.gameObject == eatLocation && !isEating) {
 			Debug.Log ("At food location");
+			isAtFoodLocation = true;
 			if(satiation <= levelToStartEating) {
 				if(Food.use.foodLevel > 0) {
 					eat();
@@ -242,6 +243,12 @@ public class iKittenModel : MonoBehaviour {
 					hungerAlertTimer += Time.deltaTime;
 				}
 			}
+		}
+	}
+	
+	void OnTriggerExit(Collider other) {
+		if(other.gameObject == eatLocation && !isEating) {
+			isAtFoodLocation = false;
 		}
 	}
 }
