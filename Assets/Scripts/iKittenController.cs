@@ -14,6 +14,7 @@ public class iKittenController : MonoBehaviour {
 	RaycastHit touchHitInfo;
 	GameObject touchedObject;
 	GameObject iKittyFood;
+	public Transform iKittyHead;
 	
 	float inputX;
 	float inputY;
@@ -34,8 +35,10 @@ public class iKittenController : MonoBehaviour {
 		iKittyFood = GameObject.Find("iKittyFood");
 	}
 	
+	float angle = 0;
+	bool isStroking = false;
 	// Update is called once per frame
-	void Update () {
+	void LateUpdate () {
 		cameraPos = Camera.main.transform.position;
 		stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 		
@@ -51,23 +54,27 @@ public class iKittenController : MonoBehaviour {
 		
 		if(Input.GetMouseButtonDown(0) || Input.touchCount > 0) {
 			
-			#if UNITY_EDITOR
+			#if UNITY_OSX_STANDALONE
 		   		inputY = 10;
 				inputX = -10;
 			#else
-			if(Input.GetTouch(0).phase == TouchPhase.Moved) {
-				touch = Input.GetTouch(0);
-				touchDeltaPosition = touch.deltaPosition;						 
-		   		inputX = touchDeltaPosition.x;
-		   		inputY = touchDeltaPosition.y;
-			} else {
-				inputX = 0;
-				inputY = 0;
+			if(Input.touchCount > 0) {
+				if(Input.GetTouch(0).phase == TouchPhase.Moved) {
+					touch = Input.GetTouch(0);
+					touchDeltaPosition = touch.deltaPosition;						 
+			   		inputX = touchDeltaPosition.x;
+			   		inputY = touchDeltaPosition.y;
+					Debug.Log ("inputX: "+inputX+"  InputY: "+inputY);
+				} else {
+					inputX = 0;
+					inputY = 0;
+				}
 			}
 			#endif
+		
 			
-			if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out touchHitInfo, touchDistance, touchLayerMask)) {
-				Debug.Log(touchHitInfo.collider.gameObject.name);
+			if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.GetTouch(0).position), out touchHitInfo, touchDistance, touchLayerMask)) {
+				Debug.Log("Touch hit "+touchHitInfo.collider.gameObject.name);
 				touchedObject = touchHitInfo.collider.gameObject;
 				
 				if(touchedObject == iKittyFood) {
@@ -84,15 +91,6 @@ public class iKittenController : MonoBehaviour {
 						model.isIdle = false;
 						model.timer = 0;
 					}
-					
-					if(touchedObject == this.gameObject) {
-						animator.SetBool("Meow", false);	
-						animator.SetBool("Meow", true);
-						animator.SetBool("Idle", false);
-						sounds.randomMeow();
-						model.isIdle = false;
-						model.timer = 0;
-					}	
 				}
 					
 				if(touchedObject.name == "WoolBall") {
@@ -102,10 +100,24 @@ public class iKittenController : MonoBehaviour {
 					touchedObject.rigidbody.AddForce(ballForce * 50);
 					touchedObject.GetComponent<Ball>().isMoving = true;
 				}
+				
+				if(touchedObject.name == "NoseBridge") {
+					animator.SetBool("Idle", false);
+					animator.SetBool("Stroke", true);
+					isStroking = true;
+				}
+			}
+			
+			if(isStroking) {
+				angle += -inputY * 0.85f;
+				iKittyHead.rotation = Quaternion.Euler(new Vector3(angle, 0, 0));
 			}
 		} else {
 			animator.SetBool("Meow", false);
 			animator.SetBool("Lick", false);
+			isStroking = false;
+			animator.SetBool("Stroke", false);
+			//animator.SetBool("Idle", true);
 		}
 	}
 }
