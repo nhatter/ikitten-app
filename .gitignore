@@ -56,3 +56,5 @@ ProjectSettings/AudioManager.asset
 *.userprefs
 
 *.sln
+
+ProjectSettings/AudioManager.asset
