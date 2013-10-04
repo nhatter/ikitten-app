@@ -35,7 +35,7 @@ public class iKittenController : MonoBehaviour {
 	public float minStrokeAngleZ = -35;
 	bool isStroking = false;
 	float notStrokingTimer = 0;
-	float timeToStopStroking = 2;
+	float timeToStopStroking = 3;
 	
 	// Use this for initialization
 	void Start () {
@@ -75,7 +75,6 @@ public class iKittenController : MonoBehaviour {
 					touchDeltaPosition = touch.deltaPosition;						 
 			   		inputX = touchDeltaPosition.x;
 			   		inputY = touchDeltaPosition.y;
-					Debug.Log ("inputX: "+inputX+"  InputY: "+inputY);
 				} else {
 					inputX = 0;
 					inputY = 0;
@@ -93,16 +92,18 @@ public class iKittenController : MonoBehaviour {
 					model.isIdle = false;
 				}
 
-				if(model.isIdle && animator.GetBool("Idle")) {
-					if(touchedObject.name == "cu_cat_tongue") {
+				//if(model.isIdle && animator.GetBool("Idle")) {
+					if(touchedObject.name == "Mouth") {
 						animator.SetBool("Meow", false);
 						animator.SetBool("Lick", true);
 						animator.SetBool("Idle", false);
 						audio.PlayOneShot(sounds.lickSound);
 						model.isIdle = false;
 						model.timer = 0;
+						isStroking = true;
+						notStrokingTimer = 0;
 					}
-				}
+				//}
 					
 				if(touchedObject.name == "WoolBall") {
 				    Debug.Log("X, Y: " + touchDeltaPosition.x	+ ", " + touchDeltaPosition.y);
@@ -114,7 +115,7 @@ public class iKittenController : MonoBehaviour {
 				
 				
 				
-				if(touchedObject.name == "NoseBridge") {
+				if(touchedObject.name == "NoseBridge" || touchedObject.name == "Neck") {
 					animator.SetBool("Idle", false);
 					animator.SetBool("Stroke", true);
 					strokeAngleX += -inputY * touchStrokeScale;
@@ -128,6 +129,8 @@ public class iKittenController : MonoBehaviour {
 					}
 					
 					isStroking = true;
+					notStrokingTimer = 0;
+
 				}
 				
 				if(touchedObject.name == "HeadSide") {
@@ -144,6 +147,7 @@ public class iKittenController : MonoBehaviour {
 					}
 					
 					isStroking = true;
+					notStrokingTimer = 0;
 				}
 			}
 			
@@ -155,6 +159,7 @@ public class iKittenController : MonoBehaviour {
 		if(isStroking) {
 			notStrokingTimer = 0;
 		} else {
+			//Debug.Log("Timer: "+notStrokingTimer);
 			notStrokingTimer += Time.deltaTime;
 			strokeAngleX = Mathf.LerpAngle(strokeAngleX, 0, 0.01f);
 			strokeAngleZ = Mathf.LerpAngle(strokeAngleZ, 0, 0.01f);

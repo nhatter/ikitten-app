@@ -211,7 +211,6 @@ public class iKittenModel : MonoBehaviour {
 	}
 		
 	void OnTriggerStay(Collider other) {
-		Debug.Log (other.name);
 		if(other.gameObject == ball && isChasingBall && !isBallInMouth) {
 			waypointController.clearWaypoints();
 			catchBall();
@@ -222,7 +221,6 @@ public class iKittenModel : MonoBehaviour {
 		}
 		
 		if(other.gameObject == eatLocation && !isEating) {
-			Debug.Log ("At food location");
 			isAtFoodLocation = true;
 			if(satiation <= levelToStartEating) {
 				if(Food.use.foodLevel > 0) {
