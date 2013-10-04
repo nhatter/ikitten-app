@@ -3,6 +3,7 @@ using System.Collections;
 
 public class iKittenController : MonoBehaviour {
 	public float touchDistance = 2.0f;
+	public float touchStrokeScale = 0.1f;
 	public LayerMask touchLayerMask;
 	float swipeSpeed = 0.1F;
 	
@@ -26,6 +27,16 @@ public class iKittenController : MonoBehaviour {
 	
 	Vector3 cameraPos;
 	
+	float strokeAngleX = 0;
+	public float maxStrokeAngleX = 35;
+	public float minStrokeAngleX = -35;
+	float strokeAngleZ = 0;
+	public float maxStrokeAngleZ = 35;
+	public float minStrokeAngleZ = -35;
+	bool isStroking = false;
+	float notStrokingTimer = 0;
+	float timeToStopStroking = 2;
+	
 	// Use this for initialization
 	void Start () {
 		model = GetComponent<iKittenModel>();
@@ -35,8 +46,7 @@ public class iKittenController : MonoBehaviour {
 		iKittyFood = GameObject.Find("iKittyFood");
 	}
 	
-	float angle = 0;
-	bool isStroking = false;
+	
 	// Update is called once per frame
 	void LateUpdate () {
 		cameraPos = Camera.main.transform.position;
@@ -52,6 +62,7 @@ public class iKittenController : MonoBehaviour {
 			Debug.Log ("Kitten is now idle");
 		}
 		
+		isStroking = false;
 		if(Input.GetMouseButtonDown(0) || Input.touchCount > 0) {
 			
 			#if UNITY_OSX_STANDALONE
@@ -73,7 +84,7 @@ public class iKittenController : MonoBehaviour {
 			#endif
 		
 			
-			if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.GetTouch(0).position), out touchHitInfo, touchDistance, touchLayerMask)) {
+			if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out touchHitInfo, touchDistance, touchLayerMask)) {
 				Debug.Log("Touch hit "+touchHitInfo.collider.gameObject.name);
 				touchedObject = touchHitInfo.collider.gameObject;
 				
@@ -101,23 +112,59 @@ public class iKittenController : MonoBehaviour {
 					touchedObject.GetComponent<Ball>().isMoving = true;
 				}
 				
+				
+				
 				if(touchedObject.name == "NoseBridge") {
 					animator.SetBool("Idle", false);
 					animator.SetBool("Stroke", true);
+					strokeAngleX += -inputY * touchStrokeScale;
+					
+					if(strokeAngleX > maxStrokeAngleX) {
+						strokeAngleX = maxStrokeAngleX;
+					}
+					
+					if(strokeAngleX < minStrokeAngleX) {
+						strokeAngleX = minStrokeAngleX;
+					}
+					
+					isStroking = true;
+				}
+				
+				if(touchedObject.name == "HeadSide") {
+					animator.SetBool("Idle", false);
+					animator.SetBool("Stroke", true);
+					strokeAngleZ += -inputY * touchStrokeScale;
+					
+					if(strokeAngleZ > maxStrokeAngleZ) {
+						strokeAngleZ = maxStrokeAngleZ;
+					}
+					
+					if(strokeAngleZ < minStrokeAngleZ) {
+						strokeAngleZ = minStrokeAngleZ;
+					}
+					
 					isStroking = true;
 				}
 			}
 			
-			if(isStroking) {
-				angle += -inputY * 0.85f;
-				iKittyHead.rotation = Quaternion.Euler(new Vector3(angle, 0, 0));
-			}
 		} else {
 			animator.SetBool("Meow", false);
 			animator.SetBool("Lick", false);
-			isStroking = false;
+		}
+		
+		if(isStroking) {
+			notStrokingTimer = 0;
+		} else {
+			notStrokingTimer += Time.deltaTime;
+			strokeAngleX = Mathf.LerpAngle(strokeAngleX, 0, 0.01f);
+			strokeAngleZ = Mathf.LerpAngle(strokeAngleZ, 0, 0.01f);
+		}
+		
+		iKittyHead.rotation = Quaternion.Euler(new Vector3(strokeAngleX, 0, strokeAngleZ));
+						
+		if(notStrokingTimer > timeToStopStroking) {
 			animator.SetBool("Stroke", false);
-			//animator.SetBool("Idle", true);
+			notStrokingTimer = 0;
 		}
 	}
 }
