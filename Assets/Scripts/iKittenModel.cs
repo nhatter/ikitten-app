@@ -51,6 +51,8 @@ public class iKittenModel : MonoBehaviour {
 	float runSoundTimer = 0;
 	public float runSoundTime = 0.2f;
 	public float waypointLookTime = 1.0f;
+	
+	public bool isStroking = false;
 
 	// Use this for initialization
 	void Start () {
@@ -107,7 +109,7 @@ public class iKittenModel : MonoBehaviour {
 			waypointController.setFinalLookTarget(food.transform.position);
 			waypointController.setOnCompleteAction(setMovedToFood);
 			isMovingToFood = true;
-			isRunning = true;
+			iKittenModel.use.isStroking = true;
 		}
 		
 		if(satiation == MAX_SATISFACTION && isEating) {

@@ -33,7 +33,6 @@ public class iKittenController : MonoBehaviour {
 	float strokeAngleZ = 0;
 	public float maxStrokeAngleZ = 35;
 	public float minStrokeAngleZ = -35;
-	bool isStroking = false;
 	float notStrokingTimer = 0;
 	float timeToStopStroking = 3;
 	
@@ -62,7 +61,7 @@ public class iKittenController : MonoBehaviour {
 			Debug.Log ("Kitten is now idle");
 		}
 		
-		isStroking = false;
+		iKittenModel.use.isStroking = false;
 		if(Input.GetMouseButtonDown(0) || Input.touchCount > 0) {
 			
 			#if UNITY_OSX_STANDALONE
@@ -92,18 +91,15 @@ public class iKittenController : MonoBehaviour {
 					model.isIdle = false;
 				}
 
-				//if(model.isIdle && animator.GetBool("Idle")) {
-					if(touchedObject.name == "Mouth") {
-						animator.SetBool("Meow", false);
-						animator.SetBool("Lick", true);
-						animator.SetBool("Idle", false);
-						audio.PlayOneShot(sounds.lickSound);
-						model.isIdle = false;
-						model.timer = 0;
-						isStroking = true;
-						notStrokingTimer = 0;
-					}
-				//}
+				if(touchedObject.name == "Mouth") {
+					animator.SetBool("Meow", false);
+					animator.SetBool("Lick", true);
+					animator.SetBool("Idle", false);
+					model.isIdle = false;
+					model.timer = 0;
+					iKittenModel.use.isStroking = true;
+					notStrokingTimer = 0;
+				}
 					
 				if(touchedObject.name == "WoolBall") {
 				    Debug.Log("X, Y: " + touchDeltaPosition.x	+ ", " + touchDeltaPosition.y);
@@ -128,7 +124,7 @@ public class iKittenController : MonoBehaviour {
 						strokeAngleX = minStrokeAngleX;
 					}
 					
-					isStroking = true;
+					iKittenModel.use.isStroking = true;
 					notStrokingTimer = 0;
 
 				}
@@ -146,7 +142,7 @@ public class iKittenController : MonoBehaviour {
 						strokeAngleZ = minStrokeAngleZ;
 					}
 					
-					isStroking = true;
+					iKittenModel.use.isStroking = true;
 					notStrokingTimer = 0;
 				}
 			}
@@ -156,8 +152,9 @@ public class iKittenController : MonoBehaviour {
 			animator.SetBool("Lick", false);
 		}
 		
-		if(isStroking) {
+		if(iKittenModel.use.isStroking) {
 			notStrokingTimer = 0;
+			iKittenSounds.use.purr();
 		} else {
 			//Debug.Log("Timer: "+notStrokingTimer);
 			notStrokingTimer += Time.deltaTime;
@@ -169,6 +166,7 @@ public class iKittenController : MonoBehaviour {
 						
 		if(notStrokingTimer > timeToStopStroking) {
 			animator.SetBool("Stroke", false);
+			iKittenSounds.use.stop();
 			notStrokingTimer = 0;
 		}
 	}
