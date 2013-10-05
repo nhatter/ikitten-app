@@ -150,7 +150,7 @@ public class iKittenModel : MonoBehaviour {
 			runSoundTimer += Time.deltaTime;
 		}
 		
-		if(ballState.isMoving && !isChasingBall && isIdle && animator.GetBool("Idle") && satiation > levelToStartEating) {
+		if(ballState.isMoving && !isChasingBall && isIdle && animator.GetBool("Idle") && satiation > levelToStartEating && !isStroking) {
 			if(Vector3.Distance(ball.transform.position, this.gameObject.transform.position) > chasingDistance) {
 				chaseBall();
 			}
