@@ -35,6 +35,7 @@ public class iKittenController : MonoBehaviour {
 	public float minStrokeAngleZ = -35;
 	float notStrokingTimer = 0;
 	float timeToStopStroking = 3;
+	bool isStrokingBegan = false;
 	
 	// Use this for initialization
 	void Start () {
@@ -126,7 +127,7 @@ public class iKittenController : MonoBehaviour {
 					
 					iKittenModel.use.isStroking = true;
 					notStrokingTimer = 0;
-
+					PlayerModel.use.incStrokePoints();
 				}
 				
 				if(touchedObject.name == "HeadSide") {
@@ -144,6 +145,7 @@ public class iKittenController : MonoBehaviour {
 					
 					iKittenModel.use.isStroking = true;
 					notStrokingTimer = 0;
+					PlayerModel.use.incStrokePoints();
 				}
 			}
 			
@@ -155,6 +157,7 @@ public class iKittenController : MonoBehaviour {
 		if(iKittenModel.use.isStroking) {
 			notStrokingTimer = 0;
 			iKittenSounds.use.purr();
+			isStrokingBegan = true;
 		} else {
 			//Debug.Log("Timer: "+notStrokingTimer);
 			notStrokingTimer += Time.deltaTime;
@@ -162,12 +165,19 @@ public class iKittenController : MonoBehaviour {
 			strokeAngleZ = Mathf.LerpAngle(strokeAngleZ, 0, 0.01f);
 		}
 		
-		iKittyHead.rotation = Quaternion.Euler(new Vector3(strokeAngleX, 0, strokeAngleZ));
 						
 		if(notStrokingTimer > timeToStopStroking) {
 			animator.SetBool("Stroke", false);
 			iKittenSounds.use.stop();
 			notStrokingTimer = 0;
+			isStrokingBegan = false;
+			PlayerModel.use.isHappyFromStroking = false;
+			PlayerModel.use.strokePoints = 0;
+		} else {
+			if(isStrokingBegan) {
+				iKittyHead.rotation = Quaternion.Euler(new Vector3(strokeAngleX, 0, strokeAngleZ));
+			}
 		}
+
 	}
 }

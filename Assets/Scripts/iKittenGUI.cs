@@ -19,5 +19,7 @@ public class iKittenGUI : MonoBehaviour {
 			Debug.Log ("Changing camera");
 			CameraManager.use.nextCamera();
 		}
+		
+		GUI.Label(new Rect(Screen.width/2, 5, Screen.width/2, 40), "Points: "+PlayerModel.use.happyPoints);
 	}
 }
