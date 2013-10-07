@@ -12,14 +12,9 @@ public class PlayerModel : MonoBehaviour {
 	public int strokePointsToGainHappyPoints = 10000;
 	public int happyPointsGainedFromStroking = 100;
 	public bool isHappyFromStroking = false;
-	
-	private Dictionary<string, GameObject> party = new Dictionary<string, GameObject>();
-	
+		
 	void Start() {
 		use = this;
-		foreach(iKittenModel model in GameObject.FindObjectsOfType(typeof(iKittenModel) )) {
-			party.Add (model.getState().name, model.gameObject);
-		}
 	}
 	
 	public void incStrokePoints() {
@@ -34,8 +29,8 @@ public class PlayerModel : MonoBehaviour {
 	
 	public SerialisableDictionary<string, iKittenState> getSerialisableParty() {
 		SerialisableDictionary<string, iKittenState> partyStats = new SerialisableDictionary<string, iKittenState>();
-		foreach(GameObject member in party.Values) {
-			iKittenState entity = member.GetComponent<iKittenModel>().getState();
+		foreach(iKittenModel member in GameObject.FindObjectsOfType(typeof(iKittenModel))) {
+			iKittenState entity = member.getState();
 			partyStats.Add(entity.name, entity);
 		}
 		
