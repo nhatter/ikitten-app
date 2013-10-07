@@ -20,7 +20,6 @@ public class FXManager : MonoBehaviour {
 	}
 	
 	void setEmit(GameObject particleCollection, bool isEmitting) {
-		Debug.Log("Setting "+particleCollection.name+" to emit");
 		foreach(ParticleEmitter emitter in particleCollection.GetComponentsInChildren<ParticleEmitter>()) {
 			emitter.emit = isEmitting;
 		}

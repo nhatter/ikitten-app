@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+
+using System;
 using System.Collections;
 
 public class iKittenController : MonoBehaviour {
@@ -53,6 +55,11 @@ public class iKittenController : MonoBehaviour {
 		stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 		
 		if(Input.GetKeyDown(KeyCode.Escape)) {
+			try {
+				SaveDataModel.save("iKitten.xml");
+			} catch(Exception e) {
+				Debug.Log ("Could not save the game because "+e);
+			}
 			Application.Quit();
 		}
 		

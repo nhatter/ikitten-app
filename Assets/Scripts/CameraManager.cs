@@ -4,9 +4,10 @@ using System.Collections;
 public class CameraManager : MonoBehaviour {
 	public static CameraManager use;
 	
-	GameObject iKitty;
 	Camera[] cameras;
 	int cameraIndex = 0;
+	
+	FollowObject followCameraSettings;
 
 	// Use this for initialization
 	void Start () {
@@ -21,8 +22,8 @@ public class CameraManager : MonoBehaviour {
 		cameras[0].enabled = true;
 		cameras[0].GetComponent<AudioListener>().enabled = true;
 		
-		iKitty = GameObject.Find("iKitty");
-		
+		followCameraSettings = GameObject.Find("FollowCamera").GetComponent<FollowObject>();
+				
 		use = this;
 	}
 	
@@ -39,7 +40,7 @@ public class CameraManager : MonoBehaviour {
 		cameras[cameraIndex].GetComponent<AudioListener>().enabled = true;
 	}
 	
-	void Update() {
-		//Camera.main.transform.LookAt(new Vector3(Camera.main.transform.position.x, iKitty.transform.position.y, iKitty.transform.position.z));
+	public void setCameraToFollow(GameObject targetObject) {
+		followCameraSettings.targetObject = targetObject;
 	}
 }

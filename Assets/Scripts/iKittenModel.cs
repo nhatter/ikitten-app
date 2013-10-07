@@ -6,7 +6,9 @@ public class iKittenModel : MonoBehaviour {
 	
 	public int MAX_SATISFACTION = 10;
 	public float FEED_ALERT_TIME_SCALE = 2.0f;
-	public int satiation = 10;
+	
+	public iKittenState state = new iKittenState();
+	
 	public float timeTilSatiationIncrease = 5.0f;
 	public float timeTilSatiationDecrease = 5.0f;
 	public float levelToStartEating = 3.0f;
@@ -85,7 +87,7 @@ public class iKittenModel : MonoBehaviour {
 		if(isEating && Food.use.foodLevel > 0) {
 			if(timer >= timeTilSatiationIncrease) {
 				Food.use.moveFoodDown();
-				satiation++;
+				state.satiation++;
 				queueTimerReset = true;
 			}
 		} else {
@@ -97,12 +99,12 @@ public class iKittenModel : MonoBehaviour {
 			}
 			
 			if(timer >= timeTilSatiationDecrease) {
-				satiation--;
+			state.satiation--;
 				queueTimerReset = true;
 			}
 		}
 		
-		if(satiation <= levelToStartEating && isIdle && !isAtFoodLocation && !isMovingToFood && !isEating) {
+		if(state.satiation <= levelToStartEating && isIdle && !isAtFoodLocation && !isMovingToFood && !isEating) {
 			waypointController.clearWaypoints();
 			waypointController.addWaypoint(eatLocation.transform.position);
 			waypointController.MoveToWaypoint();
@@ -112,7 +114,7 @@ public class iKittenModel : MonoBehaviour {
 			iKittenModel.use.isStroking = true;
 		}
 		
-		if(satiation == MAX_SATISFACTION && isEating) {
+		if(state.satiation == MAX_SATISFACTION && isEating) {
 			isEating = false;
 			audio.Stop();
 			audio.loop = false;
@@ -150,13 +152,17 @@ public class iKittenModel : MonoBehaviour {
 			runSoundTimer += Time.deltaTime;
 		}
 		
-		if(ballState.isMoving && !isChasingBall && isIdle && animator.GetBool("Idle") && satiation > levelToStartEating && !isStroking) {
+		if(ballState.isMoving && !isChasingBall && isIdle && animator.GetBool("Idle") && state.satiation > levelToStartEating && !isStroking) {
 			if(Vector3.Distance(ball.transform.position, this.gameObject.transform.position) > chasingDistance) {
 				chaseBall();
 			}
 		}
 		
 	} // End of Update
+	
+	public iKittenState getState() {
+		return state;
+	}
 	
 	public void catchBall() {
 		//ball.rigidbody.velocity = Vector3.zero;
@@ -224,18 +230,18 @@ public class iKittenModel : MonoBehaviour {
 		
 		if(other.gameObject == eatLocation && !isEating) {
 			isAtFoodLocation = true;
-			if(satiation <= levelToStartEating) {
+			if(state.satiation <= levelToStartEating) {
 				if(Food.use.foodLevel > 0) {
 					eat();
 				} else {
-					if(satiation > 0) {
-						timeTilSatiationMeow = satiation*FEED_ALERT_TIME_SCALE;
+					if(state.satiation > 0) {
+						timeTilSatiationMeow =state.satiation*FEED_ALERT_TIME_SCALE;
 					} else {
 						timeTilSatiationMeow = minTimeTilSatiationMeow;
 					}
 				}
 				
-				if(satiation <= levelToStartEating && hungerAlertTimer >= timeTilSatiationMeow & isIdle) {
+				if(state.satiation <= levelToStartEating && hungerAlertTimer >= timeTilSatiationMeow & isIdle) {
 					animator.SetBool("Meow", true);
 					sounds.randomMeow();
 					hungerAlertTimer = 0;
