@@ -14,7 +14,10 @@ public class SaveDataModel : MonoBehaviour {
 	
 	void Start() {
 		createSavesDir();
-		load(SAVES_DIR+"iKitten.xml");
+		if(!load(SAVES_DIR+"iKitten.xml")) {
+			GameObject iKitten = (GameObject) GameObject.Instantiate((GameObject)Resources.Load("iKitten"));
+			CameraManager.use.setCameraToFollow(iKitten);
+		}
 	}
 	
 	void createSavesDir() {
@@ -37,7 +40,7 @@ public class SaveDataModel : MonoBehaviour {
 		Debug.Log("Saving game");
 	}
 	
-	public static void load (string saveFile) {
+	public static bool load (string saveFile) {
 		string saveFilePath = "";
 		if(!Debug.isDebugBuild) {
 			saveFilePath = SAVES_DIR;
@@ -49,9 +52,10 @@ public class SaveDataModel : MonoBehaviour {
 			Debug.Log("Loading game");
 			lastSave = saveFile;
 			PlayerModel.use.loadSerialisedParty(saveData.stats);
-			//loadScene();
+			return true;
 		} else {
 			Debug.Log("No save file found - not loading.");
+			return false;
 		}
 	}
 	
