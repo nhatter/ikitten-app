@@ -55,6 +55,18 @@ public class iKittenModel : MonoBehaviour {
 	public float waypointLookTime = 1.0f;
 	
 	public bool isStroking = false;
+	public float strokeAngleX = 0;
+	public float maxStrokeAngleX = 35;
+	public float minStrokeAngleX = -35;
+	public float strokeAngleZ = 0;
+	public float maxStrokeAngleZ = 35;
+	public float minStrokeAngleZ = -35;
+	public float notStrokingTimer = 0;
+	public float timeToStopStroking = 3;
+	public bool isStrokingBegan = false;
+	public bool isHappyFromStroking = false;
+	
+	Transform head;
 
 	// Use this for initialization
 	void Start () {
@@ -67,6 +79,10 @@ public class iKittenModel : MonoBehaviour {
 		ballPlaceholder = GameObject.Find("WoolBallPlaceholder");
 		food = GameObject.Find("iKittyFood");
 		eatLocation = GameObject.Find("EatLocation");
+		head = ComponentUtils.FindTransformInChildren(this.gameObject, "cu_cat_head");
+		if(head == null) {
+			Debug.Log ("No kitten head found!");
+		}
 		use = this;
 	}
 	
@@ -99,7 +115,7 @@ public class iKittenModel : MonoBehaviour {
 			}
 			
 			if(timer >= timeTilSatiationDecrease) {
-			state.satiation--;
+				state.satiation--;
 				queueTimerReset = true;
 			}
 		}
@@ -111,7 +127,7 @@ public class iKittenModel : MonoBehaviour {
 			waypointController.setFinalLookTarget(food.transform.position);
 			waypointController.setOnCompleteAction(setMovedToFood);
 			isMovingToFood = true;
-			iKittenModel.use.isStroking = true;
+			isStroking = true;
 		}
 		
 		if(state.satiation == MAX_SATISFACTION && isEating) {
@@ -155,6 +171,40 @@ public class iKittenModel : MonoBehaviour {
 		if(ballState.isMoving && !isChasingBall && isIdle && animator.GetBool("Idle") && state.satiation > levelToStartEating && !isStroking) {
 			if(Vector3.Distance(ball.transform.position, this.gameObject.transform.position) > chasingDistance) {
 				chaseBall();
+			}
+		}
+		
+		if(!isIdle && !animator.GetBool("Idle") && !isRunning) {
+			isPlayerInteracting = false;
+			animator.SetBool("Idle", true);
+			Debug.Log ("Kitten is now idle");
+		}
+		
+		if(isStroking) {
+			notStrokingTimer = 0;
+			iKittenSounds.use.purr();
+			isStrokingBegan = true;
+		} else {
+			//Debug.Log("Timer: "+notStrokingTimer);
+			notStrokingTimer += Time.deltaTime;
+			strokeAngleX = Mathf.LerpAngle(strokeAngleX, 0, 0.01f);
+			strokeAngleZ = Mathf.LerpAngle(strokeAngleZ, 0, 0.01f);
+			animator.SetBool("Meow", false);
+			animator.SetBool("Lick", false);
+		}
+		
+		isStroking = false;
+		
+		if(notStrokingTimer > timeToStopStroking) {
+			animator.SetBool("Stroke", false);
+			iKittenSounds.use.stop();
+			notStrokingTimer = 0;
+			isStrokingBegan = false;
+			PlayerModel.use.isHappyFromStroking = false;
+			PlayerModel.use.strokePoints = 0;
+		} else {
+			if(isStrokingBegan) {
+				head.rotation = Quaternion.Euler(new Vector3(strokeAngleX, 0, strokeAngleZ));
 			}
 		}
 		

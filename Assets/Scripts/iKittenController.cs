@@ -12,12 +12,11 @@ public class iKittenController : MonoBehaviour {
 	Animator animator;
 	iKittenModel model;
 	iKittenSounds sounds;
-	AnimatorStateInfo stateInfo;
 	WaypointController waypointController;
 	RaycastHit touchHitInfo;
 	GameObject touchedObject;
+	GameObject touchediKitten;
 	GameObject iKittyFood;
-	public Transform iKittyHead;
 	
 	float inputX;
 	float inputY;
@@ -29,22 +28,8 @@ public class iKittenController : MonoBehaviour {
 	
 	Vector3 cameraPos;
 	
-	float strokeAngleX = 0;
-	public float maxStrokeAngleX = 35;
-	public float minStrokeAngleX = -35;
-	float strokeAngleZ = 0;
-	public float maxStrokeAngleZ = 35;
-	public float minStrokeAngleZ = -35;
-	float notStrokingTimer = 0;
-	float timeToStopStroking = 3;
-	bool isStrokingBegan = false;
-	
 	// Use this for initialization
 	void Start () {
-		model = GetComponent<iKittenModel>();
-		animator = GetComponent<Animator>();
-		sounds = GetComponent<iKittenSounds>();
-		waypointController = GetComponent<WaypointController>();
 		iKittyFood = GameObject.Find("iKittyFood");
 	}
 	
@@ -52,7 +37,6 @@ public class iKittenController : MonoBehaviour {
 	// Update is called once per frame
 	void LateUpdate () {
 		cameraPos = Camera.main.transform.position;
-		stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 		
 		if(Input.GetKeyDown(KeyCode.Escape)) {
 			try {
@@ -63,13 +47,6 @@ public class iKittenController : MonoBehaviour {
 			Application.Quit();
 		}
 		
-		if(!model.isIdle && !animator.GetBool("Idle") && !model.isRunning) {
-			model.isPlayerInteracting = false;
-			animator.SetBool("Idle", true);
-			Debug.Log ("Kitten is now idle");
-		}
-		
-		iKittenModel.use.isStroking = false;
 		if(Input.GetMouseButtonDown(0) || Input.touchCount > 0) {
 			
 			#if UNITY_OSX_STANDALONE
@@ -94,6 +71,16 @@ public class iKittenController : MonoBehaviour {
 				Debug.Log("Touch hit "+touchHitInfo.collider.gameObject.name);
 				touchedObject = touchHitInfo.collider.gameObject;
 				
+				if(touchedObject.layer == LayerMask.NameToLayer("iKitten")) {
+					touchediKitten = touchedObject.transform.root.gameObject;
+
+					Debug.Log ("touched kitten "+touchediKitten.name);
+					model = touchediKitten.GetComponent<iKittenModel>();
+					animator = touchediKitten.GetComponent<Animator>();
+					sounds = touchediKitten.GetComponent<iKittenSounds>();
+					waypointController = touchediKitten.GetComponent<WaypointController>();
+				}
+				
 				if(touchedObject == iKittyFood) {
 					Food.use.refillFood();
 					model.isIdle = false;
@@ -105,8 +92,8 @@ public class iKittenController : MonoBehaviour {
 					animator.SetBool("Idle", false);
 					model.isIdle = false;
 					model.timer = 0;
-					iKittenModel.use.isStroking = true;
-					notStrokingTimer = 0;
+					model.isStroking = true;
+					model.notStrokingTimer = 0;
 				}
 					
 				if(touchedObject.name == "WoolBall") {
@@ -122,69 +109,39 @@ public class iKittenController : MonoBehaviour {
 				if(touchedObject.name == "NoseBridge" || touchedObject.name == "Neck") {
 					animator.SetBool("Idle", false);
 					animator.SetBool("Stroke", true);
-					strokeAngleX += -inputY * touchStrokeScale;
+					model.strokeAngleX += -inputY * touchStrokeScale;
 					
-					if(strokeAngleX > maxStrokeAngleX) {
-						strokeAngleX = maxStrokeAngleX;
+					if(model.strokeAngleX > model.maxStrokeAngleX) {
+						model.strokeAngleX = model.maxStrokeAngleX;
 					}
 					
-					if(strokeAngleX < minStrokeAngleX) {
-						strokeAngleX = minStrokeAngleX;
+					if(model.strokeAngleX < model.minStrokeAngleX) {
+						model.strokeAngleX = model.minStrokeAngleX;
 					}
 					
-					iKittenModel.use.isStroking = true;
-					notStrokingTimer = 0;
+					model.isStroking = true;
+					model.notStrokingTimer = 0;
 					PlayerModel.use.incStrokePoints();
 				}
 				
 				if(touchedObject.name == "HeadSide") {
 					animator.SetBool("Idle", false);
 					animator.SetBool("Stroke", true);
-					strokeAngleZ += -inputY * touchStrokeScale;
+					model.strokeAngleZ += -inputY * touchStrokeScale;
 					
-					if(strokeAngleZ > maxStrokeAngleZ) {
-						strokeAngleZ = maxStrokeAngleZ;
+					if(model.strokeAngleZ > model.maxStrokeAngleZ) {
+						model.strokeAngleZ = model.maxStrokeAngleZ;
 					}
 					
-					if(strokeAngleZ < minStrokeAngleZ) {
-						strokeAngleZ = minStrokeAngleZ;
+					if(model.strokeAngleZ < model.minStrokeAngleZ) {
+						model.strokeAngleZ = model.minStrokeAngleZ;
 					}
 					
-					iKittenModel.use.isStroking = true;
-					notStrokingTimer = 0;
+					model.isStroking = true;
+					model.notStrokingTimer = 0;
 					PlayerModel.use.incStrokePoints();
 				}
-			}
-			
-		} else {
-			animator.SetBool("Meow", false);
-			animator.SetBool("Lick", false);
+			}	
 		}
-		
-		if(iKittenModel.use.isStroking) {
-			notStrokingTimer = 0;
-			iKittenSounds.use.purr();
-			isStrokingBegan = true;
-		} else {
-			//Debug.Log("Timer: "+notStrokingTimer);
-			notStrokingTimer += Time.deltaTime;
-			strokeAngleX = Mathf.LerpAngle(strokeAngleX, 0, 0.01f);
-			strokeAngleZ = Mathf.LerpAngle(strokeAngleZ, 0, 0.01f);
-		}
-		
-						
-		if(notStrokingTimer > timeToStopStroking) {
-			animator.SetBool("Stroke", false);
-			iKittenSounds.use.stop();
-			notStrokingTimer = 0;
-			isStrokingBegan = false;
-			PlayerModel.use.isHappyFromStroking = false;
-			PlayerModel.use.strokePoints = 0;
-		} else {
-			if(isStrokingBegan) {
-				iKittyHead.rotation = Quaternion.Euler(new Vector3(strokeAngleX, 0, strokeAngleZ));
-			}
-		}
-
 	}
 }
