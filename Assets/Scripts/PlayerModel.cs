@@ -39,8 +39,9 @@ public class PlayerModel : MonoBehaviour {
 	
 	public void loadSerialisedParty(SerialisableDictionary<string, iKittenState> serialisedParty) {
 		foreach(KeyValuePair<string, iKittenState> kitten in serialisedParty) {
-			GameObject iKitten = (GameObject) GameObject.Instantiate((GameObject) Resources.Load("iKitten"));
+			GameObject iKitten = (GameObject) GameObject.Instantiate((GameObject) Resources.Load("iKitten/iKitten"));
 			iKitten.GetComponent<iKittenModel>().state = kitten.Value;
+			iKitten.GetComponentInChildren<Renderer>().material = (Material) Resources.Load("iKitten/Materials/"+kitten.Value.materialName);
 			CameraManager.use.setCameraToFollow(iKitten);
 		}
 	}

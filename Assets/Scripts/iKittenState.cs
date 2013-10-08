@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 [Serializable]
 public class iKittenState {
 	public string name = "iKitten";
+	public string materialName = "American_Wirehair.mat";
 	public int satiation = 10;
 	public int sleep = 10;
 	public int love = 5;
