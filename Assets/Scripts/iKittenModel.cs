@@ -259,6 +259,7 @@ public class iKittenModel : MonoBehaviour {
 		isAtFoodLocation = true;
 		animator.SetBool("Eat", isEating);
 		animator.SetBool("Idle", false);
+		animator.SetBool("Meow", false);
 		audio.clip = sounds.purrSound;
 		audio.loop = true;
 		audio.Play();
@@ -284,6 +285,14 @@ public class iKittenModel : MonoBehaviour {
 		if(other.gameObject == eatLocation && !isEating) {
 			isAtFoodLocation = true;
 			if(state.satiation <= levelToStartEating) {
+				if(state.satiation <= levelToStartEating && hungerAlertTimer >= timeTilSatiationMeow & isIdle) {
+					animator.SetBool("Meow", true);
+					sounds.randomMeow();
+					hungerAlertTimer = 0;
+				} else {
+					hungerAlertTimer += Time.deltaTime;
+				}
+				
 				if(Food.use.foodLevel > 0) {
 					eat();
 				} else {
@@ -292,14 +301,6 @@ public class iKittenModel : MonoBehaviour {
 					} else {
 						timeTilSatiationMeow = minTimeTilSatiationMeow;
 					}
-				}
-				
-				if(state.satiation <= levelToStartEating && hungerAlertTimer >= timeTilSatiationMeow & isIdle) {
-					animator.SetBool("Meow", true);
-					sounds.randomMeow();
-					hungerAlertTimer = 0;
-				} else {
-					hungerAlertTimer += Time.deltaTime;
 				}
 			}
 		}
