@@ -9,10 +9,19 @@ public class iKittenGUI : MonoBehaviour {
 	string message = "Congratulations! You have adopted an iKitten. They may be a bit shy. Why don't you try stroking it to put it at ease?";
 	GUIStyle messageStyle;
 	
+	Rect scorePosValue;
 	Rect messagePos;
 	Rect scorePos;
+	Rect scorePosOffScreen;
 	Rect scoreIconPos;
+	Rect scoreIconPosOffScreen;
+	Rect scoreIconPosValue;
 	Rect okButtonPos;
+	
+	bool isShowingScore = false;
+	bool isHidingScore = false;
+	bool hasAnimatedShowingScore = false;
+	bool hasAnimatedHidingScore = false;
 	
 	void Start() {
 		DontDestroyOnLoad(this);
@@ -23,7 +32,12 @@ public class iKittenGUI : MonoBehaviour {
 		messagePos = generateStyleRect("Message");
 		okButtonPos = generateStyleRect("OKButton");
 		scorePos = generateStyleRect("Score");
+		scorePosOffScreen = new Rect(scorePos.x, scorePos.y - customSkin.GetStyle("Score").fixedHeight*2, scorePos.width, scorePos.height);
+		scorePosValue = scorePosOffScreen;
+		
 		scoreIconPos = generateStyleRect("ScoreIcon");
+		scoreIconPosOffScreen = new Rect(scoreIconPos.x, scoreIconPos.y - customSkin.GetStyle("ScoreIcon").fixedHeight*2, scoreIconPos.width, scoreIconPos.height);
+		scoreIconPosValue = scoreIconPosOffScreen;
 	}
 	
 	void OnGUI() {
@@ -33,11 +47,57 @@ public class iKittenGUI : MonoBehaviour {
 			CameraManager.use.nextCamera();
 		}
 		
-		GUI.Label(scoreIconPos, "", "ScoreIcon");
-		dropShadowLabel(scorePos, ""+PlayerModel.use.happyPoints, "Score");
+		if(PlayerModel.use.isIncreasingPoints) {
+			if(!hasAnimatedShowingScore) {
+				iTween.ValueTo(gameObject,iTween.Hash("from",scoreIconPosValue,"to",scoreIconPos,"onupdate","AnimateScoreIcon","easetype","easeinoutback"));
+				iTween.ValueTo(gameObject,iTween.Hash("from",scorePosValue,"to",scorePos,"onupdate","AnimateScore","easetype","easeinoutback"));
+				
+				hasAnimatedShowingScore = true;
+			} else {
+				if(!hasAnimatedHidingScore && PlayerModel.use.stoppedIncreasingPoints) {
+					iTween.ValueTo(gameObject,iTween.Hash("from",scoreIconPosValue,"to",scoreIconPosOffScreen,"onupdate","AnimateScoreIcon","easetype","easeinoutback"));
+				    iTween.ValueTo(gameObject,iTween.Hash("from",scorePosValue,"to",scorePosOffScreen,"onupdate","AnimateScore","easetype","easeinoutback"));
+	
+					hasAnimatedHidingScore = true;
+				}
+			}
+			
+			GUI.Label(scoreIconPosValue, "", "ScoreIcon");
+			dropShadowLabel(scorePosValue, ""+PlayerModel.use.happyPoints, "Score");
+		}
+		
+		
 		
 		if(isShowingMessage) {
 			drawMessage();
+		}
+	}
+	
+	public void showScore() {
+		isShowingScore = true;
+	}
+	
+	public void hideScore() {
+		isHidingScore = true;
+	}
+	
+	void ResetScoreAnimation() {
+		hasAnimatedShowingScore = false;
+		hasAnimatedHidingScore = false;
+		PlayerModel.use.isIncreasingPoints = false;
+		PlayerModel.use.stoppedIncreasingPoints = false;
+		isShowingScore = false;
+		isHidingScore = false;
+	}
+	
+	void AnimateScore(Rect newCoordinates){
+		scorePosValue=newCoordinates;
+	}
+	
+	void AnimateScoreIcon(Rect newCoordinates){
+		scoreIconPosValue=newCoordinates;
+		if(scoreIconPosValue == scoreIconPosOffScreen && hasAnimatedHidingScore) {
+			ResetScoreAnimation();
 		}
 	}
 	

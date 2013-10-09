@@ -185,23 +185,26 @@ public class iKittenModel : MonoBehaviour {
 			iKittenSounds.use.purr();
 			isStrokingBegan = true;
 		} else {
-			//Debug.Log("Timer: "+notStrokingTimer);
-			notStrokingTimer += Time.deltaTime;
-			strokeAngleX = Mathf.LerpAngle(strokeAngleX, 0, 0.01f);
-			strokeAngleZ = Mathf.LerpAngle(strokeAngleZ, 0, 0.01f);
-			animator.SetBool("Meow", false);
-			animator.SetBool("Lick", false);
+			if(isStrokingBegan) {
+				notStrokingTimer += Time.deltaTime;
+				strokeAngleX = Mathf.LerpAngle(strokeAngleX, 0, 0.01f);
+				strokeAngleZ = Mathf.LerpAngle(strokeAngleZ, 0, 0.01f);
+				animator.SetBool("Meow", false);
+				animator.SetBool("Lick", false);
+			}
 		}
 		
 		isStroking = false;
 		
 		if(notStrokingTimer > timeToStopStroking) {
+			Debug.Log("Stopped stoking kitten");
 			animator.SetBool("Stroke", false);
 			iKittenSounds.use.stop();
 			notStrokingTimer = 0;
 			isStrokingBegan = false;
 			PlayerModel.use.isHappyFromStroking = false;
 			PlayerModel.use.strokePoints = 0;
+			PlayerModel.use.stoppedIncreasingPoints = true;
 		} else {
 			if(isStrokingBegan) {
 				head.rotation = Quaternion.Euler(new Vector3(strokeAngleX, 0, strokeAngleZ));

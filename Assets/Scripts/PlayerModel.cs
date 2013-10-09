@@ -8,6 +8,8 @@ public class PlayerModel : MonoBehaviour {
 	public int happyPoints;
 	public int money;
 	public int strokePoints;
+	public bool isIncreasingPoints = false;
+	public bool stoppedIncreasingPoints = false;
 	
 	public int strokePointsToGainHappyPoints = 10000;
 	public int happyPointsGainedFromStroking = 100;
@@ -23,6 +25,7 @@ public class PlayerModel : MonoBehaviour {
 		if(strokePoints >= strokePointsToGainHappyPoints) {
 			isHappyFromStroking = true;
 			happyPoints += happyPointsGainedFromStroking;
+			isIncreasingPoints = true;
 			strokePoints = 0;
 		}
 	}
@@ -38,11 +41,14 @@ public class PlayerModel : MonoBehaviour {
 	}
 	
 	public void loadSerialisedParty(SerialisableDictionary<string, iKittenState> serialisedParty) {
+		int iKittenNumber = 0;
 		foreach(KeyValuePair<string, iKittenState> kitten in serialisedParty) {
 			GameObject iKitten = (GameObject) GameObject.Instantiate((GameObject) Resources.Load("iKitten/iKitten"));
+			iKitten.transform.position += new Vector3(-1*iKittenNumber,0,0);
 			iKitten.GetComponent<iKittenModel>().state = kitten.Value;
 			iKitten.GetComponentInChildren<Renderer>().material = (Material) Resources.Load("iKitten/Materials/"+kitten.Value.materialName);
 			CameraManager.use.setCameraToFollow(iKitten);
+			iKittenNumber++;
 		}
 	}
 }
