@@ -15,7 +15,7 @@ public class SaveDataModel : MonoBehaviour {
 	void Start() {
 		createSavesDir();
 		if(!load(SAVES_DIR+"iKitten.xml")) {
-			GameObject iKitten = (GameObject) GameObject.Instantiate((GameObject)Resources.Load("iKitten"));
+			GameObject iKitten = (GameObject) GameObject.Instantiate((GameObject)Resources.Load("iKitten/iKitten"));
 			CameraManager.use.setCameraToFollow(iKitten);
 		}
 	}
