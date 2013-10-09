@@ -83,7 +83,6 @@ public class iKittenController : MonoBehaviour {
 				
 				if(touchedObject == iKittyFood) {
 					Food.use.refillFood();
-					model.isIdle = false;
 				}
 
 				if(touchedObject.name == "Mouth") {
