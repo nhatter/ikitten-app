@@ -20,6 +20,7 @@ public class iKittenNeed {
 	private bool isResourceRequired = false;
 	
 	public static int levelToStartMeetingNeed = 3;
+	public static iKittenNeed deficientNeed;
 	
 	private string needMetAnimationStateName;
 	private GameObject needObjectTrigger;
@@ -67,13 +68,17 @@ public class iKittenNeed {
 		}
 		
 		if(needObjectTrigger != null) {
-			if(state.need <= levelToStartMeetingNeed && model.isIdle && !state.isAtLocationToMeetNeed && !state.isMovingToMeetNeed && !state.isMeetingNeed) {
-				model.waypointController.clearWaypoints();
-				model.waypointController.addWaypoint(needObjectTrigger.transform.position);
-				model.waypointController.MoveToWaypoint();
-				model.waypointController.setFinalLookTarget(needObject.transform.position);
-				model.waypointController.setOnCompleteAction(setMovedToMeetNeed);
-				state.isMovingToMeetNeed = true;
+			if(state.need <= levelToStartMeetingNeed) {
+				setThisAsDeficientNeed();
+				
+				if(deficientNeed == this && model.isIdle && !state.isAtLocationToMeetNeed && !state.isMovingToMeetNeed && !state.isMeetingNeed) {
+					model.waypointController.clearWaypoints();
+					model.waypointController.addWaypoint(needObjectTrigger.transform.position);
+					model.waypointController.MoveToWaypoint();
+					model.waypointController.setFinalLookTarget(needObject.transform.position);
+					model.waypointController.setOnCompleteAction(setMovedToMeetNeed);
+					state.isMovingToMeetNeed = true;
+				}
 			}
 		}
 		
@@ -141,23 +146,29 @@ public class iKittenNeed {
 	public void checkNeedSatisfied() {
 		model.animator.SetBool("Meow", false);
 		if(state.need <= levelToStartMeetingNeed) {
-			if(state.need <= levelToStartMeetingNeed && state.needAlertTimer >= timeTilMeow & model.isIdle) {
-				model.animator.SetBool("Meow", true);
-				model.sounds.randomMeow();
-				state.needAlertTimer = 0;
-			} else {
-				state.needAlertTimer += Time.deltaTime;
-			}
+			setThisAsDeficientNeed();
 			
-			if(state.resourceLevel > 0 && isResourceRequired) {
-				meetNeed();
-			} else {
-				if(state.need > 0) {
-					timeTilMeow = state.need*ALERT_TIME_SCALE;
+			if(deficientNeed == this) {
+				if(state.need <= levelToStartMeetingNeed && state.needAlertTimer >= timeTilMeow & model.isIdle) {
+					model.animator.SetBool("Meow", true);
+					model.sounds.randomMeow();
+					state.needAlertTimer = 0;
 				} else {
-					timeTilMeow = minTimeTilMeow;
+					state.needAlertTimer += Time.deltaTime;
+				}
+				
+				if(state.resourceLevel > 0 && isResourceRequired) {
+					meetNeed();
+				} else {
+					if(state.need > 0) {
+						timeTilMeow = state.need*ALERT_TIME_SCALE;
+					} else {
+						timeTilMeow = minTimeTilMeow;
+					}
 				}
 			}
+		} else {
+			deficientNeed = null;
 		}
 	}
 	
@@ -190,6 +201,12 @@ public class iKittenNeed {
 	public void dec() {
 		if(state.need < MIN_SATISFACTION) {
 			state.need--;
+		}
+	}
+	
+	void setThisAsDeficientNeed() {
+		if(deficientNeed == null) {
+			deficientNeed = this;
 		}
 	}
 	
