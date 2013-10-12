@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 
 public class iKittenController : MonoBehaviour {
+	public static iKittenController use;
 	public float touchDistance = 2.0f;
 	public float touchStrokeScale = 0.1f;
 	public LayerMask touchLayerMask;
@@ -30,6 +31,7 @@ public class iKittenController : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
+		use = this;
 		iKittyFood = GameObject.Find("iKittyFood");
 	}
 	
@@ -102,44 +104,12 @@ public class iKittenController : MonoBehaviour {
 					touchedObject.GetComponent<Ball>().isMoving = true;
 				}
 				
-				
-				
 				if(touchedObject.name == "NoseBridge" || touchedObject.name == "Neck") {
-					animator.SetBool("Idle", false);
-					animator.SetBool("Stroke", true);
-					model.strokeAngleX += -inputY * touchStrokeScale;
-					
-					if(model.strokeAngleX > model.maxStrokeAngleX) {
-						model.strokeAngleX = model.maxStrokeAngleX;
-					}
-					
-					if(model.strokeAngleX < model.minStrokeAngleX) {
-						model.strokeAngleX = model.minStrokeAngleX;
-					}
-					
-					model.isStroking = true;
-					model.notStrokingTimer = 0;
-					PlayerModel.use.incStrokePoints();
-					model.love.inc();
+					model.stroke(inputY, true);
 				}
 				
 				if(touchedObject.name == "HeadSide") {
-					animator.SetBool("Idle", false);
-					animator.SetBool("Stroke", true);
-					model.strokeAngleZ += -inputY * touchStrokeScale;
-					
-					if(model.strokeAngleZ > model.maxStrokeAngleZ) {
-						model.strokeAngleZ = model.maxStrokeAngleZ;
-					}
-					
-					if(model.strokeAngleZ < model.minStrokeAngleZ) {
-						model.strokeAngleZ = model.minStrokeAngleZ;
-					}
-					
-					model.isStroking = true;
-					model.notStrokingTimer = 0;
-					PlayerModel.use.incStrokePoints();
-					model.love.inc();
+					model.stroke(inputY, false);
 				}
 			}	
 		}

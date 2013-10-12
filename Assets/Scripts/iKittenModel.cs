@@ -15,6 +15,7 @@ public class iKittenModel : MonoBehaviour {
 	public Animator animator;
 	public AnimatorStateInfo stateInfo;
 	public iKittenSounds sounds;
+	public iKittenController controller;
 	public WaypointController waypointController;
 	
 	GameObject mouthObjectPlaceholder;
@@ -47,9 +48,11 @@ public class iKittenModel : MonoBehaviour {
 	public float strokeAngleX = 0;
 	public float maxStrokeAngleX = 35;
 	public float minStrokeAngleX = -35;
+	public float initialStrokeAngleX = 15;
 	public float strokeAngleZ = 0;
 	public float maxStrokeAngleZ = 35;
 	public float minStrokeAngleZ = -35;
+	public float initialStrokeAngleZ;
 	public float notStrokingTimer = 0;
 	public float timeToStopStroking = 3;
 	public bool isStrokingBegan = false;
@@ -146,12 +149,11 @@ public class iKittenModel : MonoBehaviour {
 		if(isStroking) {
 			notStrokingTimer = 0;
 			iKittenSounds.use.purr();
-			isStrokingBegan = true;
 		} else {
 			if(isStrokingBegan) {
 				notStrokingTimer += Time.deltaTime;
-				strokeAngleX = Mathf.LerpAngle(strokeAngleX, 0, 0.01f);
-				strokeAngleZ = Mathf.LerpAngle(strokeAngleZ, 0, 0.01f);
+				strokeAngleX = Mathf.LerpAngle(strokeAngleX, initialStrokeAngleX, 0.01f);
+				strokeAngleZ = Mathf.LerpAngle(strokeAngleZ, initialStrokeAngleZ, 0.01f);
 				animator.SetBool("Meow", false);
 				animator.SetBool("Lick", false);
 			}
@@ -243,6 +245,45 @@ public class iKittenModel : MonoBehaviour {
 		animator.SetBool("Idle",true);
 		ballisMoving = false;
 		isRunning = false;
+	}
+	
+	public void stroke(float inputY, bool isXAxis) {
+		if(!isStrokingBegan) {
+			strokeAngleX = initialStrokeAngleX;
+			initialStrokeAngleZ = head.transform.rotation.z;
+			strokeAngleZ = initialStrokeAngleZ;
+		}
+		
+		animator.SetBool("Idle", false);
+		animator.SetBool("Stroke", true);
+		
+		if(isXAxis) {
+			strokeAngleX += -inputY * iKittenController.use.touchStrokeScale;
+			
+			if(strokeAngleX > maxStrokeAngleX) {
+				strokeAngleX = maxStrokeAngleX;
+			}
+			
+			if(strokeAngleX < minStrokeAngleX) {
+				strokeAngleX = minStrokeAngleX;
+			}
+		} else {
+			strokeAngleZ += -inputY * iKittenController.use.touchStrokeScale;
+			
+			if(strokeAngleZ > maxStrokeAngleZ) {
+				strokeAngleZ = maxStrokeAngleZ;
+			}
+			
+			if(strokeAngleZ < minStrokeAngleZ) {
+				strokeAngleZ = minStrokeAngleZ;
+			}
+		}
+		
+		isStroking = true;
+		isStrokingBegan = true;
+		notStrokingTimer = 0;
+		PlayerModel.use.incStrokePoints();
+		love.inc();
 	}
 		
 	void OnTriggerStay(Collider other) {
