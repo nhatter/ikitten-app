@@ -38,6 +38,10 @@ public class iKittenNeed {
 	private AudioSource audio;
 	private bool queueTimerReset = false;
 	
+	public iKittenNeed() {
+		// For serialisation
+	}
+	
 	public iKittenNeed(string name, string animationState, int level) {
 		this.needName = name;
 		this.needMetAnimationStateName = animationState;
