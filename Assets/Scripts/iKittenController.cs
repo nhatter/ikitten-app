@@ -120,6 +120,7 @@ public class iKittenController : MonoBehaviour {
 					model.isStroking = true;
 					model.notStrokingTimer = 0;
 					PlayerModel.use.incStrokePoints();
+					model.love.inc();
 				}
 				
 				if(touchedObject.name == "HeadSide") {
@@ -138,6 +139,7 @@ public class iKittenController : MonoBehaviour {
 					model.isStroking = true;
 					model.notStrokingTimer = 0;
 					PlayerModel.use.incStrokePoints();
+					model.love.inc();
 				}
 			}	
 		}

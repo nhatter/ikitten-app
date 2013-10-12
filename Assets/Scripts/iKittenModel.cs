@@ -103,6 +103,8 @@ public class iKittenModel : MonoBehaviour {
 		#endif
 		
 		satiation.handleNeed();
+		love.handleNeed();
+		love.checkNeedSatisfied();
 		
 		if(isRunning) {
 			animator.SetBool("Run", true);
@@ -160,7 +162,7 @@ public class iKittenModel : MonoBehaviour {
 		if(notStrokingTimer > timeToStopStroking) {
 			Debug.Log("Stopped stoking kitten");
 			animator.SetBool("Stroke", false);
-			iKittenSounds.use.stop();
+			love.stopMeetingNeed();
 			notStrokingTimer = 0;
 			isStrokingBegan = false;
 			PlayerModel.use.isHappyFromStroking = false;
