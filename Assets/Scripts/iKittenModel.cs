@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class iKittenModel : MonoBehaviour {
 	public static iKittenModel use;
@@ -11,17 +12,16 @@ public class iKittenModel : MonoBehaviour {
 	public bool isPlayerInteracting = false;
 	public bool haveCriticalNeed = false;
 	
-	Animator animator;
-	AnimatorStateInfo stateInfo;
-	iKittenSounds sounds;
-	WaypointController waypointController;
+	public Animator animator;
+	public AnimatorStateInfo stateInfo;
+	public iKittenSounds sounds;
+	public WaypointController waypointController;
 	
 	GameObject mouthObjectPlaceholder;
 	GameObject ballPlaceholder;
 	GameObject food;
 	GameObject eatLocation;
 	
-	public float timer = 0.0f;
 	public float hungerAlertTimer = 0.0f;
 	bool queueTimerReset = false;
 	
@@ -56,6 +56,17 @@ public class iKittenModel : MonoBehaviour {
 	public bool isHappyFromStroking = false;
 	
 	Transform head;
+	
+	bool ballisMoving = false;
+	
+	private iKittenNeed[] allNeeds;
+	public iKittenNeed satiation 	= new iKittenNeed("Satiation", "Eat", true);
+	public iKittenNeed sleep 		= new iKittenNeed("Sleep", "Sleep");
+	public iKittenNeed love 		= new iKittenNeed("Love", "Purr");
+	public iKittenNeed exercise 	= new iKittenNeed("Exercise");
+	public iKittenNeed fun 			= new iKittenNeed("Fun");
+	public iKittenNeed hygiene 		= new iKittenNeed("Hygiene", "Clean");
+	public iKittenNeed environment 	= new iKittenNeed("Environment");
 
 	// Use this for initialization
 	void Start () {
@@ -66,9 +77,13 @@ public class iKittenModel : MonoBehaviour {
 		ballState = ball.GetComponent<Ball>();
 		mouthObjectPlaceholder = GameObject.Find ("MouthObjectPlaceholder");
 		ballPlaceholder = GameObject.Find("WoolBallPlaceholder");
-		food = GameObject.Find("iKittyFood");
-		eatLocation = GameObject.Find("EatLocation");
 		head = ComponentUtils.FindTransformInChildren(this.gameObject, "cu_cat_head");
+
+		satiation.setNeedObject(GameObject.Find("iKittyFood"));
+		satiation.setNeedObjectTrigger(GameObject.Find("EatLocation"));
+		
+		setupNeeds();
+		
 		if(head == null) {
 			Debug.Log ("No kitten head found!");
 		}
@@ -77,8 +92,6 @@ public class iKittenModel : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		timer += Time.deltaTime;
-		
 		stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 		
 		isIdle = (stateInfo.nameHash == Animator.StringToHash("Base.A_idle"));
@@ -88,6 +101,8 @@ public class iKittenModel : MonoBehaviour {
 			Handheld.Vibrate();
 		}
 		#endif
+		
+		satiation.handleNeed();
 		
 		if(isRunning) {
 			animator.SetBool("Run", true);
@@ -114,7 +129,7 @@ public class iKittenModel : MonoBehaviour {
 			runSoundTimer += Time.deltaTime;
 		}
 		
-		if(ballState.isMoving && !isChasingBall && isIdle && animator.GetBool("Idle") && (!haveCriticalNeed || state.fun.need < iKittenNeed.levelToStartMeetingNeed) && !isStroking) {
+		if(ballisMoving && !isChasingBall && isIdle && animator.GetBool("Idle") && (!haveCriticalNeed || fun.state.need < iKittenNeed.levelToStartMeetingNeed) && !isStroking) {
 			if(Vector3.Distance(ball.transform.position, this.gameObject.transform.position) > chasingDistance) {
 				chaseBall();
 			}
@@ -159,8 +174,35 @@ public class iKittenModel : MonoBehaviour {
 		
 	} // End of Update
 	
+	public void passModelToState() {
+		foreach(iKittenNeed need in allNeeds) {
+			need.setModel(this);
+		}
+	}
+		
 	public iKittenState getState() {
 		return state;
+	}
+	
+	public void setupNeeds() {
+		List<iKittenNeed> allNeedsList = new List<iKittenNeed>();
+		allNeedsList.Add(satiation);
+		allNeedsList.Add(sleep);
+		allNeedsList.Add(love);
+		allNeedsList.Add(exercise);
+		allNeedsList.Add(fun);
+		allNeedsList.Add(hygiene);
+		allNeedsList.Add(environment);
+		allNeeds = allNeedsList.ToArray();
+		
+		List<iKittenNeedState> allNeedStatesList = new List<iKittenNeedState>();
+		foreach(iKittenNeed need in allNeedsList) {
+			allNeedStatesList.Add(need.state);
+		}
+		
+		state.needs = allNeedStatesList.ToArray();
+		
+		satiation.setNeedIncreasedAction(Food.use.moveFoodDown);
 	}
 	
 	public void catchBall() {
@@ -196,7 +238,7 @@ public class iKittenModel : MonoBehaviour {
 		isBallInMouth = false;
 		animator.SetBool("Run",false);
 		animator.SetBool("Idle",true);
-		ballState.isMoving = false;
+		ballisMoving = false;
 		isRunning = false;
 	}
 		
@@ -209,9 +251,11 @@ public class iKittenModel : MonoBehaviour {
 			waypointController.setOnCompleteAction(dropBall);
 			waypointController.MoveToWaypoint();
 		}
+		
+		satiation.checkIfHitNeedTrigger(other);
 	}
 	
 	void OnTriggerExit(Collider other) {
-		
+		satiation.checkIfLeftNeedTrigger(other);
 	}
 }

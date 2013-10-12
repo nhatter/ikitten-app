@@ -48,6 +48,8 @@ public class PlayerModel : MonoBehaviour {
 			iKitten.GetComponent<iKittenModel>().state = kitten.Value;
 			iKitten.GetComponentInChildren<Renderer>().material = (Material) Resources.Load("iKitten/Materials/"+kitten.Value.materialName);
 			CameraManager.use.setCameraToFollow(iKitten);
+			iKitten.GetComponent<iKittenModel>().setupNeeds();
+			iKitten.GetComponent<iKittenModel>().passModelToState();
 			iKittenNumber++;
 		}
 	}

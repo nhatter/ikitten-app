@@ -90,7 +90,6 @@ public class iKittenController : MonoBehaviour {
 					animator.SetBool("Lick", true);
 					animator.SetBool("Idle", false);
 					model.isIdle = false;
-					model.timer = 0;
 					model.isStroking = true;
 					model.notStrokingTimer = 0;
 				}

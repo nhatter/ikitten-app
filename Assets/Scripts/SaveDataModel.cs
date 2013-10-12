@@ -17,6 +17,7 @@ public class SaveDataModel : MonoBehaviour {
 		if(!load(SAVES_DIR+"iKitten.xml")) {
 			GameObject iKitten = (GameObject) GameObject.Instantiate((GameObject)Resources.Load("iKitten/iKitten"));
 			CameraManager.use.setCameraToFollow(iKitten);
+			iKitten.GetComponent<iKittenModel>().passModelToState();
 		}
 	}
 	
