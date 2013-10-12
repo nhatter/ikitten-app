@@ -10,14 +10,11 @@ using System.Xml.Serialization;
 public class iKittenState {
 	public string name = "iKitten";
 	public string materialName = "American_Wirehair.mat";
-	public int satiation = 10;
-	public int sleep = 10;
-	public int love = 5;
-	public int exercise = 5;
-	public int fun = 5;
-	public int warmth = 5;
-	public int hygiene = 5;
-	public int environment = 5;
-	public int training = 5;
-	public int health = 5;
+	public iKittenNeed satiation 	= new iKittenNeed("Satiation", "Eat", 10, true);
+	public iKittenNeed sleep 		= new iKittenNeed("Sleep", "Sleep", 10);
+	public iKittenNeed love 		= new iKittenNeed("Love", "Purr", 10);
+	public iKittenNeed exercise 	= new iKittenNeed("Exercise", 10);
+	public iKittenNeed fun 			= new iKittenNeed("Fun", 10);
+	public iKittenNeed hygiene 		= new iKittenNeed("Hygiene", "Clean", 10);
+	public iKittenNeed environment 	= new iKittenNeed("Environment", "Eat", 10);
 }

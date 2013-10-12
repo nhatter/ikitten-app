@@ -3,22 +3,13 @@ using System.Collections;
 
 public class iKittenModel : MonoBehaviour {
 	public static iKittenModel use;
-	
-	public int MAX_SATISFACTION = 10;
-	public float FEED_ALERT_TIME_SCALE = 2.0f;
-	
+
 	public iKittenState state = new iKittenState();
-	
-	public float timeTilSatiationIncrease = 5.0f;
-	public float timeTilSatiationDecrease = 5.0f;
-	public float levelToStartEating = 3.0f;
-	public float timeTilSatiationMeow = 10.0f;
-	public float minTimeTilSatiationMeow = 1.0f;
 	
 	public bool isEating = false;
 	public bool isIdle = true;
-	
 	public bool isPlayerInteracting = false;
+	public bool haveCriticalNeed = false;
 	
 	Animator animator;
 	AnimatorStateInfo stateInfo;
@@ -28,8 +19,6 @@ public class iKittenModel : MonoBehaviour {
 	GameObject mouthObjectPlaceholder;
 	GameObject ballPlaceholder;
 	GameObject food;
-	public bool isMovingToFood = false;
-	public bool isAtFoodLocation = false;
 	GameObject eatLocation;
 	
 	public float timer = 0.0f;
@@ -100,49 +89,6 @@ public class iKittenModel : MonoBehaviour {
 		}
 		#endif
 		
-		if(isEating && Food.use.foodLevel > 0) {
-			if(timer >= timeTilSatiationIncrease) {
-				Food.use.moveFoodDown();
-				state.satiation++;
-				queueTimerReset = true;
-			}
-		} else {
-			if(isEating) {
-				audio.Stop();
-				audio.loop = false;
-				isEating = false;
-				animator.SetBool("Eat", isEating);
-			}
-			
-			if(timer >= timeTilSatiationDecrease) {
-				state.satiation--;
-				queueTimerReset = true;
-			}
-		}
-		
-		if(state.satiation <= levelToStartEating && isIdle && !isAtFoodLocation && !isMovingToFood && !isEating) {
-			waypointController.clearWaypoints();
-			waypointController.addWaypoint(eatLocation.transform.position);
-			waypointController.MoveToWaypoint();
-			waypointController.setFinalLookTarget(food.transform.position);
-			waypointController.setOnCompleteAction(setMovedToFood);
-			isMovingToFood = true;
-			isStroking = true;
-		}
-		
-		if(state.satiation == MAX_SATISFACTION && isEating) {
-			isEating = false;
-			audio.Stop();
-			audio.loop = false;
-			animator.SetBool("Eat", isEating);
-			animator.SetBool("Idle", true);
-		}
-		
-		if(queueTimerReset) {
-			timer = 0;
-			queueTimerReset = false;
-		}
-		
 		if(isRunning) {
 			animator.SetBool("Run", true);
 			animator.SetBool("Idle", false);
@@ -168,7 +114,7 @@ public class iKittenModel : MonoBehaviour {
 			runSoundTimer += Time.deltaTime;
 		}
 		
-		if(ballState.isMoving && !isChasingBall && isIdle && animator.GetBool("Idle") && state.satiation > levelToStartEating && !isStroking) {
+		if(ballState.isMoving && !isChasingBall && isIdle && animator.GetBool("Idle") && (!haveCriticalNeed || state.fun.need < iKittenNeed.levelToStartMeetingNeed) && !isStroking) {
 			if(Vector3.Distance(ball.transform.position, this.gameObject.transform.position) > chasingDistance) {
 				chaseBall();
 			}
@@ -253,24 +199,6 @@ public class iKittenModel : MonoBehaviour {
 		ballState.isMoving = false;
 		isRunning = false;
 	}
-	
-	public void eat() {
-		isEating = true;
-		isAtFoodLocation = true;
-		animator.SetBool("Eat", isEating);
-		animator.SetBool("Idle", false);
-		animator.SetBool("Meow", false);
-		audio.clip = sounds.purrSound;
-		audio.loop = true;
-		audio.Play();
-	}
-	
-	public void setMovedToFood() {
-		isMovingToFood = false;
-		isRunning = false;
-		animator.SetBool("Run", false);
-		animator.SetBool("Idle", true);
-	}
 		
 	void OnTriggerStay(Collider other) {
 		if(other.gameObject == ball && isChasingBall && !isBallInMouth) {
@@ -281,34 +209,9 @@ public class iKittenModel : MonoBehaviour {
 			waypointController.setOnCompleteAction(dropBall);
 			waypointController.MoveToWaypoint();
 		}
-		
-		if(other.gameObject == eatLocation && !isEating) {
-			isAtFoodLocation = true;
-			if(state.satiation <= levelToStartEating) {
-				if(state.satiation <= levelToStartEating && hungerAlertTimer >= timeTilSatiationMeow & isIdle) {
-					animator.SetBool("Meow", true);
-					sounds.randomMeow();
-					hungerAlertTimer = 0;
-				} else {
-					hungerAlertTimer += Time.deltaTime;
-				}
-				
-				if(Food.use.foodLevel > 0) {
-					eat();
-				} else {
-					if(state.satiation > 0) {
-						timeTilSatiationMeow =state.satiation*FEED_ALERT_TIME_SCALE;
-					} else {
-						timeTilSatiationMeow = minTimeTilSatiationMeow;
-					}
-				}
-			}
-		}
 	}
 	
 	void OnTriggerExit(Collider other) {
-		if(other.gameObject == eatLocation && !isEating) {
-			isAtFoodLocation = false;
-		}
+		
 	}
 }
