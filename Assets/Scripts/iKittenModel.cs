@@ -216,6 +216,7 @@ public class iKittenModel : MonoBehaviour {
 	}
 	
 	public void chaseBall() {
+		fun.inc();
 		isChasingBall = true;
 		isRunning = true;
 		waypointController.setMoveSpeed(runSpeed);
