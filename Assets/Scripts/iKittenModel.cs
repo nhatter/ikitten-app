@@ -77,7 +77,7 @@ public class iKittenModel : MonoBehaviour {
 		ballState = ball.GetComponent<Ball>();
 		mouthObjectPlaceholder = GameObject.Find ("MouthObjectPlaceholder");
 		ballPlaceholder = GameObject.Find("WoolBallPlaceholder");
-		head = ComponentUtils.FindTransformInChildren(this.gameObject, "cu_cat_head");
+		head = ComponentUtils.FindTransformInChildren(this.gameObject, "cu_cat_neck1");
 
 		satiation.setNeedObject(GameObject.Find("iKittyFood"));
 		satiation.setNeedObjectTrigger(GameObject.Find("EatLocation"));
