@@ -24,6 +24,7 @@ public class iKittenModel : MonoBehaviour {
 	GameObject eatLocation;
 	public static GameObject chaseObject;
 	public static GameObject lightBlob;
+	public static bool isTorchLit;
 	
 	public float hungerAlertTimer = 0.0f;
 	bool queueTimerReset = false;
@@ -246,6 +247,12 @@ public class iKittenModel : MonoBehaviour {
 		ball.rigidbody.isKinematic = false;
 		ball.rigidbody.velocity = Vector3.zero;
 		isBallInMouth = false;
+		stopChasingObject();
+	}
+	
+	public void stopChasingObject() {
+		waypointController.clearWaypoints();
+		iTween.StopByName("waypointController");
 		animator.SetBool("Run",false);
 		animator.SetBool("Idle",true);
 		ballState.isMoving = false;
@@ -295,7 +302,6 @@ public class iKittenModel : MonoBehaviour {
 		if(other.gameObject == ball && isChasing && !isBallInMouth) {
 			waypointController.clearWaypoints();
 			catchBall();
-			//iTween.StopByName("waypointController");
 			waypointController.addWaypoint(ballPlaceholder.transform.position);
 			waypointController.setOnCompleteAction(dropBall);
 			waypointController.MoveToWaypoint();

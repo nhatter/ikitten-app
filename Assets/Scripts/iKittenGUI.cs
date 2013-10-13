@@ -49,10 +49,20 @@ public class iKittenGUI : MonoBehaviour {
 			CameraManager.use.nextCamera();
 		}
 		
-		if(GUI.Button(torchButtonPos, "", "TorchButton")) {
-			iKittenModel.chaseObject = iKittenModel.lightBlob;
-			foreach(iKittenModel model in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
-				model.chase();
+		if(GUI.Button(torchButtonPos, "", "TorchButton"+(iKittenModel.isTorchLit ? "Lit" : "")) ) {
+			iKittenModel.isTorchLit = !iKittenModel.isTorchLit;
+			if(iKittenModel.isTorchLit) {
+				iKittenModel.lightBlob.GetComponentInChildren<Projector>().enabled = true;
+
+				iKittenModel.chaseObject = iKittenModel.lightBlob;
+				foreach(iKittenModel model in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
+					model.chase();
+				}
+			} else {
+				foreach(iKittenModel model in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
+					model.stopChasingObject();
+				}
+				iKittenModel.lightBlob.GetComponentInChildren<Projector>().enabled = false;
 			}
 		}
 		
