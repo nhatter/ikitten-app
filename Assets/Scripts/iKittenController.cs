@@ -18,6 +18,7 @@ public class iKittenController : MonoBehaviour {
 	GameObject touchedObject;
 	GameObject touchediKitten;
 	GameObject iKittyFood;
+	GameObject lightBlob;
 	
 	float inputX;
 	float inputY;
@@ -33,11 +34,13 @@ public class iKittenController : MonoBehaviour {
 	void Start () {
 		use = this;
 		iKittyFood = GameObject.Find("iKittyFood");
+		lightBlob = GameObject.Find("LightBlob");
 	}
 	
 	
 	// Update is called once per frame
 	void LateUpdate () {
+		moveLight();
 		cameraPos = Camera.main.transform.position;
 		
 		if(Input.GetKeyDown(KeyCode.Escape)) {
@@ -113,5 +116,18 @@ public class iKittenController : MonoBehaviour {
 				}
 			}	
 		}
+	} // End of LateUpdate
+	
+	public float speed = 0.005F;
+	Vector3 dir = Vector3.zero;
+	Vector3 cameraDir;
+	public void moveLight() {
+        dir.x = -Input.acceleration.y;
+        dir.z = Input.acceleration.x;
+        if (dir.sqrMagnitude > 1)
+            dir.Normalize();
+        
+        dir *= Time.deltaTime;
+        lightBlob.transform.Translate(dir * speed);
 	}
 }

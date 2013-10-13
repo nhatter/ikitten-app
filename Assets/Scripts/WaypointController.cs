@@ -17,7 +17,7 @@ public class WaypointController : MonoBehaviour {
 	private int currentWaypoint = 0;
 	Vector3 currentWayPointPos;
 	
-	private float moveSpeed = 1.0f;
+	public float moveSpeed = 2.0f;
 	private float travelTime;
 	private float lookTime = 2.0f;
 	

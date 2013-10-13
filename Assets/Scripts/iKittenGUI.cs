@@ -5,6 +5,7 @@ public class iKittenGUI : MonoBehaviour {
 	public GUISkin customSkin;
 	public Vector2 SHADOW_OFFSET = new Vector2(-1,-1);
 	private Rect cameraButtonPos;
+	private Rect torchButtonPos;
 	bool isShowingMessage = true;
 	string message = "Congratulations! You have adopted an iKitten. They may be a bit shy. Why don't you try stroking it to put it at ease?";
 	GUIStyle messageStyle;
@@ -28,6 +29,7 @@ public class iKittenGUI : MonoBehaviour {
 		int cameraButtonWidth = (int)customSkin.GetStyle("CameraButton").fixedWidth;
 		int cameraButtonHeight = (int)customSkin.GetStyle("CameraButton").fixedHeight;
 		cameraButtonPos = new Rect(Screen.width - cameraButtonWidth, 0, cameraButtonWidth, cameraButtonHeight);
+		torchButtonPos = new Rect(Screen.width - cameraButtonWidth, cameraButtonHeight+5, cameraButtonWidth, cameraButtonHeight);
 		
 		messagePos = generateStyleRect("Message");
 		okButtonPos = generateStyleRect("OKButton");
@@ -45,6 +47,13 @@ public class iKittenGUI : MonoBehaviour {
 		if(GUI.Button(cameraButtonPos, "", "CameraButton")) {
 			Debug.Log ("Changing camera");
 			CameraManager.use.nextCamera();
+		}
+		
+		if(GUI.Button(torchButtonPos, "", "TorchButton")) {
+			iKittenModel.chaseObject = iKittenModel.lightBlob;
+			foreach(iKittenModel model in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
+				model.chase();
+			}
 		}
 		
 		if(PlayerModel.use.isIncreasingPoints) {

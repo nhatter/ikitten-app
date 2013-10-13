@@ -22,19 +22,21 @@ public class iKittenModel : MonoBehaviour {
 	GameObject ballPlaceholder;
 	GameObject food;
 	GameObject eatLocation;
+	public static GameObject chaseObject;
+	public static GameObject lightBlob;
 	
 	public float hungerAlertTimer = 0.0f;
 	bool queueTimerReset = false;
 	
 	public int idleNameHash = Animator.StringToHash("Base.A_idle");
 	
-	GameObject ball;
+	public static GameObject ball;
 	Ball ballState;
-	public bool isChasingBall = false;
+	public bool isChasing = false;
 	public bool isBallInMouth = false;
-	public float chaseBallReactionTime = 1.0f;
+	public float chaseReactionTime = 1.0f;
 	public float distanceToCatchBall = 0.01f;
-	public float chaseBallReactionTimer = 0;
+	public float chaseReactionTimer = 0;
 	public Vector3 ballInMouthOffset = new Vector3(0,0,0);
 	public float chasingDistance = 2.0f;
 	
@@ -79,18 +81,20 @@ public class iKittenModel : MonoBehaviour {
 		ball = GameObject.Find ("WoolBall");
 		ballState = ball.GetComponent<Ball>();
 		mouthObjectPlaceholder = GameObject.Find ("MouthObjectPlaceholder");
+		lightBlob = GameObject.Find("LightBlob");
 		ballPlaceholder = GameObject.Find("WoolBallPlaceholder");
 		head = ComponentUtils.FindTransformInChildren(this.gameObject, "cu_cat_neck1");
-
+		
 		satiation.setNeedObject(GameObject.Find("iKittyFood"));
 		satiation.setNeedObjectTrigger(GameObject.Find("EatLocation"));
+		
+		chaseObject = ball;
 		
 		setupNeeds();
 		
 		if(head == null) {
 			Debug.Log ("No kitten head found!");
 		}
-		use = this;
 	}
 	
 	// Update is called once per frame
@@ -113,15 +117,15 @@ public class iKittenModel : MonoBehaviour {
 			animator.SetBool("Run", true);
 			animator.SetBool("Idle", false);
 			
-			if(isChasingBall) {
-				chaseBallReactionTimer += Time.deltaTime;
+			if(isChasing) {
+				chaseReactionTimer += Time.deltaTime;
 				
-				if(chaseBallReactionTimer > chaseBallReactionTime) {
-					waypointController.addWaypoint(ball.transform.position);
+				if(chaseReactionTimer > chaseReactionTime) {
+					waypointController.addWaypoint(chaseObject.transform.position);
 					waypointController.MoveToWaypoint();
-					chaseBallReactionTimer = 0;
+					chaseReactionTimer= 0;
 				}
-			}	
+			}
 				
 			if(runSoundTimer > runSoundTime) {
 				runSoundTimer = 0;
@@ -134,9 +138,9 @@ public class iKittenModel : MonoBehaviour {
 			runSoundTimer += Time.deltaTime;
 		}
 		
-		if(ballState.isMoving && !isChasingBall && isIdle && animator.GetBool("Idle") && (!haveCriticalNeed || fun.state.need < iKittenNeed.levelToStartMeetingNeed) && !isStroking) {
-			if(Vector3.Distance(ball.transform.position, this.gameObject.transform.position) > chasingDistance) {
-				chaseBall();
+		if(ballState.isMoving && !isChasing && isIdle && animator.GetBool("Idle") && (!haveCriticalNeed || fun.state.need < iKittenNeed.levelToStartMeetingNeed) && !isStroking) {
+			if(Vector3.Distance(chaseObject.transform.position, this.gameObject.transform.position) > chasingDistance) {
+				chase();
 			}
 		}
 		
@@ -211,21 +215,21 @@ public class iKittenModel : MonoBehaviour {
 	
 	public void catchBall() {
 		//ball.rigidbody.velocity = Vector3.zero;
-		isChasingBall = false;
+		isChasing = false;
 		audio.Stop();
 		pickupBall();
 		Debug.Log("Kitten caught the ball");
 	}
 	
-	public void chaseBall() {
+	public void chase() {
 		fun.inc();
-		isChasingBall = true;
+		isChasing = true;
 		Debug.Log("Kiten is chasing ball");
 		isRunning = true;
 		waypointController.setMoveSpeed(runSpeed);
 		waypointController.setLookTime(waypointLookTime);
-		waypointController.addWaypoint(ball.transform.position);
-		waypointController.addWaypoint(ball.transform.position);
+		waypointController.addWaypoint(chaseObject.transform.position);
+		waypointController.addWaypoint(chaseObject.transform.position);
 		waypointController.MoveToWaypoint();
 	}
 	
@@ -288,7 +292,7 @@ public class iKittenModel : MonoBehaviour {
 	}
 		
 	void OnTriggerStay(Collider other) {
-		if(other.gameObject == ball && isChasingBall && !isBallInMouth) {
+		if(other.gameObject == ball && isChasing && !isBallInMouth) {
 			waypointController.clearWaypoints();
 			catchBall();
 			//iTween.StopByName("waypointController");
