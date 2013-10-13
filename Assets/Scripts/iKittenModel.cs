@@ -22,6 +22,8 @@ public class iKittenModel : MonoBehaviour {
 	GameObject ballPlaceholder;
 	GameObject food;
 	GameObject eatLocation;
+	GameObject bed;
+	GameObject sleepLocation;
 	public static GameObject chaseObject;
 	public static GameObject lightBlob;
 	public static bool isTorchLit;
@@ -89,6 +91,19 @@ public class iKittenModel : MonoBehaviour {
 		satiation.setNeedObject(GameObject.Find("iKittyFood"));
 		satiation.setNeedObjectTrigger(GameObject.Find("EatLocation"));
 		
+		bed = GameObject.Find("Bed");
+		sleepLocation = GameObject.Find("SleepLocation");
+		
+		sleep.setNeedObject(bed);
+		sleep.setNeedObjectTrigger(sleepLocation);
+		sleep.setAtNeedLocationAction( delegate(){
+			waypointController.clearWaypoints();
+			iTween.StopByName(this.gameObject, "WaypointController");
+			animator.SetBool("Jump", true);
+			Debug.Log("Kitten going to sleep");
+			iTween.MoveTo(gameObject,iTween.Hash("delay", 0.75f,"name","JumpToBed","position",bed.transform.position,"time",0.5,"easetype","linear","oncomplete","prepareToSleep"));
+		});
+		
 		chaseObject = ball;
 		
 		setupNeeds();
@@ -96,6 +111,20 @@ public class iKittenModel : MonoBehaviour {
 		if(head == null) {
 			Debug.Log ("No kitten head found!");
 		}
+	}
+	
+	void prepareToSleep() {
+		isRunning = false;
+		animator.SetBool("Run", false);
+		animator.SetBool("Jump", false);
+		Vector3 cameraPos = Camera.main.transform.position;
+		iTween.LookTo(this.gameObject, iTween.Hash("lookTarget", new Vector3(cameraPos.x, gameObject.transform.position.y, cameraPos.z), "lookSpeed", 3, "oncomplete", "fallSleep"));
+	}
+	
+	void fallAsleep() {
+		sleep.setMovedToMeetNeed();
+		sleep.meetNeed();
+		animator.SetBool("Idle", false);
 	}
 	
 	// Update is called once per frame
@@ -115,6 +144,7 @@ public class iKittenModel : MonoBehaviour {
 		love.checkNeedSatisfied();
 		fun.handleNeed();
 		fun.checkNeedSatisfied();
+		sleep.handleNeed();
 		
 		if(isRunning) {
 			animator.SetBool("Run", true);
@@ -315,9 +345,11 @@ public class iKittenModel : MonoBehaviour {
 		}
 		
 		satiation.checkIfHitNeedTrigger(other);
+		sleep.checkIfHitNeedTrigger(other);
 	}
 	
 	void OnTriggerExit(Collider other) {
 		satiation.checkIfLeftNeedTrigger(other);
+		sleep.checkIfLeftNeedTrigger(other);
 	}
 }

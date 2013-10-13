@@ -29,6 +29,8 @@ public class iKittenNeed {
 	private iKittenModel model;
 	private bool queueTimerReset = false;
 	
+	private Action atNeedLocationAction;
+	private bool isNeedLocationActionSet = false;
 	private Action needIncreasedAction = delegate(){};
 	
 	private float needIncTimer = 0;
@@ -72,11 +74,16 @@ public class iKittenNeed {
 				setThisAsDeficientNeed();
 				
 				if(deficientNeed == this && model.isIdle && !state.isAtLocationToMeetNeed && !state.isMovingToMeetNeed && !state.isMeetingNeed) {
+					Debug.Log ("Kitten is moving to meet need");
+					model.isRunning = true;
 					model.waypointController.clearWaypoints();
 					model.waypointController.addWaypoint(needObjectTrigger.transform.position);
 					model.waypointController.MoveToWaypoint();
 					model.waypointController.setFinalLookTarget(needObject.transform.position);
-					model.waypointController.setOnCompleteAction(setMovedToMeetNeed);
+					if(!isNeedLocationActionSet) {
+						model.waypointController.setOnCompleteAction(setMovedToMeetNeed);
+					}
+					
 					state.isMovingToMeetNeed = true;
 				}
 			}
@@ -98,7 +105,8 @@ public class iKittenNeed {
 		}
 	}
 	
-	void setMovedToMeetNeed() {
+	public void setMovedToMeetNeed() {
+		Debug.Log("Kittne has moved to need location");
 		state.isMovingToMeetNeed = false;
 		model.isRunning = false;
 		if(needMetAnimationStateName != "") {
@@ -128,8 +136,9 @@ public class iKittenNeed {
 	
 	public void checkIfHitNeedTrigger(Collider other) {
 		if(needObjectTrigger != null) {
-			if(other.gameObject == needObjectTrigger && !state.isMeetingNeed) {
+			if(other.gameObject == needObjectTrigger && !state.isMeetingNeed && deficientNeed == this) {
 				state.isAtLocationToMeetNeed = true;
+				atNeedLocationAction();
 				checkNeedSatisfied();
 			}
 		}
@@ -157,7 +166,7 @@ public class iKittenNeed {
 					state.needAlertTimer += Time.deltaTime;
 				}
 				
-				if(state.resourceLevel > 0 && isResourceRequired) {
+				if(state.resourceLevel > 0 && isResourceRequired || !isResourceRequired) {
 					meetNeed();
 				} else {
 					if(state.need > 0) {
@@ -182,6 +191,11 @@ public class iKittenNeed {
 	
 	public void setNeedIncreasedAction(Action newAction) {
 		needIncreasedAction = newAction;
+	}
+	
+	public void setAtNeedLocationAction(Action newAction) {
+		atNeedLocationAction = newAction;
+		isNeedLocationActionSet = true;
 	}
 	
 	public void inc() {

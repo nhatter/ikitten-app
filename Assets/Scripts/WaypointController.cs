@@ -31,7 +31,7 @@ public class WaypointController : MonoBehaviour {
 	}
 	
 	public void setFinalLookTarget(Vector3 lookTarget) {
-		finalLookTarget = lookTarget;
+		finalLookTarget = new Vector3(lookTarget.x, 0, lookTarget.z);
 	}
 	
 	public void MoveToWaypoint(){
@@ -39,7 +39,8 @@ public class WaypointController : MonoBehaviour {
 			//Time = Distance / Rate:
 			currentWayPointPos = waypoints.Dequeue();
 			
-			if(waypoints.Count == 0 && onCompleteAction != null) {
+			if(waypoints.Count == 0) {
+				Debug.Log("Using onCompleteWrapper as oncomplete function");
 				onCompleteActionString = "onCompleteActionWrapper";
 			} else {
 				onCompleteActionString = "MoveToWaypoint";
@@ -47,7 +48,7 @@ public class WaypointController : MonoBehaviour {
 			
 			travelTime = Vector3.Distance(transform.position, currentWayPointPos)/moveSpeed;
 			currentWayPointPos = new Vector3(currentWayPointPos.x, 0, currentWayPointPos.z);
-			iTween.MoveTo(gameObject,iTween.Hash("name","waypointController","position",currentWayPointPos,"time",travelTime,"easetype","linear","oncomplete",onCompleteActionString,"Looktarget",currentWayPointPos,"looktime", lookTime));
+			iTween.MoveTo(gameObject,iTween.Hash("name","WaypointController","position",currentWayPointPos,"time",travelTime,"easetype","linear","oncomplete",onCompleteActionString,"Looktarget",currentWayPointPos,"looktime", lookTime));
 			
 		} else {
 			if(finalLookTarget != null) {
@@ -67,6 +68,7 @@ public class WaypointController : MonoBehaviour {
 	}
 	
 	public void onCompleteActionWrapper() {
+		Debug.Log ("Calling onCompleteAction");
 		onCompleteAction();
 		MoveToWaypoint();
 	}
