@@ -185,16 +185,17 @@ public class iKittenNeed {
 	}
 	
 	public void inc() {
-		if(state.need < MAX_SATISFACTION) {
-			if(!state.isMeetingNeed) {
-				meetNeed();
-			}	
-				
-			needIncTimer += Time.deltaTime;
-			if(needIncTimer >= timeToIncNeed) {
+		if(!state.isMeetingNeed) {
+			meetNeed();
+		}	
+			
+		needIncTimer += Time.deltaTime;
+		if(needIncTimer >= timeToIncNeed) {
+			if(state.need < MAX_SATISFACTION) {
 				state.need++;
-				needIncTimer = 0;
 			}
+			PlayerModel.use.incHappyPoints(100);
+			needIncTimer = 0;
 		}
 	}
 	

@@ -30,6 +30,11 @@ public class PlayerModel : MonoBehaviour {
 		}
 	}
 	
+	public void incHappyPoints(int points) {
+		happyPoints += points;
+		isIncreasingPoints = true;
+	}
+	
 	public SerialisableDictionary<string, iKittenState> getSerialisableParty() {
 		SerialisableDictionary<string, iKittenState> partyStats = new SerialisableDictionary<string, iKittenState>();
 		foreach(iKittenModel member in GameObject.FindObjectsOfType(typeof(iKittenModel))) {

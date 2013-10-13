@@ -113,6 +113,8 @@ public class iKittenModel : MonoBehaviour {
 		satiation.handleNeed();
 		love.handleNeed();
 		love.checkNeedSatisfied();
+		fun.handleNeed();
+		fun.checkNeedSatisfied();
 		
 		if(isRunning) {
 			animator.SetBool("Run", true);
@@ -143,6 +145,10 @@ public class iKittenModel : MonoBehaviour {
 			if(Vector3.Distance(chaseObject.transform.position, this.gameObject.transform.position) > chasingDistance) {
 				chase();
 			}
+		}
+		
+		if(isChasing) {
+			fun.inc();
 		}
 		
 		if(!isIdle && !animator.GetBool("Idle") && !isRunning) {
@@ -223,7 +229,6 @@ public class iKittenModel : MonoBehaviour {
 	}
 	
 	public void chase() {
-		fun.inc();
 		isChasing = true;
 		Debug.Log("Kiten is chasing ball");
 		isRunning = true;
@@ -257,6 +262,8 @@ public class iKittenModel : MonoBehaviour {
 		animator.SetBool("Idle",true);
 		ballState.isMoving = false;
 		isRunning = false;
+		isChasing = false;
+		PlayerModel.use.stoppedIncreasingPoints = true;
 	}
 	
 	public void stroke(float inputY, bool isXAxis) {
