@@ -7,6 +7,9 @@ public class iKittenController : MonoBehaviour {
 	public static iKittenController use;
 	public float touchDistance = 2.0f;
 	public float touchStrokeScale = 0.1f;
+	public float accelerometerSensitivity = 50.0f;
+	public float moveLightBlobSpeed = 10.0f;
+
 	public LayerMask touchLayerMask;
 	float swipeSpeed = 0.1F;
 	
@@ -118,7 +121,6 @@ public class iKittenController : MonoBehaviour {
 		}
 	} // End of LateUpdate
 	
-	public float speed = 0.005F;
 	Vector3 dir = Vector3.zero;
 	Vector3 cameraDir;
 	public void moveLight() {
@@ -128,6 +130,6 @@ public class iKittenController : MonoBehaviour {
             dir.Normalize();
         
         dir *= Time.deltaTime;
-        lightBlob.transform.Translate(dir * speed);
+        lightBlob.rigidbody.velocity = dir * accelerometerSensitivity * moveLightBlobSpeed;
 	}
 }
