@@ -134,7 +134,7 @@ public class iKittenModel : MonoBehaviour {
 			runSoundTimer += Time.deltaTime;
 		}
 		
-		if(ballisMoving && !isChasingBall && isIdle && animator.GetBool("Idle") && (!haveCriticalNeed || fun.state.need < iKittenNeed.levelToStartMeetingNeed) && !isStroking) {
+		if(ballState.isMoving && !isChasingBall && isIdle && animator.GetBool("Idle") && (!haveCriticalNeed || fun.state.need < iKittenNeed.levelToStartMeetingNeed) && !isStroking) {
 			if(Vector3.Distance(ball.transform.position, this.gameObject.transform.position) > chasingDistance) {
 				chaseBall();
 			}
@@ -220,6 +220,7 @@ public class iKittenModel : MonoBehaviour {
 	public void chaseBall() {
 		fun.inc();
 		isChasingBall = true;
+		Debug.Log("Kiten is chasing ball");
 		isRunning = true;
 		waypointController.setMoveSpeed(runSpeed);
 		waypointController.setLookTime(waypointLookTime);
@@ -243,7 +244,7 @@ public class iKittenModel : MonoBehaviour {
 		isBallInMouth = false;
 		animator.SetBool("Run",false);
 		animator.SetBool("Idle",true);
-		ballisMoving = false;
+		ballState.isMoving = false;
 		isRunning = false;
 	}
 	
