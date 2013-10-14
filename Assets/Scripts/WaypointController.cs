@@ -9,7 +9,7 @@ public class WaypointController : MonoBehaviour {
 	public int rotateTime = 1;
 	public bool isLooping = false;
 	
-	private Action onCompleteAction;
+	private Action onCompleteAction = delegate(){};
 	private string onCompleteActionString;
 	
 	private Vector3 finalLookTarget;
