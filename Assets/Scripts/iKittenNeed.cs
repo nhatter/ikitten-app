@@ -52,7 +52,7 @@ public class iKittenNeed {
 	public void handleNeed() {
 		state.timer += Time.deltaTime;
 		
-		if(state.isMeetingNeed && (state.resourceLevel > 0 && isResourceRequired)) {
+		if(state.isMeetingNeed && (state.resourceLevel > 0 && isResourceRequired || !isResourceRequired)) {
 			if(state.timer >= timeTilNeedIncrease) {
 				needIncreasedAction();
 				state.need++;
@@ -89,7 +89,7 @@ public class iKittenNeed {
 			}
 		}
 		
-		if(state.need == MAX_SATISFACTION && state.isMeetingNeed && isResourceRequired) {
+		if(state.need == MAX_SATISFACTION && state.isMeetingNeed) {
 			state.isMeetingNeed = false;
 			model.audio.Stop();
 			model.audio.loop = false;
