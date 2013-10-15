@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class iKittenModel : MonoBehaviour {
 	public static iKittenModel use;
 
-	public iKittenState state = new iKittenState();
+	private iKittenState state = new iKittenState();
 	
 	public bool isEating = false;
 	public bool isIdle = true;
@@ -68,49 +68,20 @@ public class iKittenModel : MonoBehaviour {
 	bool ballisMoving = false;
 	
 	private iKittenNeed[] allNeeds;
-	public iKittenNeed satiation 	= new iKittenNeed("Satiation", "Eat", true);
-	public iKittenNeed sleep 		= new iKittenNeed("Sleep", "Sleep");
-	public iKittenNeed love 		= new iKittenNeed("Love", "Purr");
-	public iKittenNeed exercise 	= new iKittenNeed("Exercise");
-	public iKittenNeed fun 			= new iKittenNeed("Fun");
-	public iKittenNeed hygiene 		= new iKittenNeed("Hygiene", "Clean");
-	public iKittenNeed environment 	= new iKittenNeed("Environment");
-
+	public iKittenNeed satiation;
+	public iKittenNeed sleep;
+	public iKittenNeed love;
+	public iKittenNeed exercise;
+	public iKittenNeed fun;
+	public iKittenNeed hygiene;
+	public iKittenNeed environment;
+		
 	// Use this for initialization
 	void Start () {
-		animator = GetComponent<Animator>();
-		sounds = GetComponent<iKittenSounds>();
-		waypointController = GetComponent<WaypointController>();
-		ball = GameObject.Find ("WoolBall");
-		ballState = ball.GetComponent<Ball>();
-		mouthObjectPlaceholder = GameObject.Find ("MouthObjectPlaceholder");
-		lightBlob = GameObject.Find("LightBlob");
-		ballPlaceholder = GameObject.Find("WoolBallPlaceholder");
-		head = ComponentUtils.FindTransformInChildren(this.gameObject, "cu_cat_neck1");
-		
-		satiation.setNeedObject(GameObject.Find("iKittyFood"));
-		satiation.setNeedObjectTrigger(GameObject.Find("EatLocation"));
-		
-		bed = GameObject.Find("Bed");
-		sleepLocation = GameObject.Find("SleepLocation");
-		
-		sleep.setNeedObject(bed);
-		sleep.setNeedObjectTrigger(sleepLocation);
-		sleep.setAtNeedLocationAction( delegate(){
-			waypointController.clearWaypoints();
-			iTween.StopByName(this.gameObject, "WaypointController");
-			animator.SetBool("Jump", true);
-			Debug.Log("Kitten going to sleep");
-			iTween.MoveTo(gameObject,iTween.Hash("delay", 0.75f,"name","JumpToBed","position",bed.transform.position,"time",0.5,"easetype","linear","oncomplete","prepareToSleep"));
-		});
-		
-		chaseObject = ball;
-		
+		cacheGameObjectRefs();
 		setupNeeds();
-		
-		if(head == null) {
-			Debug.Log ("No kitten head found!");
-		}
+	
+		chaseObject = ball;
 	}
 	
 	void prepareToSleep() {
@@ -221,7 +192,9 @@ public class iKittenModel : MonoBehaviour {
 	
 	public void passModelToState() {
 		foreach(iKittenNeed need in allNeeds) {
-			need.setModel(this);
+			if(need != null) {
+				need.setModel(this);
+			}
 		}
 	}
 		
@@ -229,25 +202,61 @@ public class iKittenModel : MonoBehaviour {
 		return state;
 	}
 	
+	public void setState(iKittenState newState) {
+		this.state = newState;
+	}
+	
+	void cacheGameObjectRefs() {
+		animator = GetComponent<Animator>();
+		sounds = GetComponent<iKittenSounds>();
+		waypointController = GetComponent<WaypointController>();
+		ball = GameObject.Find ("WoolBall");
+		ballState = ball.GetComponent<Ball>();
+		mouthObjectPlaceholder = GameObject.Find ("MouthObjectPlaceholder");
+		lightBlob = GameObject.Find("LightBlob");
+		ballPlaceholder = GameObject.Find("WoolBallPlaceholder");
+		head = ComponentUtils.FindTransformInChildren(this.gameObject, "cu_cat_neck1");
+		bed = GameObject.Find("Bed");
+		sleepLocation = GameObject.Find("SleepLocation");
+	}
+	
 	public void setupNeeds() {
-		List<iKittenNeed> allNeedsList = new List<iKittenNeed>();
-		allNeedsList.Add(satiation);
-		allNeedsList.Add(sleep);
-		allNeedsList.Add(love);
-		allNeedsList.Add(exercise);
-		allNeedsList.Add(fun);
-		allNeedsList.Add(hygiene);
-		allNeedsList.Add(environment);
-		allNeeds = allNeedsList.ToArray();
+		allNeeds = GetComponents<iKittenNeed>();
 		
-		List<iKittenNeedState> allNeedStatesList = new List<iKittenNeedState>();
-		foreach(iKittenNeed need in allNeedsList) {
-			allNeedStatesList.Add(need.state);
+		foreach(iKittenNeed need in allNeeds) {
+			switch(need.state.needName) {
+				case "Satiation":
+					satiation = need;
+				break;
+				
+				case "Sleep":
+					sleep = need;
+				break;
+				
+				case "Love":
+					love = need;
+				break;
+				
+				case "Fun":
+					fun = need;
+				break;
+			}
 		}
 		
-		state.needs = allNeedStatesList.ToArray();
 		
 		satiation.setNeedIncreasedAction(Food.use.moveFoodDown);
+		satiation.setNeedObject(GameObject.Find("iKittyFood"));
+		satiation.setNeedObjectTrigger(GameObject.Find("EatLocation"));
+		
+		sleep.setNeedObject(bed);
+		sleep.setNeedObjectTrigger(sleepLocation);
+		sleep.setAtNeedLocationAction( delegate(){
+			waypointController.clearWaypoints();
+			iTween.StopByName(this.gameObject, "WaypointController");
+			animator.SetBool("Jump", true);
+			Debug.Log("Kitten going to sleep");
+			iTween.MoveTo(gameObject,iTween.Hash("delay", 0.75f,"name","JumpToBed","position",bed.transform.position,"time",0.5,"easetype","linear","oncomplete","prepareToSleep"));
+		});
 	}
 	
 	public void catchBall() {

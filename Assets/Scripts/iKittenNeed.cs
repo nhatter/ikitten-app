@@ -6,47 +6,37 @@ using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
 
-public class iKittenNeed {
+public class iKittenNeed : MonoBehaviour {
 	public static int MIN_SATISFACTION = 1;
 	public static int MAX_SATISFACTION = 10;
 	public static float ALERT_TIME_SCALE = 2.0f;
 	
 	public iKittenNeedState state = new iKittenNeedState();
 	
-	private float timeTilNeedIncrease = 5.0f;
-	private float timeTilNeedDecrease = 5.0f;
+	public float timeTilNeedIncrease = 5.0f;
+	public float timeTilNeedDecrease = 5.0f;
 	private float timeTilMeow = 10.0f;
 	private float minTimeTilMeow = 1.0f;
-	private bool isResourceRequired = false;
+
+	public bool isResourceRequired = false;
+	public bool requiresPlayerToMeetNeed = false;
 	
 	public static int levelToStartMeetingNeed = 3;
 	public static iKittenNeed deficientNeed;
 	
-	private string needMetAnimationStateName;
+	public string needMetAnimationStateName;
 	private GameObject needObjectTrigger;
 	private GameObject needObject;
 	
 	private iKittenModel model;
 	private bool queueTimerReset = false;
 	
-	private Action atNeedLocationAction;
 	private bool isNeedLocationActionSet = false;
+	private Action atNeedLocationAction = delegate(){};
+	private bool isNeedIncreasedActionSet = false;
 	private Action needIncreasedAction = delegate(){};
 	
 	private float needIncTimer = 0;
-	public float timeToIncNeed = 3;
-	
-	public iKittenNeed(string name, string animationState, bool resourceRequired) {
-		state.needName = name;
-		this.needMetAnimationStateName = animationState;
-		this.isResourceRequired = resourceRequired;
-	}
-	
-	public iKittenNeed(string name, string animationState) : this(name, animationState, false) {
-	}
-	
-	public iKittenNeed(string name) : this(name, "", false) {
-	}
 	
 	// Update is called once per frame
 	public void handleNeed() {
@@ -54,12 +44,14 @@ public class iKittenNeed {
 		
 		if(state.isMeetingNeed && (state.resourceLevel > 0 && isResourceRequired || !isResourceRequired)) {
 			if(state.timer >= timeTilNeedIncrease) {
-				needIncreasedAction();
+				if(isNeedIncreasedActionSet) {
+					needIncreasedAction();
+				}
 				state.need++;
 				queueTimerReset = true;
 			}
 		} else {
-			if(state.isMeetingNeed && isResourceRequired) {
+			if(state.isMeetingNeed) {
 				stopMeetingNeed();
 			}
 			
@@ -69,10 +61,9 @@ public class iKittenNeed {
 			}
 		}
 		
-		if(needObjectTrigger != null) {
-			if(state.need <= levelToStartMeetingNeed) {
-				setThisAsDeficientNeed();
-				
+		
+		if(state.need <= levelToStartMeetingNeed) {
+			if(needObjectTrigger != null) {
 				if(deficientNeed == this && model.isIdle && !state.isAtLocationToMeetNeed && !state.isMovingToMeetNeed && !state.isMeetingNeed) {
 					Debug.Log ("Kitten is moving to meet need");
 					model.isRunning = true;
@@ -87,15 +78,24 @@ public class iKittenNeed {
 					state.isMovingToMeetNeed = true;
 				}
 			}
+			
+			setThisAsDeficientNeed();
 		}
+	
 		
-		if(state.need == MAX_SATISFACTION && state.isMeetingNeed) {
-			state.isMeetingNeed = false;
-			model.audio.Stop();
-			model.audio.loop = false;
-			if(needMetAnimationStateName != "") {
-				model.animator.SetBool(needMetAnimationStateName, false);
-				model.animator.SetBool("Idle", true);
+		if(state.isMeetingNeed) {
+			if(state.need > levelToStartMeetingNeed) {
+				deficientNeed = null;
+			}	
+			
+			if(state.need == MAX_SATISFACTION) {
+				resetNeed();
+				model.audio.Stop();
+				model.audio.loop = false;
+				if(needMetAnimationStateName != "") {
+					model.animator.SetBool(needMetAnimationStateName, false);
+					model.animator.SetBool("Idle", true);
+				}
 			}
 		}
 		
@@ -107,7 +107,6 @@ public class iKittenNeed {
 	
 	public void setMovedToMeetNeed() {
 		Debug.Log("Kittne has moved to need location");
-		state.isMovingToMeetNeed = false;
 		model.isRunning = false;
 		if(needMetAnimationStateName != "") {
 			model.animator.SetBool("Run", false);
@@ -116,13 +115,15 @@ public class iKittenNeed {
 	}
 	
 	public void meetNeed() {
-		state.isMeetingNeed = true;
-		model.animator.SetBool(needMetAnimationStateName, true);
-		model.animator.SetBool("Idle", false);
-		model.animator.SetBool("Meow", false);
-		model.audio.clip = model.sounds.purrSound;
-		model.audio.loop = true;
-		model.audio.Play();
+		if(!state.isMeetingNeed) {
+			state.isMeetingNeed = true;
+			model.animator.SetBool(needMetAnimationStateName, true);
+			model.animator.SetBool("Idle", false);
+			model.animator.SetBool("Meow", false);
+			model.audio.clip = model.sounds.purrSound;
+			model.audio.loop = true;
+			model.audio.Play();
+		}
 	}
 	
 	public void stopMeetingNeed() {
@@ -136,9 +137,13 @@ public class iKittenNeed {
 	
 	public void checkIfHitNeedTrigger(Collider other) {
 		if(needObjectTrigger != null) {
+			Debug.Log(other.name+" is other object.");
+
 			if(other.gameObject == needObjectTrigger && !state.isMeetingNeed && deficientNeed == this) {
 				state.isAtLocationToMeetNeed = true;
-				atNeedLocationAction();
+				if(isNeedLocationActionSet) {
+					atNeedLocationAction();
+				}
 				checkNeedSatisfied();
 			}
 		}
@@ -166,7 +171,7 @@ public class iKittenNeed {
 					state.needAlertTimer += Time.deltaTime;
 				}
 				
-				if(state.resourceLevel > 0 && isResourceRequired || !isResourceRequired) {
+				if(state.resourceLevel > 0 && isResourceRequired || (!isResourceRequired && !requiresPlayerToMeetNeed)) {
 					meetNeed();
 				} else {
 					if(state.need > 0) {
@@ -176,8 +181,6 @@ public class iKittenNeed {
 					}
 				}
 			}
-		} else {
-			deficientNeed = null;
 		}
 	}
 	
@@ -190,6 +193,7 @@ public class iKittenNeed {
 	}
 	
 	public void setNeedIncreasedAction(Action newAction) {
+		isNeedIncreasedActionSet = true;
 		needIncreasedAction = newAction;
 	}
 	
@@ -204,7 +208,7 @@ public class iKittenNeed {
 		}	
 			
 		needIncTimer += Time.deltaTime;
-		if(needIncTimer >= timeToIncNeed) {
+		if(needIncTimer >= timeTilNeedIncrease) {
 			if(state.need < MAX_SATISFACTION) {
 				state.need++;
 			}
@@ -227,5 +231,11 @@ public class iKittenNeed {
 	
 	public void setModel(iKittenModel newModel) {
 		this.model = newModel;
+	}
+	
+	void resetNeed() {
+		state.isAtLocationToMeetNeed = false;
+		state.isMovingToMeetNeed = false;
+		state.isMeetingNeed = false;
 	}
 }

@@ -50,7 +50,7 @@ public class PlayerModel : MonoBehaviour {
 		foreach(KeyValuePair<string, iKittenState> kitten in serialisedParty) {
 			GameObject iKitten = (GameObject) GameObject.Instantiate((GameObject) Resources.Load("iKitten/iKitten"));
 			iKitten.transform.position += new Vector3(-1*iKittenNumber,0,0);
-			iKitten.GetComponent<iKittenModel>().state = kitten.Value;
+			iKitten.GetComponent<iKittenModel>().setState(kitten.Value);
 			iKitten.GetComponentInChildren<Renderer>().material = (Material) Resources.Load("iKitten/Materials/"+kitten.Value.materialName);
 			CameraManager.use.setCameraToFollow(iKitten);
 			iKitten.GetComponent<iKittenModel>().setupNeeds();
