@@ -80,7 +80,8 @@ public class iKittenModel : MonoBehaviour {
 	void Start () {
 		cacheGameObjectRefs();
 		setupNeeds();
-	
+		passModelToState();
+		
 		chaseObject = ball;
 	}
 	
@@ -204,6 +205,25 @@ public class iKittenModel : MonoBehaviour {
 	
 	public void setState(iKittenState newState) {
 		this.state = newState;
+		foreach(iKittenNeedState needState in state.needs) {
+			switch(needState.needName) {
+				case "Satiation":
+					satiation.state = needState;
+				break;
+				
+				case "Sleep":
+					sleep.state = needState;
+				break;
+				
+				case "Love":
+					love.state = needState;
+				break;
+				
+				case "Fun":
+					fun.state = needState;
+				break;
+			}
+		}
 	}
 	
 	void cacheGameObjectRefs() {
@@ -223,26 +243,15 @@ public class iKittenModel : MonoBehaviour {
 	public void setupNeeds() {
 		allNeeds = GetComponents<iKittenNeed>();
 		
+		
+		List<iKittenNeedState> allNeedStates = new List<iKittenNeedState>();
 		foreach(iKittenNeed need in allNeeds) {
-			switch(need.state.needName) {
-				case "Satiation":
-					satiation = need;
-				break;
-				
-				case "Sleep":
-					sleep = need;
-				break;
-				
-				case "Love":
-					love = need;
-				break;
-				
-				case "Fun":
-					fun = need;
-				break;
-			}
+			_assignNeed(need);
+			allNeedStates.Add(need.state);
 		}
 		
+		// Record which states need saving
+		state.needs = allNeedStates.ToArray();
 		
 		satiation.setNeedIncreasedAction(Food.use.moveFoodDown);
 		satiation.setNeedObject(GameObject.Find("iKittyFood"));
@@ -257,6 +266,26 @@ public class iKittenModel : MonoBehaviour {
 			Debug.Log("Kitten going to sleep");
 			iTween.MoveTo(gameObject,iTween.Hash("delay", 0.75f,"name","JumpToBed","position",bed.transform.position,"time",0.5,"easetype","linear","oncomplete","prepareToSleep"));
 		});
+	}
+	
+	void _assignNeed(iKittenNeed need) {
+		switch(need.state.needName) {
+			case "Satiation":
+				satiation = need;
+			break;
+			
+			case "Sleep":
+				sleep = need;
+			break;
+			
+			case "Love":
+				love = need;
+			break;
+			
+			case "Fun":
+				fun = need;
+			break;
+		}
 	}
 	
 	public void catchBall() {
