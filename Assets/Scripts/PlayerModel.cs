@@ -41,6 +41,7 @@ public class PlayerModel : MonoBehaviour {
 			iKittenState entity = member.getState();
 			entity.position = member.gameObject.transform.position;
 			entity.animationState = AnimationUtils.getEnabledBool(member.animator, iKittenState.ANIMATION_STATES);
+			entity.position = member.gameObject.transform.position;
 			partyStats.Add(entity.name, entity);
 		}
 		
@@ -60,6 +61,7 @@ public class PlayerModel : MonoBehaviour {
 			iKitten.GetComponent<iKittenModel>().passModelToState();
 			AnimationUtils.disableAllStates(iKitten.GetComponent<iKittenModel>().animator, iKittenState.ANIMATION_STATES);
 			iKitten.GetComponent<iKittenModel>().animator.SetBool(kitten.Value.animationState, true);
+			iKitten.transform.position = iKitten.GetComponent<iKittenModel>().getState().position;
 			iKittenNumber++;
 		}
 	}
