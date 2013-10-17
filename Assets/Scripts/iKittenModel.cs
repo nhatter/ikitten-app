@@ -226,7 +226,7 @@ public class iKittenModel : MonoBehaviour {
 		}
 	}
 	
-	void cacheGameObjectRefs() {
+	public void cacheGameObjectRefs() {
 		animator = GetComponent<Animator>();
 		sounds = GetComponent<iKittenSounds>();
 		waypointController = GetComponent<WaypointController>();

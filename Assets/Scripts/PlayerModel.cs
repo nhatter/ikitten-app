@@ -39,6 +39,8 @@ public class PlayerModel : MonoBehaviour {
 		SerialisableDictionary<string, iKittenState> partyStats = new SerialisableDictionary<string, iKittenState>();
 		foreach(iKittenModel member in GameObject.FindObjectsOfType(typeof(iKittenModel))) {
 			iKittenState entity = member.getState();
+			entity.position = member.gameObject.transform.position;
+			entity.animationState = AnimationUtils.getEnabledBool(member.animator, iKittenState.ANIMATION_STATES);
 			partyStats.Add(entity.name, entity);
 		}
 		
@@ -53,8 +55,11 @@ public class PlayerModel : MonoBehaviour {
 			iKitten.GetComponent<iKittenModel>().setState(kitten.Value);
 			iKitten.GetComponentInChildren<Renderer>().material = (Material) Resources.Load("iKitten/Materials/"+kitten.Value.materialName);
 			CameraManager.use.setCameraToFollow(iKitten);
+			iKitten.GetComponent<iKittenModel>().cacheGameObjectRefs();
 			iKitten.GetComponent<iKittenModel>().setupNeeds();
 			iKitten.GetComponent<iKittenModel>().passModelToState();
+			AnimationUtils.disableAllStates(iKitten.GetComponent<iKittenModel>().animator, iKittenState.ANIMATION_STATES);
+			iKitten.GetComponent<iKittenModel>().animator.SetBool(kitten.Value.animationState, true);
 			iKittenNumber++;
 		}
 	}
