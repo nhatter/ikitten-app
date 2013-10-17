@@ -7,4 +7,5 @@ public class SaveData {
 	public SerialisableDictionary<string, int> inventory;
 	public string levelName;
 	public SerialisableDictionary<string, iKittenState> stats;
+	public PlayerModelState playerState;
 }

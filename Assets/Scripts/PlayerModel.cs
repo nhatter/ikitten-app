@@ -5,12 +5,11 @@ using System.Collections.Generic;
 public class PlayerModel : MonoBehaviour {
 	public static PlayerModel use;
 	
-	public int happyPoints;
-	public int money;
-	public int strokePoints;
+	public PlayerModelState state = new PlayerModelState();
 	public bool isIncreasingPoints = false;
 	public bool stoppedIncreasingPoints = false;
-	
+	public int strokePoints = 0;
+
 	public int strokePointsToGainHappyPoints = 10000;
 	public int happyPointsGainedFromStroking = 100;
 	public bool isHappyFromStroking = false;
@@ -24,14 +23,14 @@ public class PlayerModel : MonoBehaviour {
 		
 		if(strokePoints >= strokePointsToGainHappyPoints) {
 			isHappyFromStroking = true;
-			happyPoints += happyPointsGainedFromStroking;
+			state.happyPoints += happyPointsGainedFromStroking;
 			isIncreasingPoints = true;
 			strokePoints = 0;
 		}
 	}
 	
 	public void incHappyPoints(int points) {
-		happyPoints += points;
+		state.happyPoints += points;
 		isIncreasingPoints = true;
 	}
 	

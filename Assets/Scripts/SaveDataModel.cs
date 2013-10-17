@@ -35,6 +35,7 @@ public class SaveDataModel : MonoBehaviour {
 		saveData.inventory = InventoryModel.use.getSerialisableInventory();
 		saveData.levelName = Application.loadedLevelName;
 		saveData.stats = PlayerModel.use.getSerialisableParty();
+		saveData.playerState = PlayerModel.use.state;
 		XMLManager.Save<SaveData>(saveData, SAVES_DIR+saveFile);
 		lastSave = SAVES_DIR+saveFile;
 		Debug.Log("Saving game");
@@ -52,6 +53,7 @@ public class SaveDataModel : MonoBehaviour {
 			Debug.Log("Loading game");
 			lastSave = saveFile;
 			PlayerModel.use.loadSerialisedParty(saveData.stats);
+			PlayerModel.use.state = saveData.playerState;
 			return true;
 		} else {
 			Debug.Log("No save file found - not loading.");

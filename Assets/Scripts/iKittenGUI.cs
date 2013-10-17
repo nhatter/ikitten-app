@@ -82,7 +82,7 @@ public class iKittenGUI : MonoBehaviour {
 			}
 			
 			GUI.Label(scoreIconPosValue, "", "ScoreIcon");
-			dropShadowLabel(scorePosValue, ""+PlayerModel.use.happyPoints, "Score");
+			dropShadowLabel(scorePosValue, ""+PlayerModel.use.state.happyPoints, "Score");
 		}
 		
 		
