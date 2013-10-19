@@ -2,6 +2,9 @@
 using System.Collections;
 
 public class iKittenGUI : MonoBehaviour {
+	public static iKittenGUI use;
+	
+	public bool isActive = false;
 	public GUISkin customSkin;
 	public Vector2 SHADOW_OFFSET = new Vector2(-1,-1);
 	private Rect cameraButtonPos;
@@ -40,9 +43,16 @@ public class iKittenGUI : MonoBehaviour {
 		scoreIconPos = generateStyleRect("ScoreIcon");
 		scoreIconPosOffScreen = new Rect(scoreIconPos.x, scoreIconPos.y - customSkin.GetStyle("ScoreIcon").fixedHeight*2, scoreIconPos.width, scoreIconPos.height);
 		scoreIconPosValue = scoreIconPosOffScreen;
+		
+		use = this;
 	}
 	
 	void OnGUI() {
+		// Don't show interface unless playing the game
+		if(!isActive) {
+			return;
+		}
+		
 		GUI.skin = customSkin;
 		if(GUI.Button(cameraButtonPos, "", "CameraButton")) {
 			Debug.Log ("Changing camera");

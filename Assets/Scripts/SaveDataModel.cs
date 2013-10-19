@@ -64,6 +64,7 @@ public class SaveDataModel : MonoBehaviour {
 			lastSave = saveFile;
 			PlayerModel.use.loadSerialisedParty(saveData.stats);
 			PlayerModel.use.state = saveData.playerState;
+			iKittenGUI.use.isActive = true;
 			if(saveData.sceneName != Application.loadedLevelName) {
 				SceneManager.loadScene(saveData.sceneName);
 			}
