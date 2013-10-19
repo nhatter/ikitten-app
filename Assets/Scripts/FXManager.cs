@@ -7,6 +7,7 @@ public class FXManager : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
+		DontDestroyOnLoad(this);
 		use = this;
 		sparkleFX = GameObject.Find("Sparkle");
 	}
@@ -26,6 +27,7 @@ public class FXManager : MonoBehaviour {
 	}
 	
 	public void sparkle(Vector3 position) {
+		sparkleFX = GameObject.Find("Sparkle");
 		sparkleFX.transform.position = position;
 		setEmit(sparkleFX, true);
 	}
