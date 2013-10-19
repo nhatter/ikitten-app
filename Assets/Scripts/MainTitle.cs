@@ -7,6 +7,7 @@ public class MainTitle : MonoBehaviour {
 	
 	Rect gdxLogoPos;
 	bool isShowingGDX = true;
+	bool isShowingFluffy = false;
 	bool isLoadingGame = false;
 	
 	void Start() {
@@ -21,7 +22,9 @@ public class MainTitle : MonoBehaviour {
 	void Update() {
 		if(!isShowingGDX && !isLoadingGame) {
 			isLoadingGame = true;
+			Fader.use.setChangeValue(1);
 			Fader.use.InOutThen(delegate() {
+				isShowingFluffy = false;
 				Application.LoadLevel("Adoption");
 			});
 		}
@@ -31,12 +34,15 @@ public class MainTitle : MonoBehaviour {
 		GUI.skin = skin;
 		if(isShowingGDX) {
 			GUI.Box(gdxLogoPos, "", "GDXLogo");
-		} else {
+		}
+		
+		if(isShowingFluffy) {
 			GUI.Box(gdxLogoPos, "", "FluffyLogo");
 		}
 	}
 	
 	void toggleShowingGDX() {
-		isShowingGDX = !isShowingGDX;
+		isShowingGDX = false;
+		isShowingFluffy = true;
 	}
 }
