@@ -7,6 +7,8 @@ public class FollowObject : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		this.transform.position = targetObject.transform.position + offset;
+		if(targetObject != null) {
+			this.transform.position = targetObject.transform.position + offset;
+		}
 	}
 }

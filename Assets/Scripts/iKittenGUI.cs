@@ -6,7 +6,7 @@ public class iKittenGUI : MonoBehaviour {
 	public Vector2 SHADOW_OFFSET = new Vector2(-1,-1);
 	private Rect cameraButtonPos;
 	private Rect torchButtonPos;
-	bool isShowingMessage = true;
+	bool isShowingMessage = false;
 	string message = "Congratulations! You have adopted an iKitten. They may be a bit shy. Why don't you try stroking it to put it at ease?";
 	GUIStyle messageStyle;
 	

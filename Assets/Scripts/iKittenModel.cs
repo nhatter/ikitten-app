@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class iKittenModel : MonoBehaviour {
-	public static iKittenModel use;
+	public static iKittenModel anyKitten;
 
 	private iKittenState state = new iKittenState();
 	
@@ -17,6 +17,9 @@ public class iKittenModel : MonoBehaviour {
 	public iKittenSounds sounds;
 	public iKittenController controller;
 	public WaypointController waypointController;
+	
+	static Vector3 cameraPos;
+	static float kittenLookAtCameraPosYOffset = -0.75f;
 	
 	GameObject mouthObjectPlaceholder;
 	GameObject ballPlaceholder;
@@ -63,7 +66,12 @@ public class iKittenModel : MonoBehaviour {
 	public bool isStrokingBegan = false;
 	public bool isHappyFromStroking = false;
 	
-	Transform head;
+	public float randomMeowTimer = 0;
+	public float randomMeowTime;
+	public static float minRandomMeowTime = 1.0f;
+	public static float maxRandomMeowTime = 3.0f;
+	
+	public Transform head;
 	
 	bool ballisMoving = false;
 	
@@ -78,9 +86,13 @@ public class iKittenModel : MonoBehaviour {
 		
 	// Use this for initialization
 	void Start () {
+		anyKitten = this;
+		
 		cacheGameObjectRefs();
 		setupNeeds();
 		passModelToState();
+		
+		randomMeowTime = minRandomMeowTime + Random.value*maxRandomMeowTime;
 		
 		chaseObject = ball;
 	}
@@ -89,7 +101,6 @@ public class iKittenModel : MonoBehaviour {
 		isRunning = false;
 		animator.SetBool("Run", false);
 		animator.SetBool("Jump", false);
-		Vector3 cameraPos = Camera.main.transform.position;
 		iTween.LookTo(this.gameObject, iTween.Hash("lookTarget", new Vector3(cameraPos.x, gameObject.transform.position.y, cameraPos.z), "lookSpeed", 3, "oncomplete", "fallSleep"));
 	}
 	
@@ -100,7 +111,9 @@ public class iKittenModel : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void LateUpdate () {
+		cameraPos = Camera.main.transform.position;
+
 		stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 		
 		isIdle = (stateInfo.nameHash == Animator.StringToHash("Base.A_idle"));
@@ -111,14 +124,30 @@ public class iKittenModel : MonoBehaviour {
 		}
 		#endif
 		
-		satiation.handleNeed();
-		love.handleNeed();
-		love.checkNeedSatisfied();
-		fun.handleNeed();
-		fun.checkNeedSatisfied();
-		sleep.handleNeed();
+		if(!PlayerModel.use.state.hasSelectedKitten) {
+			head.LookAt(new Vector3(cameraPos.x, cameraPos.y+kittenLookAtCameraPosYOffset, cameraPos.z));
+			animator.SetBool("Idle", true);
+			
+			if(randomMeowTimer > randomMeowTime) {
+				animator.SetBool("Meow", true);
+				randomMeowTimer = 0;
+				randomMeowTime = minRandomMeowTime + Random.value*maxRandomMeowTime;
+				sounds.randomMeow();
+			} else {
+				animator.SetBool("Meow", false);
+			}
+			
+			randomMeowTimer += Time.deltaTime;
+		} else {
+			satiation.handleNeed();
+			love.handleNeed();
+			love.checkNeedSatisfied();
+			fun.handleNeed();
+			fun.checkNeedSatisfied();
+			sleep.handleNeed();
+		}
 		
-		if(isRunning) {
+		if(isRunning && PlayerModel.use.state.hasSelectedKitten) {
 			animator.SetBool("Run", true);
 			animator.SetBool("Idle", false);
 			
@@ -143,9 +172,11 @@ public class iKittenModel : MonoBehaviour {
 			runSoundTimer += Time.deltaTime;
 		}
 		
-		if(ballState.isMoving && !isChasing && isIdle && animator.GetBool("Idle") && (!haveCriticalNeed || fun.state.need < iKittenNeed.levelToStartMeetingNeed) && !isStroking) {
-			if(Vector3.Distance(chaseObject.transform.position, this.gameObject.transform.position) > chasingDistance) {
-				chase();
+		if(ball != null) {
+			if(ballState.isMoving && !isChasing && isIdle && animator.GetBool("Idle") && (!haveCriticalNeed || fun.state.need < iKittenNeed.levelToStartMeetingNeed) && !isStroking) {
+				if(Vector3.Distance(chaseObject.transform.position, this.gameObject.transform.position) > chasingDistance) {
+					chase();
+				}
 			}
 		}
 		
@@ -191,6 +222,23 @@ public class iKittenModel : MonoBehaviour {
 		
 	} // End of Update
 	
+	public static void adopt(GameObject kitten) {
+		Debug.Log("Adopting kitten!");
+		PlayerModel.use.state.hasSelectedKitten = true;
+		iKittenModel.deleteOtherKittens(kitten);
+		SaveDataModel.save(SaveDataModel.DEFAULT_SAVE_FILE, SceneManager.DEFAULT_SCENE);
+		Application.LoadLevel("Default");
+	}
+		
+		
+	public static void deleteOtherKittens(GameObject kitten) {
+		foreach(iKittenModel model in GameObject.FindObjectsOfType(typeof(iKittenModel))) {
+			if(model.gameObject != kitten) {
+				GameObject.DestroyImmediate(model.gameObject);
+			}
+		}
+	}
+	
 	public void passModelToState() {
 		foreach(iKittenNeed need in allNeeds) {
 			if(need != null) {
@@ -231,7 +279,9 @@ public class iKittenModel : MonoBehaviour {
 		sounds = GetComponent<iKittenSounds>();
 		waypointController = GetComponent<WaypointController>();
 		ball = GameObject.Find ("WoolBall");
-		ballState = ball.GetComponent<Ball>();
+		if(ball != null) {
+			ballState = ball.GetComponent<Ball>();
+		}
 		mouthObjectPlaceholder = GameObject.Find ("MouthObjectPlaceholder");
 		lightBlob = GameObject.Find("LightBlob");
 		ballPlaceholder = GameObject.Find("WoolBallPlaceholder");

@@ -15,7 +15,6 @@ public class InventoryModel : MonoBehaviour {
 	private bool hasInventoryChanged = false;
 	
 	void Start() {
-		DontDestroyOnLoad(this);
 		loadObtainableItems();
 		use = this;
 	}

@@ -43,7 +43,10 @@ public class iKittenController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void LateUpdate () {
-		moveLight();
+		if(iKittenModel.isTorchLit) {
+			moveLight();
+		}
+		
 		cameraPos = Camera.main.transform.position;
 		
 		if(Input.GetKeyDown(KeyCode.Escape)) {
@@ -87,6 +90,14 @@ public class iKittenController : MonoBehaviour {
 					animator = touchediKitten.GetComponent<Animator>();
 					sounds = touchediKitten.GetComponent<iKittenSounds>();
 					waypointController = touchediKitten.GetComponent<WaypointController>();
+					
+					if(!PlayerModel.use.state.hasSelectedKitten) {
+						iTween.AudioTo(this.gameObject, iTween.Hash("audioSource",GameObject.Find("Music").audio, "volume",0, "time", 2.0f));
+						MainSounds.use.audio.PlayOneShot(MainSounds.use.goodSound);
+						FXManager.use.sparkle(model.head.transform.position+new Vector3(0,0.4f,0));
+						Action adopt = delegate() { iKittenModel.adopt(touchediKitten); };
+						CameraManager.use.fadeOutThen(adopt);
+					}
 				}
 				
 				if(touchedObject == iKittyFood) {

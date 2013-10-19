@@ -7,17 +7,13 @@ public class SaveDataModel : MonoBehaviour {
 #else
 	public static string SAVES_DIR = "Saves/";
 #endif
-
+	public static string DEFAULT_SAVE_FILE = "anyfluffy.xml";
 	public static SaveData saveData = new SaveData();
 	private static bool isLoadingSave = false;
 	private static string lastSave;
 	
 	void Start() {
 		createSavesDir();
-		if(!load(SAVES_DIR+"iKitten.xml")) {
-			GameObject iKitten = (GameObject) GameObject.Instantiate((GameObject)Resources.Load("iKitten/iKitten"));
-			CameraManager.use.setCameraToFollow(iKitten);
-		}
 	}
 	
 	void createSavesDir() {
@@ -31,14 +27,28 @@ public class SaveDataModel : MonoBehaviour {
 		return directoryInfo.GetFiles();
 	}
 	
-	public static void save (string saveFile) {
-		saveData.inventory = InventoryModel.use.getSerialisableInventory();
-		saveData.levelName = Application.loadedLevelName;
-		saveData.stats = PlayerModel.use.getSerialisableParty();
-		saveData.playerState = PlayerModel.use.state;
+	static void saveToFile(string saveFile) {
 		XMLManager.Save<SaveData>(saveData, SAVES_DIR+saveFile);
 		lastSave = SAVES_DIR+saveFile;
 		Debug.Log("Saving game");
+	}
+	
+	static void prepareSaveData() {
+		saveData.inventory = InventoryModel.use.getSerialisableInventory();
+		saveData.sceneName = Application.loadedLevelName;
+		saveData.stats = PlayerModel.use.getSerialisableParty();
+		saveData.playerState = PlayerModel.use.state;
+	}
+	
+	public static void save(string saveFile, string sceneName) {
+		prepareSaveData();
+		saveData.sceneName = sceneName;
+		saveToFile(saveFile);
+	}
+	
+	public static void save (string saveFile) {
+		prepareSaveData();
+		saveToFile(saveFile);
 	}
 	
 	public static bool load (string saveFile) {
@@ -54,6 +64,9 @@ public class SaveDataModel : MonoBehaviour {
 			lastSave = saveFile;
 			PlayerModel.use.loadSerialisedParty(saveData.stats);
 			PlayerModel.use.state = saveData.playerState;
+			if(saveData.sceneName != Application.loadedLevelName) {
+				SceneManager.loadScene(saveData.sceneName);
+			}
 			return true;
 		} else {
 			Debug.Log("No save file found - not loading.");
@@ -63,7 +76,7 @@ public class SaveDataModel : MonoBehaviour {
 	
 	public static void loadScene() {
 		Debug.Log("Loading Scene");
-		Application.LoadLevel(saveData.levelName);
+		Application.LoadLevel(saveData.sceneName);
 		isLoadingSave = true;
 	}
 	

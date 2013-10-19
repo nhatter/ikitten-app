@@ -15,6 +15,7 @@ public class PlayerModel : MonoBehaviour {
 	public bool isHappyFromStroking = false;
 		
 	void Start() {
+		DontDestroyOnLoad(this);
 		use = this;
 	}
 	
@@ -39,6 +40,7 @@ public class PlayerModel : MonoBehaviour {
 		foreach(iKittenModel member in GameObject.FindObjectsOfType(typeof(iKittenModel))) {
 			iKittenState entity = member.getState();
 			entity.position = member.gameObject.transform.position;
+			entity.materialName = getMaterialName(member.gameObject);
 			entity.animationState = AnimationUtils.getEnabledBool(member.animator, iKittenState.ANIMATION_STATES);
 			entity.position = member.gameObject.transform.position;
 			partyStats.Add(entity.name, entity);
@@ -63,5 +65,10 @@ public class PlayerModel : MonoBehaviour {
 			iKitten.transform.position = iKitten.GetComponent<iKittenModel>().getState().position;
 			iKittenNumber++;
 		}
+	}
+	
+	string getMaterialName(GameObject gameObj) {
+		string materialName = gameObj.GetComponentInChildren<Renderer>().material.name;
+		return materialName.Replace(" (Instance)", "");
 	}
 }

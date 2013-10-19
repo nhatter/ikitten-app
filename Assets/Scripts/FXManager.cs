@@ -2,20 +2,20 @@
 using System.Collections;
 
 public class FXManager : MonoBehaviour {
-	GameObject sparkle;
+	public static FXManager use;
+	GameObject sparkleFX;
 	
 	// Use this for initialization
 	void Start () {
-		sparkle = GameObject.Find("Sparkle");
+		use = this;
+		sparkleFX = GameObject.Find("Sparkle");
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if(PlayerModel.use.isHappyFromStroking) {
-			setEmit(sparkle, true);
-			sparkle.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, sparkle.transform.position.z));
-		} else {
-			setEmit(sparkle, false);
+			setEmit(sparkleFX, true);
+			sparkleFX.transform.position = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, sparkleFX.transform.position.z));
 		}
 	}
 	
@@ -23,5 +23,10 @@ public class FXManager : MonoBehaviour {
 		foreach(ParticleEmitter emitter in particleCollection.GetComponentsInChildren<ParticleEmitter>()) {
 			emitter.emit = isEmitting;
 		}
+	}
+	
+	public void sparkle(Vector3 position) {
+		sparkleFX.transform.position = position;
+		setEmit(sparkleFX, true);
 	}
 }
