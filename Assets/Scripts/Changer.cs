@@ -8,13 +8,13 @@ public class Changer : MonoBehaviour {
 	
 	protected enum FadeMode { IN_OUT_THEN, NORMAL };
 	
-	protected float maxValue = 1.0f;
+	public float maxValue = 1.0f;
 	
-	protected float minValue = 0.0f;
+	public float minValue = 0.0f;
 	
-	protected float changeValue = 1.0f; 
+	public float changeValue = 1.0f; 
 	
-	protected float changeSpeed = 1.0f;
+	protected float changeSpeed = 0.1f;
 	 
 	private int changeDir = 1;
 
@@ -47,19 +47,10 @@ public class Changer : MonoBehaviour {
 		showChange();
 	}
 	 
-	void OnGUI() {
-		if(!isGUIfunction || !isChanging) {
-			return;
-		}
-		
-		handleChange();
-		showChange();
-	}
-	
 	public void handleChange() {
 		changeValue += changeDir * changeSpeed * Time.deltaTime;	
 		changeValue = Mathf.Clamp (changeValue, minValue, maxValue);
-		if(changedOutFunction!=null && changeValue == maxValue) {
+		if(changedOutFunction!=null && changeValue == maxValue && isChanging) {
 			changedOutFunction();
 			changedOutFunction = null;
 
@@ -72,7 +63,7 @@ public class Changer : MonoBehaviour {
 			}
 		}
 		
-		if((changedInFunction!=null || fadeMode == FadeMode.IN_OUT_THEN) && changeValue == minValue) {
+		if((changedInFunction!=null || fadeMode == FadeMode.IN_OUT_THEN) && changeValue == minValue && isChanging) {
 			if(fadeMode != FadeMode.IN_OUT_THEN) {
 				changedInFunction();
 				changedInFunction = null;
@@ -101,7 +92,9 @@ public class Changer : MonoBehaviour {
 	//--------------------------------------------------------------------
 	 
 	public void Out(){
-		fadeMode = FadeMode.NORMAL;
+		if(!isChanging) {
+			fadeMode = FadeMode.NORMAL;
+		}
 		changeValue = minValue+0.01f;
 		changeDir = 1;
 		isChanging = true;
@@ -109,7 +102,9 @@ public class Changer : MonoBehaviour {
 	
 	public void InThen(Action func) {
 		In();
-		fadeMode = FadeMode.NORMAL;
+		if(!isChanging) {
+			fadeMode = FadeMode.NORMAL;
+		}
 		changedInFunction = func;
 		queueChangeOut = false;
 		isChanging = true;

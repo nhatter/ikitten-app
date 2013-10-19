@@ -3,7 +3,7 @@ using System.Collections;
 
 public class MainTitle : MonoBehaviour {
 	public GUISkin skin;
-	public float fadeSpeed = 0.25f;
+	public float fadeSpeed = 0.05f;
 	
 	Rect gdxLogoPos;
 	bool isShowingGDX = true;
@@ -22,7 +22,6 @@ public class MainTitle : MonoBehaviour {
 	void Update() {
 		if(!isShowingGDX && !isLoadingGame) {
 			isLoadingGame = true;
-			Fader.use.setChangeValue(1);
 			Fader.use.InOutThen(delegate() {
 				isShowingFluffy = false;
 				Application.LoadLevel("Adoption");
@@ -39,6 +38,8 @@ public class MainTitle : MonoBehaviour {
 		if(isShowingFluffy) {
 			GUI.Box(gdxLogoPos, "", "FluffyLogo");
 		}
+		
+		Fader.use.showChange();
 	}
 	
 	void toggleShowingGDX() {

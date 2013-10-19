@@ -12,6 +12,8 @@ public class Fader : Changer {
 	private Vector2 drawPosition = new Vector2(0,0);
 	
 	public override void showChange() {
+		handleChange();
+		
 		GUI.color = new Color(fadeColour.r, fadeColour.b, fadeColour.g, changeValue);
 	 
 		GUI.depth = drawDepth;
