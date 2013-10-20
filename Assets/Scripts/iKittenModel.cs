@@ -175,7 +175,7 @@ public class iKittenModel : MonoBehaviour {
 		}
 		
 		if(ball != null) {
-			if(ballState.isMoving && !isChasing && isIdle && animator.GetBool("Idle") && (!haveCriticalNeed || fun.state.need < iKittenNeed.levelToStartMeetingNeed) && !isStroking) {
+			if(ballState.isMoving && stateInfo.nameHash == Animator.StringToHash("Base.A_idle") && !isChasing && isIdle && animator.GetBool("Idle") && (!haveCriticalNeed || fun.state.need < iKittenNeed.levelToStartMeetingNeed) && !isStroking) {
 				if(Vector3.Distance(chaseObject.transform.position, this.gameObject.transform.position) > chasingDistance) {
 					chase();
 				}

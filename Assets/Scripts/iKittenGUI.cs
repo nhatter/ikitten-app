@@ -27,6 +27,8 @@ public class iKittenGUI : MonoBehaviour {
 	bool hasAnimatedShowingScore = false;
 	bool hasAnimatedHidingScore = false;
 	
+	AnimatorStateInfo animationInfo;
+	
 	void Start() {
 		DontDestroyOnLoad(this);
 		int cameraButtonWidth = (int)customSkin.GetStyle("CameraButton").fixedWidth;
@@ -53,6 +55,8 @@ public class iKittenGUI : MonoBehaviour {
 			return;
 		}
 		
+
+		
 		GUI.skin = customSkin;
 		if(GUI.Button(cameraButtonPos, "", "CameraButton")) {
 			Debug.Log ("Changing camera");
@@ -66,7 +70,11 @@ public class iKittenGUI : MonoBehaviour {
 
 				iKittenModel.chaseObject = iKittenModel.lightBlob;
 				foreach(iKittenModel model in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
-					model.chase();
+					animationInfo = model.animator.GetCurrentAnimatorStateInfo(0);
+					
+					if(animationInfo.nameHash == Animator.StringToHash("Base.A_idle")) {
+						model.chase();
+					}
 				}
 			} else {
 				foreach(iKittenModel model in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
