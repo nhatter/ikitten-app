@@ -441,7 +441,7 @@ public class iKittenModel : MonoBehaviour {
 	}
 		
 	void OnTriggerStay(Collider other) {
-		if(other.gameObject == ball && isChasing && !isBallInMouth) {
+		if(other.gameObject == ball && chaseObject == ball && isChasing && !isBallInMouth) {
 			waypointController.clearWaypoints();
 			catchBall();
 			waypointController.addWaypoint(ballPlaceholder.transform.position);
