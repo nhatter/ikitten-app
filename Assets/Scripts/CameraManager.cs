@@ -13,6 +13,7 @@ public class CameraManager : MonoBehaviour {
 	int cameraIndex = 0;
 	
 	Camera torchCamera;
+	Camera featureCamera;
 	
 	FollowObject followCameraSettings;
 
@@ -28,8 +29,12 @@ public class CameraManager : MonoBehaviour {
 			cam.GetComponent<AudioListener>().enabled = false;
 			
 			switch(cam.name) {
-				case "Torch Camera":
+				case "TorchCamera":
 					torchCamera = cam;
+				break;
+				
+				case "FeatureCamera":
+					featureCamera = cam;
 				break;
 			}
 		}
@@ -78,13 +83,29 @@ public class CameraManager : MonoBehaviour {
 		fadeOutAction();
 	}
 	
+	public void disableAllCameras() {
+		foreach(Camera cam in cameras) {
+			cam.enabled = false;
+		}
+	}
+	
 	public void enableTorchCamera() {
-		followCamera.camera.enabled = false;
+		disableAllCameras();
 		torchCamera.enabled = true;
 	}
 	
 	public void disableTorchCamera() {
-		torchCamera.enabled = false;
+		disableAllCameras();
+		followCamera.camera.enabled = true;
+	}
+	
+	public void enableFeatureCamera() {
+		disableAllCameras();
+		featureCamera.enabled = true;
+	}
+	
+	public void disableFeatureCamera() {
+		disableAllCameras();
 		followCamera.camera.enabled = true;
 	}
 }

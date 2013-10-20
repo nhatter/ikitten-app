@@ -21,6 +21,7 @@ public class iKittenGUI : MonoBehaviour {
 	Rect scoreIconPosOffScreen;
 	Rect scoreIconPosValue;
 	Rect okButtonPos;
+	Rect featureButtonPos;
 	
 	bool isShowingScore = false;
 	bool isHidingScore = false;
@@ -45,6 +46,8 @@ public class iKittenGUI : MonoBehaviour {
 		scoreIconPos = generateStyleRect("ScoreIcon");
 		scoreIconPosOffScreen = new Rect(scoreIconPos.x, scoreIconPos.y - customSkin.GetStyle("ScoreIcon").fixedHeight*2, scoreIconPos.width, scoreIconPos.height);
 		scoreIconPosValue = scoreIconPosOffScreen;
+		
+		featureButtonPos = generateStyleRect("FeatureButton");
 		
 		use = this;
 	}
@@ -107,7 +110,9 @@ public class iKittenGUI : MonoBehaviour {
 			dropShadowLabel(scorePosValue, ""+PlayerModel.use.state.happyPoints, "Score");
 		}
 		
-		
+		if(GUI.Button(featureButtonPos, "", "FeatureButton")) {
+			CameraManager.use.enableFeatureCamera();
+		}
 		
 		if(isShowingMessage) {
 			drawMessage();
