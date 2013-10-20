@@ -29,6 +29,7 @@ public class iKittenModel : MonoBehaviour {
 	GameObject sleepLocation;
 	public static GameObject chaseObject;
 	public static GameObject lightBlob;
+	public static GameObject lightBlobCollider;
 	public static bool isTorchLit;
 	
 	public float hungerAlertTimer = 0.0f;
@@ -45,6 +46,7 @@ public class iKittenModel : MonoBehaviour {
 	public float chaseReactionTimer = 0;
 	public Vector3 ballInMouthOffset = new Vector3(0,0,0);
 	public float chasingDistance = 2.0f;
+	public bool hasCaughtChaseObject = false;
 	
 	public bool isRunning = false;
 	public float runSpeed = 2.0f;
@@ -182,9 +184,23 @@ public class iKittenModel : MonoBehaviour {
 		
 		if(isChasing) {
 			fun.inc();
+			
+			if(hasCaughtChaseObject) {
+				isRunning = false;
+				animator.SetBool("Run", false);
+				animator.SetBool("Idle", true);
+				waypointController.clearWaypoints();
+				iTween.StopByName(this.gameObject, "WaypointController");
+			} else {
+				if(!isRunning) {
+					chase();
+				}
+			}
+			
+			hasCaughtChaseObject = false;
 		}
 		
-		if(!isIdle && !animator.GetBool("Idle") && !isRunning) {
+		if(!isIdle && !animator.GetBool("Idle") && !isRunning && !isChasing) {
 			isPlayerInteracting = false;
 			animator.SetBool("Idle", true);
 			Debug.Log ("Kitten is now idle");
@@ -284,6 +300,7 @@ public class iKittenModel : MonoBehaviour {
 		}
 		mouthObjectPlaceholder = GameObject.Find ("MouthObjectPlaceholder");
 		lightBlob = GameObject.Find("LightBlob");
+		lightBlobCollider = GameObject.Find("LightBlobCollider");
 		ballPlaceholder = GameObject.Find("WoolBallPlaceholder");
 		head = ComponentUtils.FindTransformInChildren(this.gameObject, "cu_cat_neck1");
 		bed = GameObject.Find("Bed");
@@ -375,7 +392,7 @@ public class iKittenModel : MonoBehaviour {
 	
 	public void stopChasingObject() {
 		waypointController.clearWaypoints();
-		iTween.StopByName("waypointController");
+		iTween.StopByName(this.gameObject, "WaypointController");
 		animator.SetBool("Run",false);
 		animator.SetBool("Idle",true);
 		ballState.isMoving = false;
@@ -430,6 +447,11 @@ public class iKittenModel : MonoBehaviour {
 			waypointController.addWaypoint(ballPlaceholder.transform.position);
 			waypointController.setOnCompleteAction(dropBall);
 			waypointController.MoveToWaypoint();
+		}
+		
+		if(other.gameObject == lightBlobCollider && isChasing) {
+			Debug.Log("Has caught chase object");
+			hasCaughtChaseObject = true;
 		}
 		
 		satiation.checkIfHitNeedTrigger(other);
