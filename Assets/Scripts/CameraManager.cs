@@ -12,6 +12,8 @@ public class CameraManager : MonoBehaviour {
 	Camera[] cameras;
 	int cameraIndex = 0;
 	
+	Camera torchCamera;
+	
 	FollowObject followCameraSettings;
 
 	// Use this for initialization
@@ -24,6 +26,12 @@ public class CameraManager : MonoBehaviour {
 		foreach(Camera cam in cameras) {
 			cam.enabled = false;
 			cam.GetComponent<AudioListener>().enabled = false;
+			
+			switch(cam.name) {
+				case "Torch Camera":
+					torchCamera = cam;
+				break;
+			}
 		}
 		
 		cameras[0].enabled = true;
@@ -68,5 +76,15 @@ public class CameraManager : MonoBehaviour {
 	public void fadeOutWrapper() {
 		Debug.Log("Calling fadeOutAction");
 		fadeOutAction();
+	}
+	
+	public void enableTorchCamera() {
+		followCamera.camera.enabled = false;
+		torchCamera.enabled = true;
+	}
+	
+	public void disableTorchCamera() {
+		torchCamera.enabled = false;
+		followCamera.camera.enabled = true;
 	}
 }
