@@ -1,10 +1,17 @@
 ﻿using UnityEngine;
 using SimpleJSON;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Features : MonoBehaviour {
-    public string voteURL = "http://localhost:8888/adoptafluffy/vote.php?"; //be sure to add a ? to your url
-    public string featuresURL = "http://localhost:8888/adoptafluffy/feature_list.php";
+    public static string voteURL = "http://localhost:8888/gdxbackend/vote.php";
+    public static string featuresURL = "http://localhost:8888/gdxbackend/feature_list.php";
+	
+	JSONArray features;
+	
+	public static int MAX_VOTES_ALLOWED = 5;
+	public static int votesUsed = 0;
+	public static Dictionary<int, int> votes = new Dictionary<int, int>();
  
     void Start()
     {
@@ -12,21 +19,35 @@ public class Features : MonoBehaviour {
     }
  
     // remember to use StartCoroutine when calling this function!
-    IEnumerator PostScores(string name, int score)
+    IEnumerator PostScores()
     {
-        //This connects to a server side php script that will add the name and score to a MySQL DB.
-        // Supply it with a string representing the players name and the players score.
-        string hash = name + score;
+		WWWForm voteForm = new WWWForm();
+		voteForm.AddField("username", PlayerModel.use.state.username);
+		
+		JSONArray votesJSON = new JSONArray();
+		
+		JSONClass voteEntry = new JSONClass();
+		
+		int i=0;
+		foreach(KeyValuePair<int, int> vote in votes) {
+			voteEntry = new JSONClass();
+			voteEntry["feature_id"].AsInt = vote.Key;
+			voteEntry["votes"].AsInt = vote.Value;
+			votesJSON[i] = voteEntry;
+			i++;
+		}
  
-        string post_url = voteURL + "name=" + WWW.EscapeURL(name) + "&score=" + score + "&hash=" + hash;
- 
+		Debug.Log(votesJSON.ToString());
+		voteForm.AddField("votes_data", votesJSON.ToString());
+		voteForm.AddField("poll_id", 1);
+		
         // Post the URL to the site and create a download object to get the result.
-        WWW hs_post = new WWW(post_url);
-        yield return hs_post; // Wait until the download is done
+        WWW postVote = new WWW(voteURL, voteForm);
+        yield return postVote; // Wait until the download is done
  
-        if (hs_post.error != null)
+        if (postVote.error != null)
         {
-            print("There was an error posting the high score: " + hs_post.error);
+            print("There was an error posting the high score: " + postVote.error);
         }
     }
  
@@ -35,6 +56,7 @@ public class Features : MonoBehaviour {
     IEnumerator GetFeatures()
     {
         gameObject.GetComponent<TextMesh>().text = "(Loading Features)";
+		Debug.Log (featuresURL);
         WWW getFeatures = new WWW(featuresURL);
         yield return getFeatures;
  
@@ -46,7 +68,7 @@ public class Features : MonoBehaviour {
         {
 			gameObject.GetComponent<TextMesh>().text = "";
 			var featuresJSON = JSONNode.Parse(getFeatures.text);
-			JSONArray features = (JSONArray) featuresJSON["features"];
+			features = (JSONArray) featuresJSON["features"];
 
 			foreach(JSONNode feature in features) {
             	gameObject.GetComponent<TextMesh>().text += feature["name"]+" ("+feature["votes"]+")\n"; // this is a GUIText that will display the scores in game.
