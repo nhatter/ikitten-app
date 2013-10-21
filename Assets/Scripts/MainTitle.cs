@@ -15,29 +15,14 @@ public class MainTitle : MonoBehaviour {
 		
 		Fader.use.setChangeSpeed(fadeSpeed);
 		Fader.use.InOutThen(delegate() {
-			toggleShowingGDX();
+			Application.LoadLevel("Adoption");
 		});
-	}
-	
-	void Update() {
-		if(!isShowingGDX && !isLoadingGame) {
-			isLoadingGame = true;
-			Fader.use.InOutThen(delegate() {
-				isShowingFluffy = false;
-				Application.LoadLevel("Adoption");
-			});
-		}
 	}
 	
 	void OnGUI() {
 		GUI.skin = skin;
-		if(isShowingGDX) {
-			GUI.Box(gdxLogoPos, "", "GDXLogo");
-		}
-		
-		if(isShowingFluffy) {
-			GUI.Box(gdxLogoPos, "", "FluffyLogo");
-		}
+
+		GUI.Box(gdxLogoPos, "", "FluffyLogo");
 		
 		Fader.use.showChange();
 	}
