@@ -33,6 +33,8 @@ public class iKittenController : MonoBehaviour {
 	
 	Vector3 cameraPos;
 	
+	Voter voter;
+	
 	// Use this for initialization
 	void Start () {
 		use = this;
@@ -127,6 +129,17 @@ public class iKittenController : MonoBehaviour {
 				
 				if(touchedObject.name == "HeadSide") {
 					model.stroke(inputY, false);
+				}
+				
+				if(touchedObject.tag == "Voter") {
+					Debug.Log ("Hit voter widget");
+					voter = touchedObject.GetComponent<Voter>();
+					Features.use.changeVote(voter.featureId, voter.isIncVote);
+				}
+				
+				if(touchedObject.name == "SubmitVotes") {
+					Debug.Log ("Hit SubmitVotes");
+					Features.use.submitVotes();
 				}
 			}	
 		}
