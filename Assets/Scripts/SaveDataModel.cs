@@ -5,7 +5,7 @@ public class SaveDataModel : MonoBehaviour {
 #if UNITY_IPHONE
 	public static string SAVES_DIR = Application.dataPath + "/../../Documents/";
 #else
-	public static string SAVES_DIR = "Saves/";
+	public static string SAVES_DIR;
 #endif
 	public static string DEFAULT_SAVE_FILE = "anyfluffy.xml";
 	public static SaveData saveData = new SaveData();
@@ -13,10 +13,15 @@ public class SaveDataModel : MonoBehaviour {
 	private static string lastSave;
 	
 	void Start() {
+		// This can ONLY be defined in Start or Awake otherwise will throw an exception!
+		// This is because of persistentDataPath
+		SAVES_DIR = Application.persistentDataPath+"Saves/";
+		
 		createSavesDir();
 	}
 	
 	void createSavesDir() {
+		Debug.Log("Using "+SAVES_DIR+" as SAVE_DIR");
 		if(!System.IO.Directory.Exists(SaveDataModel.SAVES_DIR)) {
 			System.IO.Directory.CreateDirectory(SaveDataModel.SAVES_DIR);
 		}
