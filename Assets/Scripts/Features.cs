@@ -7,6 +7,7 @@ public class Features : MonoBehaviour {
 	public static Features use;
     public static string voteURL = "http://localhost:8888/gdxbackend/vote.php";
     public static string featuresURL = "http://localhost:8888/gdxbackend/feature_list.php";
+	public static int POINTS_FROM_VOTING = 5000;
 	
 	JSONArray features;
 	
@@ -66,7 +67,10 @@ public class Features : MonoBehaviour {
             print("There was an error posting the high score: " + postVote.error);
 		} else {
 			updateFeatures();
-			submitVotesWidget.GetComponent<TextMesh>().text = "SUBMITTED!";
+			submitVotesWidget.GetComponent<TextMesh>().text = "VOTED - THANKS";
+			PlayerModel.use.incHappyPoints(POINTS_FROM_VOTING);
+			yield return new WaitForSeconds(2);
+			PlayerModel.use.stoppedIncreasingPoints = true;
         }
     }
  
