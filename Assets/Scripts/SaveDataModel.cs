@@ -15,7 +15,11 @@ public class SaveDataModel : MonoBehaviour {
 	void Start() {
 		// This can ONLY be defined in Start or Awake otherwise will throw an exception!
 		// This is because of persistentDataPath
+#if UNITY_STANDALONE_OSX || UNITY_IPHONE || UNITY_ANDROID
 		SAVES_DIR = Application.persistentDataPath+"Saves/";
+#else
+		SAVES_DIR = "Saves/";
+#endif
 		
 		createSavesDir();
 	}
@@ -57,14 +61,9 @@ public class SaveDataModel : MonoBehaviour {
 	}
 	
 	public static bool load (string saveFile) {
-		string saveFilePath = "";
-		if(!Debug.isDebugBuild) {
-			saveFilePath = SAVES_DIR;
-		}
-		saveFilePath += saveFile;
 		
-		if(File.Exists(saveFilePath)) {
-			saveData = XMLManager.Load<SaveData>(saveFilePath);
+		if(File.Exists(saveFile)) {
+			saveData = XMLManager.Load<SaveData>(saveFile);
 			Debug.Log("Loading game");
 			lastSave = saveFile;
 			PlayerModel.use.loadSerialisedParty(saveData.stats);
