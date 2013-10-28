@@ -5,8 +5,6 @@ using System.Collections.Generic;
 
 public class Features : MonoBehaviour {
 	public static Features use;
-    public static string voteURL = "http://localhost:8888/gdxbackend/vote.php";
-    public static string featuresURL = "http://localhost:8888/gdxbackend/feature_list.php";
 	public static int POINTS_FROM_VOTING = 5000;
 	
 	JSONArray features;
@@ -40,11 +38,11 @@ public class Features : MonoBehaviour {
     {
 		Debug.Log("POSTing votes");
 		WWWForm voteForm = new WWWForm();
-		voteForm.AddField("username", PlayerModel.use.state.username);
 		
 		JSONArray votesJSON = new JSONArray();
-		
 		JSONClass voteEntry = new JSONClass();
+		
+		voteForm.AddField("session_id", PlayerModel.use.state.sessionId);
 		
 		int i=0;
 		foreach(KeyValuePair<int, int> vote in votes) {
@@ -60,7 +58,7 @@ public class Features : MonoBehaviour {
 		voteForm.AddField("poll_id", 1);
 		
         // Post the URL to the site and create a download object to get the result.
-        WWW postVote = new WWW(voteURL, voteForm);
+        WWW postVote = new WWW(WebConfig.VOTE_URL, voteForm);
         yield return postVote; // Wait until the download is done
  
         if (postVote.error != null) {
@@ -79,8 +77,8 @@ public class Features : MonoBehaviour {
     IEnumerator GetFeatures()
     {
         gameObject.GetComponent<TextMesh>().text = "(Loading Features)";
-		Debug.Log (featuresURL);
-        WWW getFeatures = new WWW(featuresURL);
+		Debug.Log (WebConfig.FEATURES_URL);
+        WWW getFeatures = new WWW(WebConfig.FEATURES_URL);
         yield return getFeatures;
  
         if (getFeatures.error != null)

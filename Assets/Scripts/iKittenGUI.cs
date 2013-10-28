@@ -6,7 +6,7 @@ public class iKittenGUI : MonoBehaviour {
 	
 	public bool isActive = false;
 	public GUISkin customSkin;
-	public Vector2 SHADOW_OFFSET = new Vector2(-1,-1);
+	public static Vector2 SHADOW_OFFSET = new Vector2(-1,-1);
 	private Rect cameraButtonPos;
 	private Rect torchButtonPos;
 	bool isShowingMessage = false;
@@ -14,13 +14,15 @@ public class iKittenGUI : MonoBehaviour {
 	GUIStyle messageStyle;
 	
 	Rect scorePosValue;
-	Rect messagePos;
+	public static Rect messagePos;
+	public static Rect textFieldPos;
+	public static Rect inputWarningPos;
 	Rect scorePos;
 	Rect scorePosOffScreen;
 	Rect scoreIconPos;
 	Rect scoreIconPosOffScreen;
 	Rect scoreIconPosValue;
-	Rect okButtonPos;
+	public static Rect okButtonPos;
 	Rect featureButtonPos;
 	
 	bool isShowingScore = false;
@@ -37,8 +39,17 @@ public class iKittenGUI : MonoBehaviour {
 		cameraButtonPos = new Rect(Screen.width - cameraButtonWidth, 0, cameraButtonWidth, cameraButtonHeight);
 		torchButtonPos = new Rect(Screen.width - cameraButtonWidth, cameraButtonHeight+5, cameraButtonWidth, cameraButtonHeight);
 		
-		messagePos = generateStyleRect("Message");
-		okButtonPos = generateStyleRect("OKButton");
+		GUIStyle messageStyle = customSkin.GetStyle("Message");
+		messagePos = new Rect(messageStyle.margin.left, messageStyle.margin.top, Screen.width-(messageStyle.margin.left*2), Screen.height-(messageStyle.margin.top*2));
+		
+		GUIStyle textFieldStyle = customSkin.GetStyle("textfield");
+		textFieldPos = new Rect(messagePos.x+textFieldStyle.margin.left, messagePos.y+messageStyle.fontSize*2, messagePos.width-messagePos.x*2, textFieldStyle.fixedHeight);
+		
+		inputWarningPos = new Rect(textFieldPos.x, textFieldPos.y+textFieldPos.height, textFieldPos.width, textFieldPos.height);
+		
+		GUIStyle buttonStyle = customSkin.GetStyle("OKButton");
+		okButtonPos = new Rect(messagePos.x+buttonStyle.margin.left, messagePos.y+messagePos.height-messageStyle.margin.top-buttonStyle.fixedHeight, messagePos.width-buttonStyle.margin.left*2, buttonStyle.fixedHeight);
+		
 		scorePos = generateStyleRect("Score");
 		scorePosOffScreen = new Rect(scorePos.x, scorePos.y - customSkin.GetStyle("Score").fixedHeight*2, scorePos.width, scorePos.height);
 		scorePosValue = scorePosOffScreen;
@@ -57,8 +68,6 @@ public class iKittenGUI : MonoBehaviour {
 		if(!isActive) {
 			return;
 		}
-		
-
 		
 		GUI.skin = customSkin;
 		if(GUI.Button(cameraButtonPos, "", "CameraButton")) {
@@ -147,8 +156,8 @@ public class iKittenGUI : MonoBehaviour {
 		}
 	}
 	
-	Color currentGUIColor;
-	void dropShadowLabel(Rect pos, string content, GUIStyle style) {
+	static Color currentGUIColor;
+	public static void dropShadowLabel(Rect pos, string content, GUIStyle style) {
 		currentGUIColor = GUI.color;
 		GUI.color = Color.black;
 		GUI.Label(new Rect(pos.x+SHADOW_OFFSET.x, pos.y+SHADOW_OFFSET.y, pos.width, pos.height), content, "LabelShadow");
@@ -181,6 +190,11 @@ public class iKittenGUI : MonoBehaviour {
 	
 	Rect generateStyleRect(string style) {
 		GUIStyle element = customSkin.GetStyle(style);
+		return new Rect(element.margin.left, element.margin.top, element.fixedWidth, element.fixedHeight);
+	}
+	
+	public static Rect generateStyleRect(GUISkin guiStyle, string style) {
+		GUIStyle element = guiStyle.GetStyle(style);
 		return new Rect(element.margin.left, element.margin.top, element.fixedWidth, element.fixedHeight);
 	}
 }

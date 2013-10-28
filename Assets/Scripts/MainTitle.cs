@@ -15,7 +15,8 @@ public class MainTitle : MonoBehaviour {
 		
 		Fader.use.setChangeSpeed(fadeSpeed);
 		Fader.use.InOutThen(delegate() {
-			Application.LoadLevel("Adoption");
+			Fader.use.In();
+			Destroy(this);
 		});
 	}
 	
