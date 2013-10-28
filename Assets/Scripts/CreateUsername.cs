@@ -4,16 +4,20 @@ using System.Collections;
 using SimpleJSON;
 
 public class CreateUsername : MonoBehaviour {
+	public static CreateUsername use;
+	
 	public GUISkin customSkin;
     public enum CreationStatus { USERNAME_EXISTS, RUDE_USERNAME, SUCCESS };
 	string statusMessage;
 	string username = "";
 	CreationStatus status;
 	
+    bool isCreatingUsername = false;
+	
 	Rect usernamePos;
 	
 	void Start() {
-		
+		use = this;
 	}
 	
 	// remember to use StartCoroutine when calling this function!
@@ -57,6 +61,10 @@ public class CreateUsername : MonoBehaviour {
     }
 	
 	void OnGUI() {
+		if(!isCreatingUsername) {
+			return;
+		}
+		
 		GUI.skin = iKittenGUI.use.customSkin;
 		iKittenGUI.dropShadowLabel(iKittenGUI.messagePos, "Create a username", "Message");
 		username = GUI.TextField(iKittenGUI.textFieldPos, username);
@@ -70,5 +78,10 @@ public class CreateUsername : MonoBehaviour {
 		}
 		
 		Fader.use.showChange();
+	}
+	
+	public void enable() {
+		Debug.Log ("Now enabled CreateUsername");
+		isCreatingUsername = true;
 	}
 }

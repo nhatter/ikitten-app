@@ -16,6 +16,9 @@ public class MainTitle : MonoBehaviour {
 		Fader.use.setChangeSpeed(fadeSpeed);
 		Fader.use.InOutThen(delegate() {
 			Fader.use.In();
+			
+			CreateUsername.use.enable();
+			
 			Destroy(this);
 		});
 	}
