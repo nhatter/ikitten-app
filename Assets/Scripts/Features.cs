@@ -23,6 +23,7 @@ public class Features : MonoBehaviour {
 	Vector3 featureCountPos;
 	
 	GameObject submitVotesWidget;
+	GameObject voteQuota;
  
     void Start()
     {
@@ -30,6 +31,7 @@ public class Features : MonoBehaviour {
 		voterWidgetPos = GameObject.Find("VoteSymbol").transform.position;
 
 		submitVotesWidget = GameObject.Find("SubmitVotes");
+		voteQuota = GameObject.Find("VoteQuota");
 
 		use = this;
     }
@@ -129,7 +131,9 @@ public class Features : MonoBehaviour {
 		for(int i=0; i<MAX_VOTES_PER_FEATURE; i++) {
 			GameObject voterWidget = (GameObject) GameObject.Instantiate(Resources.Load("WhiteBoard/VoteSymbol"));
 			voterWidget.transform.position = firstWidgetPost + new Vector3(0, 0, i*voterWidgetSpacing);
-			voterWidget.GetComponent<Voter>().setEnabled(false);
+			
+			// Make the first voterWidget enabled by default for UI clarity
+			voterWidget.GetComponent<Voter>().setEnabled(i == 0);
 			voterWidget.GetComponent<Voter>().featureId = featureId;
 			voterWidget.GetComponent<Voter>().voteCountToRepresent = i;
 			featureVoteWidgetsList.Add(voterWidget);
@@ -138,22 +142,44 @@ public class Features : MonoBehaviour {
 		featureVoteWidgets.Add(featureId, featureVoteWidgetsList.ToArray());
 	}
 	
-	public void changeVote(int featureId, int voteCount) {
+	public void changeVote(int featureId, int representingVoteCount) {
 		GameObject[] featureVoteWidgetsArray;
-	
+		
+		int voteCount = representingVoteCount;
+		int currentVotesForFeature = 0;
+		int currentVoteCount = getVotesUsed();
+		votes.TryGetValue(featureId, out currentVotesForFeature) ;
+		
+		if(currentVoteCount - currentVotesForFeature + voteCount > MAX_VOTES_ALLOWED) {
+			voteCount = MAX_VOTES_ALLOWED - (currentVoteCount - currentVotesForFeature);
+		}
+		
 		votes.Remove(featureId);
 		votes.Add(featureId, voteCount);
 		
 		featureVoteWidgets.TryGetValue(featureId, out featureVoteWidgetsArray);
 		
-		for(int i=0; i<voteCount; i++) {
+		for(int i=0; i<=voteCount; i++) {
 			featureVoteWidgetsArray[i].GetComponent<Voter>().setEnabled(true);
 		}
-		
-		if(voteCount < MAX_VOTES_PER_FEATURE-1) {
-			for(int i=voteCount; i<MAX_VOTES_PER_FEATURE; i++) {
+	
+		if(voteCount <= MAX_VOTES_PER_FEATURE-2) {
+			for(int i=voteCount+1; i<MAX_VOTES_PER_FEATURE; i++) {
 				featureVoteWidgetsArray[i].GetComponent<Voter>().setEnabled(false);
 			}
 		}
+		
+		voteQuota.GetComponent<TextMesh>().text = (MAX_VOTES_ALLOWED - getVotesUsed())+" left";
+		
+	}
+	
+	public int getVotesUsed() {
+		int totalVoteCount = 0;
+		
+		foreach(int voteCount in votes.Values) {
+			totalVoteCount += voteCount;
+		}
+		
+		return totalVoteCount;
 	}
 }
