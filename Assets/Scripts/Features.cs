@@ -9,14 +9,16 @@ public class Features : MonoBehaviour {
 	
 	JSONArray features;
 	
+	public static float voterWidgetSpacing = -0.3f;
 	public static float featureVerticalSpacing = -0.5f;
 	public static int MAX_VOTES_ALLOWED = 5;
-	public static int votesUsed = 0;
+	public static int MAX_VOTES_PER_FEATURE = 5;
 	public static Dictionary<int, int> votes = new Dictionary<int, int>();
 	public static Dictionary<int, GameObject> featureCountIDs = new Dictionary<int, GameObject>();
+	public static Dictionary<int, GameObject[]> featureVoteWidgets = new Dictionary<int, GameObject[]>();
 	public static bool areWidgetsInitialised = false;
 	
-	Vector3 plus1Pos;
+	Vector3 voterWidgetPos;
 	Vector3 minus1Pos;
 	Vector3 featureCountPos;
 	
@@ -25,9 +27,8 @@ public class Features : MonoBehaviour {
     void Start()
     {
 		updateFeatures();
-		plus1Pos = GameObject.Find("Feature +1").transform.position;
-		minus1Pos = GameObject.Find("Feature -1").transform.position;
-		featureCountPos = GameObject.Find("FeatureCount").transform.position;
+		voterWidgetPos = GameObject.Find("VoteSymbol").transform.position;
+
 		submitVotesWidget = GameObject.Find("SubmitVotes");
 
 		use = this;
@@ -101,7 +102,7 @@ public class Features : MonoBehaviour {
             	gameObject.GetComponent<TextMesh>().text += feature["name"]+" ("+feature["votes"]+")\n";
 				
 				if(!areWidgetsInitialised) {
-					createVoter3DWidgets(feature["id"].AsInt, plus1Pos+vSpacing, minus1Pos+vSpacing,featureCountPos+vSpacing);
+					createVoter3DWidgets(feature["id"].AsInt, voterWidgetPos+vSpacing, featureCountPos+vSpacing);
 				}
 				
 				// init vote count for feature
@@ -122,44 +123,37 @@ public class Features : MonoBehaviour {
 		StartCoroutine(GetFeatures());
 	}
 	
-	void createVoter3DWidgets(int featureId, Vector3 newPlus1Pos, Vector3 newMinus1Pos, Vector3 newFeatureCountPos) {
-		GameObject plus1 = (GameObject) GameObject.Instantiate(Resources.Load("WhiteBoard/Feature +1"));
-		plus1.transform.position = newPlus1Pos;
-		plus1.GetComponent<Voter>().isIncVote = true;
-		plus1.GetComponent<Voter>().featureId = featureId;
+	void createVoter3DWidgets(int featureId, Vector3 firstWidgetPost, Vector3 newFeatureCountPos) {
+		List<GameObject> featureVoteWidgetsList = new List<GameObject>();
 		
-		GameObject minus1 = (GameObject) GameObject.Instantiate(Resources.Load("WhiteBoard/Feature -1"));
-		minus1.GetComponent<Voter>().featureId = featureId;
-		minus1.GetComponent<Voter>().isIncVote = false;
-		minus1.transform.position = newMinus1Pos;
-		
-		GameObject featureCount = (GameObject) GameObject.Instantiate(Resources.Load("WhiteBoard/FeatureCount"));
-		featureCountIDs.Add(featureId, featureCount);
-		featureCount.transform.position = newFeatureCountPos;
-	}
-	
-	public void changeVote(int featureId, bool isAdding) {
-		int voteCount = 0;
-		GameObject voteCountDisplay;
-		
-	
-		votes.TryGetValue(featureId, out voteCount);
-		votes.Remove(featureId);
-		if(isAdding) {
-			if(votesUsed < MAX_VOTES_ALLOWED) {
-				voteCount++;
-				votesUsed++;
-			}
-		} else {
-			if(voteCount > 0) {
-				voteCount--;
-				votesUsed--;
-			}
+		for(int i=0; i<MAX_VOTES_PER_FEATURE; i++) {
+			GameObject voterWidget = (GameObject) GameObject.Instantiate(Resources.Load("WhiteBoard/VoteSymbol"));
+			voterWidget.transform.position = firstWidgetPost + new Vector3(0, 0, i*voterWidgetSpacing);
+			voterWidget.GetComponent<Voter>().setEnabled(false);
+			voterWidget.GetComponent<Voter>().featureId = featureId;
+			voterWidget.GetComponent<Voter>().voteCountToRepresent = i;
+			featureVoteWidgetsList.Add(voterWidget);
 		}
 		
+		featureVoteWidgets.Add(featureId, featureVoteWidgetsList.ToArray());
+	}
+	
+	public void changeVote(int featureId, int voteCount) {
+		GameObject[] featureVoteWidgetsArray;
+	
+		votes.Remove(featureId);
 		votes.Add(featureId, voteCount);
 		
-		featureCountIDs.TryGetValue(featureId, out voteCountDisplay);
-		voteCountDisplay.GetComponent<TextMesh>().text = ""+voteCount;
+		featureVoteWidgets.TryGetValue(featureId, out featureVoteWidgetsArray);
+		
+		for(int i=0; i<voteCount; i++) {
+			featureVoteWidgetsArray[i].GetComponent<Voter>().setEnabled(true);
+		}
+		
+		if(voteCount < MAX_VOTES_PER_FEATURE-1) {
+			for(int i=voteCount; i<MAX_VOTES_PER_FEATURE; i++) {
+				featureVoteWidgetsArray[i].GetComponent<Voter>().setEnabled(false);
+			}
+		}
 	}
 }

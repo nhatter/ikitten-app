@@ -134,7 +134,7 @@ public class iKittenController : MonoBehaviour {
 				if(touchedObject.tag == "Voter") {
 					Debug.Log ("Hit voter widget");
 					voter = touchedObject.GetComponent<Voter>();
-					Features.use.changeVote(voter.featureId, voter.isIncVote);
+					Features.use.changeVote(voter.featureId, voter.voteCountToRepresent);
 				}
 				
 				if(touchedObject.name == "SubmitVotes") {
