@@ -16,7 +16,9 @@ public class PlayerModel : MonoBehaviour {
 		
 	void Start() {
 		DontDestroyOnLoad(this);
-		use = this;
+		if(use == null ) { 
+			use = this;
+		}
 	}
 	
 	public void incStrokePoints() {
