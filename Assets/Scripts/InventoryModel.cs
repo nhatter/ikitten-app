@@ -6,6 +6,7 @@ using System.Xml.Serialization;
 
 
 public class InventoryModel : MonoBehaviour {
+	string ITEM_ICONS_PATH = "Shop/Icons/";
 	public AudioClip foundItemSound;
 	
 	public static InventoryModel use;
@@ -17,10 +18,6 @@ public class InventoryModel : MonoBehaviour {
 	void Start() {
 		loadObtainableItems();
 		use = this;
-	}
-	
-	public void loadUsableItems() {
-
 	}
 	
 	public void addItem(string itemKey) {
@@ -85,6 +82,7 @@ public class InventoryModel : MonoBehaviour {
 		TextAsset textAsset = (TextAsset) Resources.Load(ITEMS_XML, typeof(TextAsset));
 		ItemsXMLContainer storedItemsContainer = XMLManager.LoadFromText<ItemsXMLContainer>(textAsset.text);
 		foreach(Item item in storedItemsContainer.items) {
+			item.setIcon((Texture2D) Resources.Load(ITEM_ICONS_PATH+"Hats/"+item.name.Replace(" ","")));
 			obtainableItems.Add(item.getName(), item);
 			Debug.Log ("ID "+item.getName());
 		}

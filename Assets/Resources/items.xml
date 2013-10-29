@@ -1,8 +1,40 @@
 <itemsXML>
 <items>
 <item>
-	<name>Kitten Treat</name>
-	<description>iKittens love these! Use these to reward good behaviour.</description>
+	<name>Bandana</name>
+	<cost>5000</cost>
+</item>
+<item>
+	<name>Bunny Ears</name>
+	<cost>10000</cost>
+</item>
+<item>
+	<name>Baseball Cap</name>
+	<cost>10000</cost>
+</item>
+<item>
+	<name>Cowboy Hat</name>
+	<cost>10000</cost>
+</item>
+<item>
+	<name>Ear Flaps Hat</name>
+	<cost>40000</cost>
+</item>
+<item>
+	<name>Leopard Hat</name>
+	<cost>10000</cost>
+</item>
+<item>
+	<name>Magic Hat</name>
+	<cost>50000</cost>
+</item>
+<item>
+	<name>Beanie</name>
+	<cost>30000</cost>
+</item>
+<item>
+	<name>Winter hat</name>
+	<cost>50000</cost>
 </item>
 </items>
 </itemsXML>

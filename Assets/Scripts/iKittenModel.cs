@@ -21,6 +21,7 @@ public class iKittenModel : MonoBehaviour {
 	static Vector3 cameraPos;
 	static float kittenLookAtCameraPosYOffset = -0.75f;
 	
+	GameObject hats;
 	GameObject mouthObjectPlaceholder;
 	GameObject ballPlaceholder;
 	GameObject food;
@@ -97,6 +98,21 @@ public class iKittenModel : MonoBehaviour {
 		randomMeowTime = minRandomMeowTime + Random.value*maxRandomMeowTime;
 		
 		chaseObject = ball;
+	}
+	
+	public void hideWornItems() {
+		foreach(MeshRenderer renderer in hats.GetComponentsInChildren<MeshRenderer>()) {
+			renderer.enabled = false;
+		}
+	}
+	
+	public void wearItem(string itemName) {
+		GameObject itemPlaceholder = ComponentUtils.FindTransformInChildren(hats, itemName).gameObject;
+		GameObject newItem = (GameObject) GameObject.Instantiate((GameObject) Resources.Load("Shop/Hats/"+itemName));
+		newItem.transform.parent = hats.transform;
+		newItem.transform.position = itemPlaceholder.transform.position;
+		newItem.transform.localScale = itemPlaceholder.transform.localScale;
+
 	}
 	
 	void prepareToSleep() {
@@ -305,6 +321,7 @@ public class iKittenModel : MonoBehaviour {
 		head = ComponentUtils.FindTransformInChildren(this.gameObject, "cu_cat_neck1");
 		bed = GameObject.Find("Bed");
 		sleepLocation = GameObject.Find("SleepLocation");
+		hats = ComponentUtils.FindTransformInChildren(this.gameObject, "Hats").gameObject;
 	}
 	
 	public void setupNeeds() {

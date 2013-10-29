@@ -4,7 +4,11 @@ public class Item {
 	public string name;
 	public string description = "";
 	public bool isKeyItem = false;
+	public int cost;
+	private Texture2D icon;
+	public string prefabPath;
 	private int quantity;
+	
 	
 	public Item() {}
 	
@@ -39,5 +43,13 @@ public class Item {
 	
 	public bool getKeyItem() {
 		return isKeyItem;
+	}
+	
+	public void setIcon(Texture2D newIcon) {
+		icon = newIcon;
+	}
+	
+	public Texture2D getIcon() {
+		return icon;
 	}
 }
