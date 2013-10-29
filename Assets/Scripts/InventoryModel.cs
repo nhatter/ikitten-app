@@ -12,6 +12,7 @@ public class InventoryModel : MonoBehaviour {
 	public static InventoryModel use;
 	static string ITEMS_XML = "items";
 	public Dictionary<string, Item> obtainableItems = new Dictionary<string, Item>();
+	public Item[] obtainableItemsArray;
 	private GameObject foundItem;
 	private bool hasInventoryChanged = false;
 	
@@ -86,6 +87,9 @@ public class InventoryModel : MonoBehaviour {
 			obtainableItems.Add(item.getName(), item);
 			Debug.Log ("ID "+item.getName());
 		}
+		
+		obtainableItemsArray = new Item[obtainableItems.Values.Count];
+		obtainableItems.Values.CopyTo(obtainableItemsArray, 0);
 	}
 	
 	public void loadInventory(SerialisableDictionary<string, int> inventory) {

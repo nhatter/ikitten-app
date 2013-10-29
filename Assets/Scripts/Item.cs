@@ -52,4 +52,8 @@ public class Item {
 	public Texture2D getIcon() {
 		return icon;
 	}
+	
+	public string getInternalName() {
+		return name.Replace(" ", "");
+	}
 }
