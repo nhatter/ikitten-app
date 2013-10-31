@@ -18,8 +18,8 @@ public class ShopView : MonoBehaviour {
 		itemStyle = customSkin.GetStyle("ItemIcon");
 		itemBackgroundStyle = customSkin.GetStyle("ItemIconBackground");
 		shopContainerStyle = customSkin.GetStyle("ShopContainer");
-		shopContainerPos = new Rect(shopContainerStyle.margin.left, shopContainerStyle.margin.top, Screen.width/3, Screen.height-(shopContainerStyle.margin.top*2));
-		shopScrollViewPos = new Rect(shopContainerPos.x, shopContainerPos.y+shopContainerStyle.fontSize*2, Screen.width/3, shopContainerPos.height-shopContainerStyle.fontSize*2);
+		shopContainerPos = new Rect(shopContainerStyle.margin.left, shopContainerStyle.margin.top, shopContainerStyle.fixedWidth, Screen.height-(shopContainerStyle.margin.top*2));
+		shopScrollViewPos = new Rect(shopContainerPos.x, shopContainerPos.y+shopContainerStyle.fontSize*2, shopContainerStyle.fixedWidth, shopContainerPos.height-shopContainerStyle.fontSize*2);
 		
 		generateIcons();
 	}
