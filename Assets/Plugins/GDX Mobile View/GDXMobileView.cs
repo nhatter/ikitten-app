@@ -32,9 +32,15 @@ public class GDXMobileView: EditorWindow {
 	static void Init () {
        GDXMobileView window = (GDXMobileView)(EditorWindow.GetWindow(typeof(GDXMobileView)));
 		List<MobileDevice> deviceList = new List<MobileDevice>();
-		deviceList.Add(new MobileDevice("iPhone 3", new Vector2(320,480), 3.5f, 2.44f));
-		deviceList.Add(new MobileDevice("iPhone 4", new Vector2(640,960), 3.5f, 2.31f));
-		deviceList.Add(new MobileDevice("iPhone 5", new Vector2(640,1136),4, 2.31f));
+		deviceList.Add(new MobileDevice("Apple/iPhone 3", new Vector2(320,480), 3.5f, 2.44f));
+		deviceList.Add(new MobileDevice("Apple/iPhone 4", new Vector2(640,960), 3.5f, 2.31f));
+		deviceList.Add(new MobileDevice("Apple/iPhone 5", new Vector2(640,1136),4, 2.31f));
+		deviceList.Add(new MobileDevice("Apple/iPad Mini (1st Gen)", new Vector2(768,1024), 7.9f, 5.3f, "Apple/iPad Mini"));
+		deviceList.Add(new MobileDevice("Apple/iPad Mini (2nd Gen)", new Vector2(1536,2048), 7.9f, 5.3f, "Apple/iPad Mini"));
+		deviceList.Add(new MobileDevice("Apple/iPad (1st Gen)", new Vector2(768,1024), 9.7f, 7.47f, "Apple/iPad"));
+		deviceList.Add(new MobileDevice("Apple/iPad (2nd Gen)", new Vector2(768,1024), 9.7f, 7.31f, "Apple/iPad"));
+		deviceList.Add(new MobileDevice("Apple/iPad (3rd and 4th Gen)", new Vector2(1536,2048), 9.7f, 7.31f, "Apple/iPad"));
+		deviceList.Add(new MobileDevice("Apple/iPad Air (5th Gen)", new Vector2(1536,2048), 9.7f, 6.67f, "Apple/iPad Mini"));
 
 		devices = new MobileDevice[deviceList.Count];
 		deviceList.CopyTo(devices, 0);
@@ -143,12 +149,12 @@ public class GDXMobileView: EditorWindow {
 		public float physicalWidth;
 		private Texture2D deviceImage;
 		
-		public MobileDevice(string name, Vector2 resolution, float diagonal, float physicalWidth) {
+		public MobileDevice(string name, Vector2 resolution, float diagonal, float physicalWidth, string commonDeviceImage = "") {
 			this.name = name;
 			this.resolution = resolution;
 			this.diagonal = diagonal;
 			this.physicalWidth = physicalWidth;
-			this.deviceImage = (Texture2D) Resources.LoadAssetAtPath(DEVICE_IMAGES_PATH+name+".png", typeof(Texture2D));
+			this.deviceImage = (Texture2D) Resources.LoadAssetAtPath(DEVICE_IMAGES_PATH + (commonDeviceImage != "" ? commonDeviceImage : name) + ".png", typeof(Texture2D));
 		}
 		
 		public Texture2D getDeviceImage() {
