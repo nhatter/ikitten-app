@@ -8,6 +8,8 @@ public class GDXMobileView: EditorWindow {
 	public static string DEVICE_IMAGES_PATH = "Assets/Plugins/GDX Mobile View/Devices/";
 	public static Vector2 UNITY_GAMEVIEW_BORDER = new Vector2(4, 18);
 	
+	public static GDXMobileViewCanvas canvas;
+	
 	public static MobileDevice[] devices;
 	public static string[] deviceNames;
 
@@ -15,8 +17,8 @@ public class GDXMobileView: EditorWindow {
 	
 	private Vector2 deviceCenter = new Vector2(200,150);
 	
-	private int selectedDeviceIndex = 0;
-	private int selectedOrientationIndex = 0;
+	public static int selectedDeviceIndex = 0;
+	public static int selectedOrientationIndex = 0;
 	private bool isActualSize = true;
 	private bool isCompensatingForBorders = true;
 	private static float dpi = 110.0f;
@@ -24,13 +26,18 @@ public class GDXMobileView: EditorWindow {
 	private static float screenSize;
 	private static float oldScreenSize;
 	
-    float scaledDeviceWidth;
-	float scaledDeviceHeight;
-	bool isSizeSet = false;
+    public static float scaledDeviceWidth;
+	public static float scaledDeviceHeight;
+	public static bool isSizeSet = false;
+	
+	static bool isInit = false;
    
 	[MenuItem ("Window/GDX Mobile View")]
 	static void Init () {
-       GDXMobileView window = (GDXMobileView)(EditorWindow.GetWindow(typeof(GDXMobileView)));
+        GDXMobileView window = (GDXMobileView)(EditorWindow.GetWindow(typeof(GDXMobileView)));
+	 	 canvas = (GDXMobileViewCanvas)(EditorWindow.GetWindow(typeof(GDXMobileViewCanvas)));
+
+		
 		List<MobileDevice> deviceList = new List<MobileDevice>();
 		deviceList.Add(new MobileDevice("Apple/iPhone 3", new Vector2(320,480), 3.5f, 2.44f));
 		deviceList.Add(new MobileDevice("Apple/iPhone 4", new Vector2(640,960), 3.5f, 2.31f));
@@ -49,6 +56,8 @@ public class GDXMobileView: EditorWindow {
 		for(int i=0; i<devices.Length; i++) {
 			deviceNames[i] = devices[i].name;
 		}
+		
+		isInit = true;
 	}
  
     public static EditorWindow GetMainGameView() {
@@ -59,6 +68,10 @@ public class GDXMobileView: EditorWindow {
     }
  
     void OnGUI () {
+	  if(!isInit) {
+			return;
+	  }
+			
 	  EditorGUILayout.HelpBox("DPI measured as "+dpi+" dots per inch ", MessageType.Info);
 	  screenSize = EditorGUILayout.FloatField("Screen Diagonal Size: ", screenSize);
 	   if(screenSize != oldScreenSize) {
@@ -70,18 +83,6 @@ public class GDXMobileView: EditorWindow {
 	  selectedOrientationIndex = EditorGUILayout.Popup("Orientation: ", selectedOrientationIndex, orientations);
 	  isActualSize = EditorGUILayout.Toggle("Actual Size: ", isActualSize);
 	  isCompensatingForBorders = EditorGUILayout.Toggle("Compensate for GameView Border: ", isCompensatingForBorders);
-		
-	  if(isSizeSet) {
-		if(orientations[selectedOrientationIndex] == "Horizontal") {
-			GUIUtility.RotateAroundPivot(-90, new Vector2(deviceCenter.x+scaledDeviceWidth/2,deviceCenter.y+scaledDeviceHeight/2));
-		}
-	  	
-		GUI.DrawTexture(new Rect(deviceCenter.x,deviceCenter.y, scaledDeviceWidth, scaledDeviceHeight), devices[selectedDeviceIndex].getDeviceImage(), ScaleMode.ScaleToFit);
-			
-		if(orientations[selectedOrientationIndex] == "Horizontal") {
-			GUIUtility.RotateAroundPivot(90, new Vector2(deviceCenter.x+scaledDeviceWidth/2,deviceCenter.y+scaledDeviceHeight/2));
-		}
-	  }
 		
       if(GUILayout.Button("Emulate Display Size")) {
 		isSizeSet = true;
@@ -111,7 +112,10 @@ public class GDXMobileView: EditorWindow {
 			}
 			
 			scaledDeviceWidth = devices[selectedDeviceIndex].getDeviceImage().width * realLifeDeviceX;
-			scaledDeviceHeight = scaledDeviceWidth * deviceAspectRatio;
+			scaledDeviceHeight = scaledDeviceWidth * deviceAspectRatio;		
+		
+			canvas.position = new Rect(canvas.position.x, canvas.position.y, scaledDeviceHeight, scaledDeviceWidth);
+
 		} else {
 			pos.width = scaledWidth;
        		pos.height = scaledHeight;
@@ -123,7 +127,10 @@ public class GDXMobileView: EditorWindow {
 				
 			scaledDeviceWidth = devices[selectedDeviceIndex].getDeviceImage().width * realLifeDeviceX;
 			scaledDeviceHeight = scaledDeviceWidth * deviceAspectRatio;
+				
+			canvas.position = new Rect(canvas.position.x, canvas.position.y, scaledDeviceWidth, scaledDeviceHeight);
 		}
+			
         GetMainGameView().position = pos;
       }
     }
@@ -148,6 +155,7 @@ public class GDXMobileView: EditorWindow {
 		public float diagonal;
 		public float physicalWidth;
 		private Texture2D deviceImage;
+		private Texture2D deviceImageHorizontal;
 		
 		public MobileDevice(string name, Vector2 resolution, float diagonal, float physicalWidth, string commonDeviceImage = "") {
 			this.name = name;
@@ -155,15 +163,60 @@ public class GDXMobileView: EditorWindow {
 			this.diagonal = diagonal;
 			this.physicalWidth = physicalWidth;
 			this.deviceImage = (Texture2D) Resources.LoadAssetAtPath(DEVICE_IMAGES_PATH + (commonDeviceImage != "" ? commonDeviceImage : name) + ".png", typeof(Texture2D));
+			this.deviceImageHorizontal = transposeTexture();
+
 		}
 		
 		public Texture2D getDeviceImage() {
 			return deviceImage;
 		}
 		
+		public Texture2D getDeviceImageHorizontal() {
+			return deviceImageHorizontal;
+		}
+		
 		public override string ToString () {
 			return name;
 		}
+		
+		public Texture2D transposeTexture() {
+			Texture2D newTexture = new Texture2D(this.deviceImage.height, this.deviceImage.width, TextureFormat.RGBA32, true);
+			Color32[] deviceImagePixels = this.deviceImage.GetPixels32();
+			Color32[,] deviceImageGrid = new Color32[this.deviceImage.height, this.deviceImage.width];
+			Color32[,] newDeviceImageGrid = new Color32[this.deviceImage.width, this.deviceImage.height];
+			
+			int imageY = deviceImage.height;
+			int imageX = 0;
+
+			for(int i=0;i<this.deviceImage.height*this.deviceImage.width;i++) {
+				if(i!=0 && i % (deviceImage.width) == 0) {
+					imageY--;
+					imageX = 0;
+				}
+			
+				if(imageY < deviceImage.height && imageX < deviceImage.width) {
+					deviceImageGrid[imageY,imageX] = deviceImagePixels[i];
+				}
+				
+				imageX++;
+			}
+			
+			for(int j=0;j<deviceImage.height;j++) {
+				for(int i=0;i<deviceImage.width;i++) {
+					newDeviceImageGrid[i,j] = deviceImageGrid[j,i];
+				}
+			}
+			
+			int pixelCount = 0;
+			foreach(Color pixel in newDeviceImageGrid) {
+				deviceImagePixels[pixelCount] = pixel;
+				pixelCount++;
+			}
+			
+			newTexture.SetPixels32(deviceImagePixels);
+			newTexture.Apply();
+			return newTexture;
+		}
+		
 	}
- 
 }
