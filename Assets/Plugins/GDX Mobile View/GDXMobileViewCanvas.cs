@@ -3,11 +3,10 @@ using UnityEditor;
 using System.Collections;
 
 public class GDXMobileViewCanvas : EditorWindow {
-	static void Init() {
-	}
 	
 	Texture2D deviceImage;
 	Rect orientationRect;
+	
 	void OnGUI () {
 		if(GDXMobileView.isSizeSet && GDXMobileView.scaledDeviceWidth > 0 && GDXMobileView.scaledDeviceHeight > 0) {
 			if(GDXMobileView.orientations[GDXMobileView.selectedOrientationIndex] == "Horizontal") {
@@ -21,4 +20,5 @@ public class GDXMobileViewCanvas : EditorWindow {
 			GUI.DrawTexture(orientationRect, deviceImage, ScaleMode.ScaleToFit);
 		}
 	}
+
 }
