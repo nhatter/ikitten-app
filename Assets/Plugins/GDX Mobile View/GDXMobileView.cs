@@ -19,8 +19,6 @@ public class GDXMobileView: EditorWindow {
 	
 	public static int selectedDeviceIndex = 0;
 	public static int selectedOrientationIndex = 0;
-	private bool isActualSize = true;
-	private bool isCompensatingForBorders = true;
 	private static float dpi = 110.0f;
 	
 	private static float screenSize;
@@ -40,7 +38,6 @@ public class GDXMobileView: EditorWindow {
 	static void Init () {
         GDXMobileView window = (GDXMobileView)(EditorWindow.GetWindow(typeof(GDXMobileView)));
 	 	canvas = (GDXMobileViewCanvas)(EditorWindow.GetWindow(typeof(GDXMobileViewCanvas)));
-		//gameView = (GDXMobileGameView)(EditorWindow.GetWindow(typeof(GDXMobileGameView)));
 		
 		List<MobileDevice> deviceList = new List<MobileDevice>();
 		deviceList.Add(new MobileDevice("Apple/iPhone 3", new Vector2(320,480), 3.5f, 2.44f, new Vector2(40, 143)));
@@ -85,8 +82,6 @@ public class GDXMobileView: EditorWindow {
 		
       selectedDeviceIndex = EditorGUILayout.Popup("Device: ", selectedDeviceIndex, deviceNames);
 	  selectedOrientationIndex = EditorGUILayout.Popup("Orientation: ", selectedOrientationIndex, orientations);
-	  isActualSize = EditorGUILayout.Toggle("Actual Size: ", isActualSize);
-	  isCompensatingForBorders = EditorGUILayout.Toggle("Compensate for GameView Border: ", isCompensatingForBorders);
 		
       if(GUILayout.Button("Emulate Display Size")) {
 		isSizeSet = true;
@@ -97,9 +92,10 @@ public class GDXMobileView: EditorWindow {
 		float realLifeScaleX = getToScaleXFromDiag(devices[selectedDeviceIndex].diagonal, devices[selectedDeviceIndex].resolution.x, devices[selectedDeviceIndex].resolution.y);
 			
 		float aspectRatio = devices[selectedDeviceIndex].resolution.y / devices[selectedDeviceIndex].resolution.x;
-			
+		Debug.Log(realLifeScaleX+" is ratio, aspectRatio is "+aspectRatio);
 		scaledWidth = devices[selectedDeviceIndex].resolution.x * realLifeScaleX;
 		scaledHeight = scaledWidth * aspectRatio;
+			Debug.Log ("width: "+scaledWidth+"  Height: "+scaledHeight);
 			
 		float deviceAspectRatio = (float) devices[selectedDeviceIndex].getDeviceImage().height / (float) devices[selectedDeviceIndex].getDeviceImage().width ;
 		float realLifeDeviceX = getToScaleXFromWidth(devices[selectedDeviceIndex].physicalWidth, devices[selectedDeviceIndex].getDeviceImage().width, devices[selectedDeviceIndex].getDeviceImage().height);
