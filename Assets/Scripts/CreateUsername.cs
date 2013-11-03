@@ -18,6 +18,7 @@ public class CreateUsername : MonoBehaviour {
 	
 	void Start() {
 		use = this;
+		iKittenGUI.use.displayMessage("Create a username", "Create", usernameCoroutine);
 	}
 	
 	// remember to use StartCoroutine when calling this function!
@@ -66,22 +67,23 @@ public class CreateUsername : MonoBehaviour {
 		}
 		
 		GUI.skin = iKittenGUI.use.customSkin;
-		iKittenGUI.dropShadowLabel(iKittenGUI.messagePos, "Create a username", "Message");
-		username = GUI.TextField(iKittenGUI.textFieldPos, username);
+		
+		iKittenGUI.use.drawMessage();
+		username = GUI.TextField(iKittenGUI.use.textFieldPos, username);
 		
 		if(statusMessage != "") {
-			GUI.Label(iKittenGUI.inputWarningPos, statusMessage, "InputWarning");
+			GUI.Label(iKittenGUI.use.inputWarningPos, statusMessage, "InputWarning");
 		}
-		
-		if(GUI.Button(iKittenGUI.okButtonPos, "Create", "OKButton")) {
-			StartCoroutine(createUsername(username));
-		}
-		
+
 		Fader.use.showChange();
 	}
 	
 	public void enable() {
 		Debug.Log ("Now enabled CreateUsername");
 		isCreatingUsername = true;
+	}
+	
+	public void usernameCoroutine() {
+		StartCoroutine(createUsername(username));
 	}
 }

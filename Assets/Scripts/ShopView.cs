@@ -17,7 +17,10 @@ public class ShopView : MonoBehaviour {
 	Rect shopContainerPos;
 	Rect shopScrollViewPos;
 	Rect buyButtonPos;
+	Rect tooExpensiveMessagePos;
 	float shopScreenWidth;
+	
+	bool isAffordable;
 	
 	// Use this for initialization
 	void Start () {
@@ -29,6 +32,7 @@ public class ShopView : MonoBehaviour {
 		shopContainerPos = new Rect(shopContainerStyle.margin.left, shopContainerStyle.margin.top, shopScreenWidth, Screen.height-(shopContainerStyle.margin.top*2));
 		shopScrollViewPos = new Rect(shopContainerPos.x, shopContainerPos.y+shopContainerStyle.fontSize*2, shopScreenWidth, shopContainerPos.height-shopContainerStyle.fontSize*2);
 		buyButtonPos = new Rect(Screen.width-buyIconStyle.fixedWidth, Screen.height-buyIconStyle.fixedHeight, buyIconStyle.fixedWidth, buyIconStyle.fixedHeight);
+		tooExpensiveMessagePos = new Rect(shopContainerPos.x+shopScreenWidth, 50, Screen.width-(shopContainerPos.x+shopScreenWidth), Screen.height-50);
 		generateIcons();
 		use = this;
 	}
@@ -37,7 +41,6 @@ public class ShopView : MonoBehaviour {
 	void generateIcons() {
 		int i = 0;
 		itemIcons = new GUIContent[InventoryModel.use.obtainableItems.Values.Count/2];
-		
 		int itemId;
 		Item item;
 		foreach(string itemKey in InventoryModel.use.obtainableItems.Keys) {
@@ -73,7 +76,7 @@ public class ShopView : MonoBehaviour {
 			generateIcons();
 		}
 		
-		GUI.Box(shopContainerPos, "Shop", "ShopContainer");
+		GUI.Box(shopContainerPos, "Items", "ShopContainer");
 		GUI.BeginGroup(shopScrollViewPos, "", "ShopContainer");
 		shopScrollPos = GUILayout.BeginScrollView(shopScrollPos, GUILayout.Width(shopScreenWidth), GUILayout.Height(shopScrollViewPos.height));
 		
@@ -94,10 +97,16 @@ public class ShopView : MonoBehaviour {
 		GUILayout.EndScrollView();
 		GUI.EndGroup();
 		
-		if(GUI.Button(buyButtonPos, "", "BuyIcon")) {
-			InventoryModel.use.buyItem(itemSelectIndex);
-			MainSounds.use.audio.PlayOneShot(buySound);
-			updateIcon(itemSelectIndex);
+		isAffordable = PlayerModel.use.state.happyPoints >= InventoryModel.use.obtainableItems[""+itemSelectIndex].cost && InventoryModel.use.obtainableItems[""+itemSelectIndex].getQuantity() == 0;
+		
+		if(GUI.Button(buyButtonPos, "", (isAffordable ? "BuyIcon" : "CannotBuyIcon"))) {
+			if(isAffordable) {
+				InventoryModel.use.buyItem(itemSelectIndex);
+				MainSounds.use.audio.PlayOneShot(buySound);
+				updateIcon(itemSelectIndex);
+			} else {
+				iKittenGUI.use.displayMessage(tooExpensiveMessagePos,"You don't have enough points to buy that yet :(", "OK");
+			}
 		}
 	}
 }
