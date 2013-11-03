@@ -22,6 +22,12 @@ public class SaveDataModel : MonoBehaviour {
 #endif
 		
 		createSavesDir();
+		if(!SaveDataModel.load(SaveDataModel.SAVES_DIR+SaveDataModel.DEFAULT_SAVE_FILE)) {
+			if(PlayerModel.use.state.hasSelectedKitten) {
+				GameObject iKitten = (GameObject) GameObject.Instantiate((GameObject)Resources.Load("iKitten/iKitten"));
+				CameraManager.use.setCameraToFollow(iKitten);
+			}
+		}
 	}
 	
 	void createSavesDir() {
@@ -68,7 +74,8 @@ public class SaveDataModel : MonoBehaviour {
 			lastSave = saveFile;
 			PlayerModel.use.loadSerialisedParty(saveData.stats);
 			PlayerModel.use.state = saveData.playerState;
-			iKittenGUI.use.isActive = true;
+			InventoryModel.use.loadInventory(saveData.inventory);
+			//iKittenGUI.use.isActive = true;
 			if(saveData.sceneName != Application.loadedLevelName) {
 				SceneManager.loadScene(saveData.sceneName);
 			}

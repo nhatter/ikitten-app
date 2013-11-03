@@ -9,14 +9,6 @@ public class SceneManager : MonoBehaviour {
 		Debug.Log("Starting SceneManager");
 		MainSystem.load();
 		CameraManager.use.fadeIn();
-
-		
-		if(!SaveDataModel.load(SaveDataModel.SAVES_DIR+SaveDataModel.DEFAULT_SAVE_FILE)) {
-			if(PlayerModel.use.state.hasSelectedKitten) {
-				GameObject iKitten = (GameObject) GameObject.Instantiate((GameObject)Resources.Load("iKitten/iKitten"));
-				CameraManager.use.setCameraToFollow(iKitten);
-			}
-		}
 	}
 	
 	public static void loadScene(string sceneName) {

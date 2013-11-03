@@ -63,11 +63,16 @@ public class ShopView : MonoBehaviour {
 	int oldItemSelectIndex = 0;
 	
 	void OnGUI() {
-		if(!iconsGenerated) {
+		if(!iconsGenerated || iKittenModel.anyKitten == null) {
 			return;
 		}
 		
 		GUI.skin = customSkin;
+		
+		if(InventoryModel.use.getInventoryChanged()) {
+			generateIcons();
+		}
+		
 		GUI.Box(shopContainerPos, "Shop", "ShopContainer");
 		GUI.BeginGroup(shopScrollViewPos, "", "ShopContainer");
 		shopScrollPos = GUILayout.BeginScrollView(shopScrollPos, GUILayout.Width(shopScreenWidth), GUILayout.Height(shopScrollViewPos.height));

@@ -53,7 +53,7 @@ public class iKittenController : MonoBehaviour {
 		
 		if(Input.GetKeyDown(KeyCode.Escape)) {
 			try {
-				SaveDataModel.save("iKitten.xml");
+				SaveDataModel.save(SaveDataModel.DEFAULT_SAVE_FILE);
 			} catch(Exception e) {
 				Debug.Log ("Could not save the game because "+e);
 			}

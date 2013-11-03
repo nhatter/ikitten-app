@@ -39,6 +39,8 @@ public class InventoryModel : MonoBehaviour {
 			if(isPurchase) {
 				PlayerModel.use.state.happyPoints -= item.cost;
 			}
+			
+			hasInventoryChanged = true;
 		} else {
 			Debug.Log(itemKey+" does not have an inventory entry. Cannot add to inventory.");
 		}
@@ -62,7 +64,9 @@ public class InventoryModel : MonoBehaviour {
 		SerialisableDictionary<string, int> inventory = new SerialisableDictionary<string, int>();
 		foreach(Item item in obtainableItems.Values) {
 			if(item.getQuantity() > 0) {
-				inventory.Add(item.getName(), item.getQuantity());
+				if(!inventory.ContainsKey(item.getName())) {
+					inventory.Add(item.getName(), item.getQuantity());
+				}
 			}
 		}
 		
@@ -98,15 +102,14 @@ public class InventoryModel : MonoBehaviour {
 			obtainableItems.Add(""+itemId, item);
 			itemId++;
 		}
+		
+		hasInventoryChanged = true;
 	}
 	
 	public void loadInventory(SerialisableDictionary<string, int> inventory) {
 		foreach(KeyValuePair<string, int> storedItem in inventory) {
-			Item item;
-			if(obtainableItems.TryGetValue(storedItem.Key, out item)) {
-				obtainableItems.Remove(storedItem.Key);
-				item.setQuantity(storedItem.Value);
-				obtainableItems.Add(storedItem.Key, item);
+			if(obtainableItems.ContainsKey(storedItem.Key)) {
+				obtainableItems[storedItem.Key].setQuantity(storedItem.Value);
 			}
 		}
 	}
