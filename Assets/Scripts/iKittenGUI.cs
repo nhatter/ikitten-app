@@ -100,14 +100,14 @@ public class iKittenGUI : MonoBehaviour {
 			}
 		}
 		
-		if(PlayerModel.use.isIncreasingPoints) {
+		if(PlayerModel.use.isIncreasingPoints || ShopView.use.isActive) {
 			if(!hasAnimatedShowingScore) {
 				iTween.ValueTo(gameObject,iTween.Hash("from",scoreIconPosValue,"to",scoreIconPos,"onupdate","AnimateScoreIcon","easetype","easeinoutback"));
 				iTween.ValueTo(gameObject,iTween.Hash("from",scorePosValue,"to",scorePos,"onupdate","AnimateScore","easetype","easeinoutback"));
 				
 				hasAnimatedShowingScore = true;
 			} else {
-				if(!hasAnimatedHidingScore && PlayerModel.use.stoppedIncreasingPoints) {
+				if(!hasAnimatedHidingScore && (PlayerModel.use.stoppedIncreasingPoints || !ShopView.use.isActive)) {
 					iTween.ValueTo(gameObject,iTween.Hash("from",scoreIconPosValue,"to",scoreIconPosOffScreen,"onupdate","AnimateScoreIcon","easetype","easeinoutback"));
 				    iTween.ValueTo(gameObject,iTween.Hash("from",scorePosValue,"to",scorePosOffScreen,"onupdate","AnimateScore","easetype","easeinoutback"));
 	

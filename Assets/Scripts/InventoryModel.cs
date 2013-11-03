@@ -12,7 +12,6 @@ public class InventoryModel : MonoBehaviour {
 	public static InventoryModel use;
 	static string ITEMS_XML = "items";
 	public Dictionary<string, Item> obtainableItems = new Dictionary<string, Item>();
-	public Item[] obtainableItemsArray;
 	private GameObject foundItem;
 	private bool hasInventoryChanged = false;
 	
@@ -21,7 +20,11 @@ public class InventoryModel : MonoBehaviour {
 		use = this;
 	}
 	
-	public void addItem(string itemKey) {
+	public void buyItem(int itemId) {
+		addItem(obtainableItems[""+itemId].getName(), true);
+	}
+	
+	public void addItem(string itemKey, bool isPurchase) {
 		string itemName = itemKey;
 		if(itemKey.Contains("_")) {
 			string[] itemValues = itemKey.Split('_');
@@ -31,10 +34,15 @@ public class InventoryModel : MonoBehaviour {
 		Item item;
 		if(obtainableItems.TryGetValue(itemName, out item)) {
 			int quantity = item.getQuantity();
-			item.setQuantity(++quantity);
+			obtainableItems[itemName].setQuantity(++quantity);
+			
+			if(isPurchase) {
+				PlayerModel.use.state.happyPoints -= item.cost;
+			}
 		} else {
 			Debug.Log(itemKey+" does not have an inventory entry. Cannot add to inventory.");
 		}
+		
 	}
 	
 	public void setFoundItem(GameObject newItem) {
@@ -82,14 +90,14 @@ public class InventoryModel : MonoBehaviour {
 	public void loadObtainableItems() {
 		TextAsset textAsset = (TextAsset) Resources.Load(ITEMS_XML, typeof(TextAsset));
 		ItemsXMLContainer storedItemsContainer = XMLManager.LoadFromText<ItemsXMLContainer>(textAsset.text);
+		
+		int itemId = 0;
 		foreach(Item item in storedItemsContainer.items) {
 			item.setIcon((Texture2D) Resources.Load(ITEM_ICONS_PATH+"Hats/"+item.name.Replace(" ","")));
 			obtainableItems.Add(item.getName(), item);
-			Debug.Log ("ID "+item.getName());
+			obtainableItems.Add(""+itemId, item);
+			itemId++;
 		}
-		
-		obtainableItemsArray = new Item[obtainableItems.Values.Count];
-		obtainableItems.Values.CopyTo(obtainableItemsArray, 0);
 	}
 	
 	public void loadInventory(SerialisableDictionary<string, int> inventory) {
