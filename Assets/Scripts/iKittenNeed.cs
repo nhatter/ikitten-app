@@ -121,8 +121,8 @@ public class iKittenNeed : MonoBehaviour {
 			model.animator.SetBool("Idle", false);
 			model.animator.SetBool("Meow", false);
 			model.audio.clip = model.sounds.purrSound;
-			model.audio.loop = true;
-			model.audio.Play();
+			//model.audio.loop = true;
+			//model.audio.Play();
 		}
 	}
 	

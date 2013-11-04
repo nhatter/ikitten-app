@@ -66,7 +66,7 @@ public class ShopView : MonoBehaviour {
 	int oldItemSelectIndex = 0;
 	
 	void OnGUI() {
-		if(!iconsGenerated || iKittenModel.anyKitten == null) {
+		if(!iconsGenerated || iKittenModel.anyKitten == null || !isActive) {
 			return;
 		}
 		

@@ -5,6 +5,7 @@ using System.Collections;
 
 public class iKittenController : MonoBehaviour {
 	public static iKittenController use;
+	public float strokingDistance = 1.5f;
 	public float touchDistance = 2.0f;
 	public float touchStrokeScale = 0.1f;
 	public float accelerometerSensitivity = 50.0f;
@@ -22,6 +23,7 @@ public class iKittenController : MonoBehaviour {
 	GameObject touchediKitten;
 	GameObject iKittyFood;
 	GameObject lightBlob;
+	GameObject suggestionBoard;
 	
 	float inputX;
 	float inputY;
@@ -34,12 +36,15 @@ public class iKittenController : MonoBehaviour {
 	Vector3 cameraPos;
 	
 	Voter voter;
+	AnimatorStateInfo animationInfo;
+
 	
 	// Use this for initialization
 	void Start () {
 		use = this;
 		iKittyFood = GameObject.Find("iKittyFood");
 		lightBlob = GameObject.Find("LightBlob");
+		suggestionBoard = GameObject.Find ("SuggestionBoard");
 	}
 	
 	
@@ -79,6 +84,10 @@ public class iKittenController : MonoBehaviour {
 			}
 			#endif
 		
+			if(CameraManager.use.distanceToKitten > strokingDistance && Camera.main.name == "FollowCamera") {
+				iKittenModel.anyKitten.beckon();
+				Debug.Log("Moving Kitten to Player");
+			}
 			
 			if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out touchHitInfo, touchDistance, touchLayerMask)) {
 				Debug.Log("Touch hit "+touchHitInfo.collider.gameObject.name);
@@ -140,6 +149,45 @@ public class iKittenController : MonoBehaviour {
 				if(touchedObject.name == "SubmitVotes") {
 					Debug.Log ("Hit SubmitVotes");
 					Features.use.submitVotes();
+				}
+				
+				if(touchedObject.name == "ReturnToGame") {
+					CameraManager.use.disableFeatureCamera();
+					suggestionBoard.collider.enabled = true;
+				}
+				
+				if(touchedObject.name == "SuggestionBoard") {
+					CameraManager.use.enableFeatureCamera();
+					suggestionBoard.collider.enabled = false;
+				}
+				
+				if(touchedObject.name == "Torch") {
+					iKittenModel.isTorchLit = !iKittenModel.isTorchLit;
+			
+					if(iKittenModel.isTorchLit) {
+						CameraManager.use.enableTorchCamera();
+						touchedObject.transform.LookAt(iKittenModel.lightBlob.transform.position);
+						touchedObject.transform.Rotate(0,180,0);
+						touchedObject.transform.GetComponent<FollowObject>().targetObject = iKittenModel.lightBlob;
+						iKittenModel.lightBlob.GetComponentInChildren<Projector>().enabled = true;
+		
+						iKittenModel.chaseObject = iKittenModel.lightBlob;
+						foreach(iKittenModel model in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
+							animationInfo = iKittenModel.anyKitten.animator.GetCurrentAnimatorStateInfo(0);
+							
+							if(animationInfo.nameHash == Animator.StringToHash("Base.A_idle")) {
+								model.chase();
+							}
+						}
+					} else {
+						CameraManager.use.disableTorchCamera();
+						touchedObject.transform.GetComponent<FollowObject>().targetObject = null;
+						touchedObject.transform.position = iKittenModel.originalTorchPos;
+						foreach(iKittenModel model in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
+							model.stopChasingObject();
+						}
+						iKittenModel.lightBlob.GetComponentInChildren<Projector>().enabled = false;
+					}
 				}
 			}	
 		}

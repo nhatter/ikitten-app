@@ -63,12 +63,15 @@ public class Features : MonoBehaviour {
         // Post the URL to the site and create a download object to get the result.
         WWW postVote = new WWW(WebConfig.VOTE_URL, voteForm);
         yield return postVote; // Wait until the download is done
+		
+		
  
         if (postVote.error != null) {
             print("There was an error posting the high score: " + postVote.error);
+			submitVotesWidget.GetComponent<TextMesh>().text = "ERROR - TRY AGAIN";
 		} else {
 			updateFeatures();
-			submitVotesWidget.GetComponent<TextMesh>().text = "VOTED - THANKS";
+			submitVotesWidget.GetComponent<TextMesh>().text = "THANK YOU!";
 			PlayerModel.use.incHappyPoints(POINTS_FROM_VOTING);
 			yield return new WaitForSeconds(2);
 			PlayerModel.use.stoppedIncreasingPoints = true;

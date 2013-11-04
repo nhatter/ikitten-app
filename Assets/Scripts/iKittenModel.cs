@@ -7,6 +7,7 @@ public class iKittenModel : MonoBehaviour {
 
 	private iKittenState state = new iKittenState();
 	
+	public bool isBeckoning = false;
 	public bool isEating = false;
 	public bool isIdle = true;
 	public bool isPlayerInteracting = false;
@@ -25,12 +26,13 @@ public class iKittenModel : MonoBehaviour {
 	GameObject mouthObjectPlaceholder;
 	GameObject ballPlaceholder;
 	GameObject food;
-	GameObject eatLocation;
+	public static GameObject eatLocation;
 	GameObject bed;
 	GameObject sleepLocation;
 	public static GameObject chaseObject;
 	public static GameObject lightBlob;
 	public static GameObject lightBlobCollider;
+	public static Vector3 originalTorchPos;
 	public static bool isTorchLit;
 	
 	public float hungerAlertTimer = 0.0f;
@@ -172,7 +174,7 @@ public class iKittenModel : MonoBehaviour {
 			if(isChasing) {
 				chaseReactionTimer += Time.deltaTime;
 				
-				if(chaseReactionTimer > chaseReactionTime) {
+				if(chaseReactionTimer > chaseReactionTime && !isBeckoning) {
 					waypointController.addWaypoint(chaseObject.transform.position);
 					waypointController.MoveToWaypoint();
 					chaseReactionTimer= 0;
@@ -190,7 +192,7 @@ public class iKittenModel : MonoBehaviour {
 			runSoundTimer += Time.deltaTime;
 		}
 		
-		if(ball != null) {
+		if(chaseObject == ball) {
 			if(ballState.isMoving && stateInfo.nameHash == Animator.StringToHash("Base.A_idle") && !isChasing && isIdle && animator.GetBool("Idle") && (!haveCriticalNeed || fun.state.need < iKittenNeed.levelToStartMeetingNeed) && !isStroking) {
 				if(Vector3.Distance(chaseObject.transform.position, this.gameObject.transform.position) > chasingDistance) {
 					chase();
@@ -322,6 +324,8 @@ public class iKittenModel : MonoBehaviour {
 		bed = GameObject.Find("Bed");
 		sleepLocation = GameObject.Find("SleepLocation");
 		hats = ComponentUtils.FindTransformInChildren(this.gameObject, "Hats").gameObject;
+		eatLocation = GameObject.Find("EatLocation");
+		originalTorchPos = GameObject.Find("Torch").transform.position;
 	}
 	
 	public void setupNeeds() {
@@ -380,6 +384,22 @@ public class iKittenModel : MonoBehaviour {
 		Debug.Log("Kitten caught the ball");
 	}
 	
+	public void beckon() {
+		if(!isBeckoning) {
+			isBeckoning = true;
+			chase(eatLocation);
+			MainSounds.use.audio.clip = MainSounds.use.beckonSound;
+			MainSounds.use.audio.Play();
+			waypointController.setOnCompleteAction(stopChasingObject);
+			waypointController.setFinalLookTarget(new Vector3(Camera.main.transform.position.x, transform.position.y, Camera.main.transform.position.z));
+		}
+	}
+	
+	public void chase(GameObject newChaseObject) {
+		chaseObject = newChaseObject;
+		chase();
+	}
+	
 	public void chase() {
 		isChasing = true;
 		Debug.Log("Kiten is chasing ball");
@@ -416,6 +436,12 @@ public class iKittenModel : MonoBehaviour {
 		isRunning = false;
 		isChasing = false;
 		PlayerModel.use.stoppedIncreasingPoints = true;
+		fun.stopMeetingNeed();
+		chaseObject = null;
+		
+		if(isBeckoning) {
+			isBeckoning = false;
+		}
 	}
 	
 	public void stroke(float inputY, bool isXAxis) {

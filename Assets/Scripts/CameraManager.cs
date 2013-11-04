@@ -8,6 +8,8 @@ public class CameraManager : MonoBehaviour {
 	public float cameraFadeTime = 2.0f;
 	private Action fadeOutAction;
 	
+	public float distanceToKitten;
+	
 	GameObject followCamera;
 	Camera[] cameras;
 	int cameraIndex = 0;
@@ -15,7 +17,7 @@ public class CameraManager : MonoBehaviour {
 	Camera torchCamera;
 	Camera featureCamera;
 	
-	FollowObject followCameraSettings;
+	ZoomFollowObject followCameraSettings;
 
 	// Use this for initialization
 	void Start () {
@@ -44,10 +46,14 @@ public class CameraManager : MonoBehaviour {
 		
 		followCamera = GameObject.Find("FollowCamera");
 		if(followCamera != null) {
-			followCameraSettings = followCamera.GetComponent<FollowObject>();
+			followCameraSettings = followCamera.GetComponent<ZoomFollowObject>();
 		}
 		setCameraToFollow(GameObject.Find("iKitten"));
 		use = this;
+	}
+	
+	void Update() {
+		distanceToKitten = Vector3.Distance(Camera.main.transform.position, iKittenModel.anyKitten.transform.position);
 	}
 	
 	public void nextCamera() {
@@ -92,11 +98,13 @@ public class CameraManager : MonoBehaviour {
 	public void enableTorchCamera() {
 		disableAllCameras();
 		torchCamera.enabled = true;
+		//torchCamera.GetComponent<FollowObject>().enabled = true;
 	}
 	
 	public void disableTorchCamera() {
 		disableAllCameras();
 		followCamera.camera.enabled = true;
+		//torchCamera.GetComponent<FollowObject>().enabled = false;
 	}
 	
 	public void enableFeatureCamera() {

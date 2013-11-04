@@ -36,7 +36,6 @@ public class iKittenGUI : MonoBehaviour {
 	bool hasAnimatedShowingScore = false;
 	bool hasAnimatedHidingScore = false;
 	
-	AnimatorStateInfo animationInfo;
 	
 	void Start() {
 		DontDestroyOnLoad(this);
@@ -75,35 +74,6 @@ public class iKittenGUI : MonoBehaviour {
 		}
 		
 		GUI.skin = customSkin;
-		if(GUI.Button(cameraButtonPos, "", "CameraButton")) {
-			Debug.Log ("Changing camera");
-			CameraManager.use.nextCamera();
-		}
-		
-		if(GUI.Button(torchButtonPos, "", "TorchButton"+(iKittenModel.isTorchLit ? "Lit" : "")) ) {
-			iKittenModel.isTorchLit = !iKittenModel.isTorchLit;
-			
-			
-			if(iKittenModel.isTorchLit) {
-				CameraManager.use.enableTorchCamera();
-				iKittenModel.lightBlob.GetComponentInChildren<Projector>().enabled = true;
-
-				iKittenModel.chaseObject = iKittenModel.lightBlob;
-				foreach(iKittenModel model in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
-					animationInfo = model.animator.GetCurrentAnimatorStateInfo(0);
-					
-					if(animationInfo.nameHash == Animator.StringToHash("Base.A_idle")) {
-						model.chase();
-					}
-				}
-			} else {
-				CameraManager.use.disableTorchCamera();
-				foreach(iKittenModel model in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
-					model.stopChasingObject();
-				}
-				iKittenModel.lightBlob.GetComponentInChildren<Projector>().enabled = false;
-			}
-		}
 		
 		if(PlayerModel.use.isIncreasingPoints || ShopView.use.isActive) {
 			if(!hasAnimatedShowingScore) {
