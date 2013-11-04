@@ -161,6 +161,15 @@ public class iKittenController : MonoBehaviour {
 					suggestionBoard.collider.enabled = false;
 				}
 				
+				if(touchedObject.name == "ItemsBox") {
+					ShopView.use.isActive = !ShopView.use.isActive;
+					if(ShopView.use.isActive) {
+						ZoomFollowObject.use.useShopViewFOV();
+					} else {
+						ZoomFollowObject.use.useNormalFOV();
+					}
+				}
+				
 				if(touchedObject.name == "Torch") {
 					iKittenModel.isTorchLit = !iKittenModel.isTorchLit;
 			
