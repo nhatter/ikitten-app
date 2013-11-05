@@ -53,7 +53,9 @@ public class CameraManager : MonoBehaviour {
 	}
 	
 	void Update() {
-		distanceToKitten = Vector3.Distance(Camera.main.transform.position, iKittenModel.anyKitten.transform.position);
+		if(iKittenModel.anyKitten != null) {
+			distanceToKitten = Vector3.Distance(Camera.main.transform.position, iKittenModel.anyKitten.transform.position);
+		}
 	}
 	
 	public void nextCamera() {

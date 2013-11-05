@@ -29,6 +29,7 @@ public class iKittenModel : MonoBehaviour {
 	public static GameObject eatLocation;
 	GameObject bed;
 	GameObject sleepLocation;
+	public static GameObject torch;
 	public static GameObject chaseObject;
 	public static GameObject lightBlob;
 	public static GameObject lightBlobCollider;
@@ -98,8 +99,6 @@ public class iKittenModel : MonoBehaviour {
 		passModelToState();
 		
 		randomMeowTime = minRandomMeowTime + Random.value*maxRandomMeowTime;
-		
-		chaseObject = ball;
 	}
 	
 	public void hideWornItems() {
@@ -192,7 +191,7 @@ public class iKittenModel : MonoBehaviour {
 			runSoundTimer += Time.deltaTime;
 		}
 		
-		if(chaseObject == ball) {
+		if(chaseObject == ball && PlayerModel.use.state.hasSelectedKitten) {
 			if(ballState.isMoving && stateInfo.nameHash == Animator.StringToHash("Base.A_idle") && !isChasing && isIdle && animator.GetBool("Idle") && (!haveCriticalNeed || fun.state.need < iKittenNeed.levelToStartMeetingNeed) && !isStroking) {
 				if(Vector3.Distance(chaseObject.transform.position, this.gameObject.transform.position) > chasingDistance) {
 					chase();
@@ -325,7 +324,10 @@ public class iKittenModel : MonoBehaviour {
 		sleepLocation = GameObject.Find("SleepLocation");
 		hats = ComponentUtils.FindTransformInChildren(this.gameObject, "Hats").gameObject;
 		eatLocation = GameObject.Find("EatLocation");
-		originalTorchPos = GameObject.Find("Torch").transform.position;
+		torch = GameObject.Find("Torch"); 
+		if(torch != null) {
+			originalTorchPos = torch.transform.position;
+		}
 	}
 	
 	public void setupNeeds() {
