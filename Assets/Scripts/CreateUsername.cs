@@ -18,7 +18,6 @@ public class CreateUsername : MonoBehaviour {
 	
 	void Start() {
 		use = this;
-		iKittenGUI.use.displayMessage("Create a username", "Create", usernameCoroutine);
 	}
 	
 	// remember to use StartCoroutine when calling this function!
@@ -81,6 +80,7 @@ public class CreateUsername : MonoBehaviour {
 	public void enable() {
 		Debug.Log ("Now enabled CreateUsername");
 		isCreatingUsername = true;
+		iKittenGUI.use.displayMessage("Create a username", "Create", usernameCoroutine);
 	}
 	
 	public void usernameCoroutine() {
