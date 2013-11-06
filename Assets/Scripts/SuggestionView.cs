@@ -7,6 +7,7 @@ public class SuggestionView : MonoBehaviour {
 	public GUISkin customSkin;
 	public string suggestion = "Dear Gamer Developer Exchange,\n";
 	public bool isActive = false;
+	public static int POINTS_FROM_SUGGESTION = 5000;
 	
 	Rect backgroundRect;
 	Rect suggestionRect;
@@ -36,6 +37,29 @@ public class SuggestionView : MonoBehaviour {
 		use = this;
 	}
 	
+	// remember to use StartCoroutine when calling this function!
+    IEnumerator PostSuggestion()
+    {
+		Debug.Log("POSTing suggestion");
+		WWWForm voteForm = new WWWForm();
+		
+		voteForm.AddField("session_id", PlayerModel.use.state.sessionId);
+		voteForm.AddField("suggestion_text", suggestion);
+		
+        // Post the URL to the site and create a download object to get the result.
+        WWW postVote = new WWW(WebConfig.SUGGEST_URL, voteForm);
+        yield return postVote; // Wait until the download is done
+		
+        if (postVote.error != null) {
+            print("There was an error posting your suggestion: " + postVote.error);
+		} else {
+			PlayerModel.use.incHappyPoints(POINTS_FROM_SUGGESTION);
+			yield return new WaitForSeconds(2);
+			PlayerModel.use.stoppedIncreasingPoints = true;
+			isActive = false;
+        }
+    }
+	
 	void OnGUI() {
 		if(!isActive) {
 			return;
@@ -46,6 +70,7 @@ public class SuggestionView : MonoBehaviour {
 		suggestion = GUI.TextArea(suggestionRect, suggestion);
 		if(GUI.Button(submitSuggestionRect, "Send", "SendFeedback")) {
 			Debug.Log ("Submitting suggestion");
+			StartCoroutine(PostSuggestion());
 		}
 		
 		if(GUI.Button(cancelSuggestionRect, "Cancel", "CancelFeedback")) {
