@@ -66,8 +66,10 @@ public class iKittenController : MonoBehaviour {
 			Application.Quit();
 		}
 		
-		if(ShopView.use.isActive || SuggestionView.use.isActive) {
-			return;
+		if(ShopView.use != null && SuggestionView.use != null) {
+			if(ShopView.use.isActive || SuggestionView.use.isActive) {
+				return;
+			}
 		}
 		
 		if(Input.GetMouseButtonDown(0) || Input.touchCount > 0) {
