@@ -77,12 +77,13 @@ public class iKittenGUI : MonoBehaviour {
 		
 		if(PlayerModel.use.isIncreasingPoints || ShopView.use.isActive) {
 			if(!hasAnimatedShowingScore) {
+				Debug.Log("Animating score");
 				iTween.ValueTo(gameObject,iTween.Hash("from",scoreIconPosValue,"to",scoreIconPos,"onupdate","AnimateScoreIcon","easetype","easeinoutback"));
 				iTween.ValueTo(gameObject,iTween.Hash("from",scorePosValue,"to",scorePos,"onupdate","AnimateScore","easetype","easeinoutback"));
 				
 				hasAnimatedShowingScore = true;
 			} else {
-				if(!hasAnimatedHidingScore && (PlayerModel.use.stoppedIncreasingPoints || !ShopView.use.isActive)) {
+				if(!hasAnimatedHidingScore && (PlayerModel.use.stoppedIncreasingPoints)) {
 					iTween.ValueTo(gameObject,iTween.Hash("from",scoreIconPosValue,"to",scoreIconPosOffScreen,"onupdate","AnimateScoreIcon","easetype","easeinoutback"));
 				    iTween.ValueTo(gameObject,iTween.Hash("from",scorePosValue,"to",scorePosOffScreen,"onupdate","AnimateScore","easetype","easeinoutback"));
 	
