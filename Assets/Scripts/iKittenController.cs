@@ -173,7 +173,8 @@ public class iKittenController : MonoBehaviour {
 				}
 				
 				if(touchedObject.name == "ItemsBox") {
-					ShopView.use.isActive = !ShopView.use.isActive;
+					ShopView.use.enable();
+					
 					if(ShopView.use.isActive) {
 						ZoomFollowObject.use.useShopViewFOV();
 					} else {

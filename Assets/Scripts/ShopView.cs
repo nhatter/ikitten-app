@@ -18,6 +18,7 @@ public class ShopView : MonoBehaviour {
 	Rect shopScrollViewPos;
 	Rect buyButtonPos;
 	Rect tooExpensiveMessagePos;
+	Rect doneButtonPos;
 	float shopScreenWidth;
 	
 	bool isAffordable;
@@ -32,6 +33,7 @@ public class ShopView : MonoBehaviour {
 		shopContainerPos = new Rect(shopContainerStyle.margin.left, shopContainerStyle.margin.top, shopScreenWidth, Screen.height-(shopContainerStyle.margin.top*2));
 		shopScrollViewPos = new Rect(shopContainerPos.x, shopContainerPos.y+shopContainerStyle.fontSize*2, shopScreenWidth, shopContainerPos.height-shopContainerStyle.fontSize*2);
 		buyButtonPos = new Rect(Screen.width-buyIconStyle.fixedWidth, Screen.height-buyIconStyle.fixedHeight, buyIconStyle.fixedWidth, buyIconStyle.fixedHeight);
+		doneButtonPos = new Rect(Screen.width-48, 2, 48, 48);
 		tooExpensiveMessagePos = new Rect(shopContainerPos.x+shopScreenWidth, 50, Screen.width-(shopContainerPos.x+shopScreenWidth), Screen.height-50);
 		generateIcons();
 		use = this;
@@ -108,5 +110,20 @@ public class ShopView : MonoBehaviour {
 				iKittenGUI.use.displayMessage(tooExpensiveMessagePos,"You don't have enough points to buy that yet :(", "OK");
 			}
 		}
+		
+		if(GUI.Button(doneButtonPos, "Done")) {
+			disable();
+		}
 	}
+	
+	public void disable() {
+		iKittenGUI.use.hideScore();
+		isActive = false;
+	}
+	
+	public void enable() {
+		iKittenGUI.use.showScore();
+		isActive = true;
+	}
+	
 }
