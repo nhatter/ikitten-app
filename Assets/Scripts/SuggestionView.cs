@@ -53,10 +53,11 @@ public class SuggestionView : MonoBehaviour {
         if (postVote.error != null) {
             print("There was an error posting your suggestion: " + postVote.error);
 		} else {
+			isActive = false;
 			PlayerModel.use.incHappyPoints(POINTS_FROM_SUGGESTION);
 			yield return new WaitForSeconds(2);
 			PlayerModel.use.stoppedIncreasingPoints = true;
-			isActive = false;
+			
         }
     }
 	

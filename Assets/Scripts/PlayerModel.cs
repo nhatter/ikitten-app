@@ -33,6 +33,7 @@ public class PlayerModel : MonoBehaviour {
 	}
 	
 	public void incHappyPoints(int points) {
+		Debug.Log("Adding "+points+" points to player score.");
 		state.happyPoints += points;
 		isIncreasingPoints = true;
 	}
