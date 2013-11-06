@@ -249,7 +249,7 @@ public class iKittenModel : MonoBehaviour {
 			PlayerModel.use.stoppedIncreasingPoints = true;
 		} else {
 			if(isStrokingBegan) {
-				head.rotation = Quaternion.Euler(new Vector3(strokeAngleX, 0, strokeAngleZ));
+				head.localRotation = Quaternion.Euler(new Vector3(strokeAngleX, 0, strokeAngleZ));
 			}
 		}
 		
