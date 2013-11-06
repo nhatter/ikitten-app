@@ -50,6 +50,7 @@ public class iKittenController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void LateUpdate () {
+		
 		if(iKittenModel.isTorchLit) {
 			moveLight();
 		}
@@ -63,6 +64,10 @@ public class iKittenController : MonoBehaviour {
 				Debug.Log ("Could not save the game because "+e);
 			}
 			Application.Quit();
+		}
+		
+		if(ShopView.use.isActive || SuggestionView.use.isActive) {
+			return;
 		}
 		
 		if(Input.GetMouseButtonDown(0) || Input.touchCount > 0) {
@@ -159,6 +164,10 @@ public class iKittenController : MonoBehaviour {
 				if(touchedObject.name == "SuggestionBoard") {
 					CameraManager.use.enableFeatureCamera();
 					suggestionBoard.collider.enabled = false;
+				}
+				
+				if(touchedObject.name == "SuggestionBox") {
+					SuggestionView.use.isActive = true;
 				}
 				
 				if(touchedObject.name == "ItemsBox") {
