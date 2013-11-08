@@ -30,7 +30,7 @@ public class Features : MonoBehaviour {
 		updateFeatures();
 		voterWidgetPos = GameObject.Find("VoteSymbol").transform.position;
 
-		submitVotesWidget = GameObject.Find("SubmitVotes");
+		submitVotesWidget = GameObject.Find("SubmitVotesText");
 		voteQuota = GameObject.Find("VoteQuota");
 
 		use = this;
