@@ -96,9 +96,13 @@ public class iKittenController : MonoBehaviour {
 			}
 			#endif
 		
-			if(CameraManager.use.distanceToKitten > strokingDistance && Camera.main.name == "FollowCamera") {
-				iKittenModel.anyKitten.beckon();
-				Debug.Log("Moving Kitten to Player");
+			if(Camera.main.name == "FollowCamera") {
+				if(CameraManager.use.distanceToKitten > strokingDistance) {
+					iKittenModel.anyKitten.beckon();
+					Debug.Log("Moving Kitten to Player");
+				} else {
+					iTween.LookTo(iKittenModel.anyKitten.gameObject, new Vector3(iKittenModel.cameraPos.x, iKittenModel.anyKitten.transform.position.y, iKittenModel.cameraPos.z), iKittenModel.timeToLookToCamera);
+				}
 			}
 			
 			if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out touchHitInfo, touchDistance, touchLayerMask)) {
@@ -133,6 +137,7 @@ public class iKittenController : MonoBehaviour {
 					animator.SetBool("Idle", false);
 					model.isIdle = false;
 					model.isStroking = true;
+					model.isStrokingBegan = true;
 					model.notStrokingTimer = 0;
 				}
 					

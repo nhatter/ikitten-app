@@ -19,8 +19,9 @@ public class iKittenModel : MonoBehaviour {
 	public iKittenController controller;
 	public WaypointController waypointController;
 	
-	static Vector3 cameraPos;
+	public static Vector3 cameraPos;
 	static float kittenLookAtCameraPosYOffset = -0.75f;
+	public static float timeToLookToCamera = 1.5f;
 	
 	GameObject hats;
 	GameObject mouthObjectPlaceholder;
