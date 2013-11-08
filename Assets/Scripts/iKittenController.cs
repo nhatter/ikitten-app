@@ -24,6 +24,9 @@ public class iKittenController : MonoBehaviour {
 	GameObject iKittyFood;
 	GameObject lightBlob;
 	GameObject suggestionBoard;
+	GameObject foodBox;
+	Vector3 foodBoxLocation;
+	Vector3 foodBoxUseLocation;
 	
 	float inputX;
 	float inputY;
@@ -45,6 +48,12 @@ public class iKittenController : MonoBehaviour {
 		iKittyFood = GameObject.Find("iKittyFood");
 		lightBlob = GameObject.Find("LightBlob");
 		suggestionBoard = GameObject.Find ("SuggestionBoard");
+		foodBox = (GameObject)GameObject.Find("FoodBox");
+		
+		if(foodBox != null) {
+			foodBoxLocation = foodBox.transform.position;
+			foodBoxUseLocation = GameObject.Find("FoodBoxUseLocation").transform.position;
+		}
 	}
 	
 	
@@ -99,9 +108,7 @@ public class iKittenController : MonoBehaviour {
 			if(Camera.main.name == "FollowCamera") {
 				if(CameraManager.use.distanceToKitten > strokingDistance) {
 					iKittenModel.anyKitten.beckon();
-					Debug.Log("Moving Kitten to Player");
-				} else {
-					iTween.LookTo(iKittenModel.anyKitten.gameObject, new Vector3(iKittenModel.cameraPos.x, iKittenModel.anyKitten.transform.position.y, iKittenModel.cameraPos.z), iKittenModel.timeToLookToCamera);
+					Debug.Log ("Beckoning kitten");
 				}
 			}
 			
@@ -119,7 +126,7 @@ public class iKittenController : MonoBehaviour {
 					waypointController = touchediKitten.GetComponent<WaypointController>();
 					
 					if(!PlayerModel.use.state.hasSelectedKitten) {
-						iTween.AudioTo(this.gameObject, iTween.Hash("audioSource",GameObject.Find("Music").audio, "volume",0, "time", 2.0f));
+						iTween.AudioTo(this.gameObject, iTween.Hash("audioSource",GameObject.Find("Music").audio, "volume",0, "time", 4.0f));
 						MainSounds.use.audio.PlayOneShot(MainSounds.use.goodSound);
 						FXManager.use.sparkle(model.head.transform.position+new Vector3(0,0.4f,0));
 						Action adopt = delegate() { iKittenModel.adopt(touchediKitten); };
@@ -127,8 +134,11 @@ public class iKittenController : MonoBehaviour {
 					}
 				}
 				
-				if(touchedObject == iKittyFood) {
+				if(touchedObject.name == "FoodBox") {
 					Food.use.refillFood();
+					MainSounds.use.audio.PlayOneShot(MainSounds.use.foodSound);
+					iTween.RotateTo(foodBox, iTween.Hash("rotation",new Vector3(-35,45,0), "time", 3.0f, "onComplete", "rotateFoodBoxBack", "oncompletetarget", this.gameObject));
+					iTween.MoveTo(foodBox, foodBoxUseLocation, 1.0f);
 				}
 
 				if(touchedObject.name == "Mouth") {
@@ -215,9 +225,10 @@ public class iKittenController : MonoBehaviour {
 							CameraManager.use.disableTorchCamera();
 							touchedObject.transform.GetComponent<FollowObject>().targetObject = null;
 							touchedObject.transform.position = iKittenModel.originalTorchPos;
-							foreach(iKittenModel kittenModel in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
-								kittenModel.stopChasingObject();
-							}
+							//foreach(iKittenModel kittenModel in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
+							//	kittenModel.stopChasingObject();
+							//}
+							iKittenModel.anyKitten.stopChasingObject();
 							iKittenModel.lightBlob.GetComponentInChildren<Projector>().enabled = false;
 						}
 					}
@@ -236,5 +247,10 @@ public class iKittenController : MonoBehaviour {
         
         dir *= Time.deltaTime;
         lightBlob.rigidbody.velocity = dir * accelerometerSensitivity * moveLightBlobSpeed;
+	}
+	
+	public void rotateFoodBoxBack() {
+		iTween.RotateTo(GameObject.Find("FoodBox"), iTween.Hash("rotation",new Vector3(0,45,0), "time", 2.0f));
+		iTween.MoveTo(foodBox, foodBoxLocation, 2.0f);
 	}
 }

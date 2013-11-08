@@ -83,7 +83,7 @@ public class Tutorial : MonoBehaviour {
 			
 			case TutorialStage.FOOD_REFILL:
 				if(!iKittenModel.isTorchLit) {
-					iKittenGUI.use.displayMessage("Touch the bowl to refill the food!", "Sure!", nextStage);
+					iKittenGUI.use.displayMessage("Touch the box of food to refill the bowl!", "Sure!", nextStage);
 				}
 			break;
 			
