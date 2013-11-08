@@ -14,6 +14,7 @@ public class iKittenState {
 	public string name = "iKitten";
 	public string materialName = "American_Wirehair";
 	public string animationState = "Idle";
+	public string itemEquipped = "";
 	public Vector3 position = new Vector3(0,0,0); 
 	public iKittenNeedState[] needs;
 }

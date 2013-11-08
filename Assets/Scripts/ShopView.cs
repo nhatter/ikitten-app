@@ -21,8 +21,6 @@ public class ShopView : MonoBehaviour {
 	Rect doneButtonPos;
 	float shopScreenWidth;
 	
-	bool isAffordable;
-	
 	// Use this for initialization
 	void Start () {
 		itemStyle = customSkin.GetStyle("ItemIcon");
@@ -99,15 +97,19 @@ public class ShopView : MonoBehaviour {
 		GUILayout.EndScrollView();
 		GUI.EndGroup();
 		
-		isAffordable = PlayerModel.use.state.happyPoints >= InventoryModel.use.obtainableItems[""+itemSelectIndex].cost && InventoryModel.use.obtainableItems[""+itemSelectIndex].getQuantity() == 0;
-		
-		if(GUI.Button(buyButtonPos, "", (isAffordable ? "BuyIcon" : "CannotBuyIcon"))) {
-			if(isAffordable) {
-				InventoryModel.use.buyItem(itemSelectIndex);
-				MainSounds.use.audio.PlayOneShot(buySound);
-				updateIcon(itemSelectIndex);
-			} else {
-				iKittenGUI.use.displayMessage(tooExpensiveMessagePos,"You don't have enough points to buy that yet :(", "OK");
+
+		if(isOwnedItem(itemSelectIndex)) {
+			iKittenModel.anyKitten.equipItem(itemSelectIndex);
+		} else {
+			if(GUI.Button(buyButtonPos, "", (isAffordableItem(itemSelectIndex) ? "BuyIcon" : "CannotBuyIcon"))) {
+				if(isAffordableItem(itemSelectIndex)) {
+					InventoryModel.use.buyItem(itemSelectIndex);
+					MainSounds.use.audio.PlayOneShot(buySound);
+					updateIcon(itemSelectIndex);
+					iKittenModel.anyKitten.equipItem(itemSelectIndex);
+				} else {
+					iKittenGUI.use.displayMessage(tooExpensiveMessagePos,"You don't have enough points to buy that yet :(", "OK");
+				}
 			}
 		}
 		
@@ -118,12 +120,27 @@ public class ShopView : MonoBehaviour {
 	
 	public void disable() {
 		iKittenGUI.use.hideScore();
+		iKittenModel.anyKitten.hideWornItems();
+		
+		string equippedItemName = iKittenModel.anyKitten.getEquippedItemName();
+		if(equippedItemName != "") {
+			iKittenModel.anyKitten.wearItem(equippedItemName);
+		}
+		
 		isActive = false;
 	}
 	
 	public void enable() {
 		iKittenGUI.use.showScore();
 		isActive = true;
+	}
+	
+	bool isAffordableItem(int itemIndex) {
+		return PlayerModel.use.state.happyPoints >= InventoryModel.use.obtainableItems[""+itemIndex].cost;
+	}
+	
+	bool isOwnedItem(int itemIndex) {
+		return InventoryModel.use.obtainableItems[""+itemIndex].getQuantity() > 0;
 	}
 	
 }

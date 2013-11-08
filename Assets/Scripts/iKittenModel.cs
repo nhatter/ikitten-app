@@ -117,7 +117,15 @@ public class iKittenModel : MonoBehaviour {
 		newItem.transform.parent = hats.transform;
 		newItem.transform.position = itemPlaceholder.transform.position;
 		newItem.transform.localScale = itemPlaceholder.transform.localScale;
-
+		//DestroyObject(itemPlaceholder);
+	}
+	
+	public void equipItem(int itemSelectIndex) {
+		state.itemEquipped = InventoryModel.use.obtainableItems[""+itemSelectIndex].getInternalName();
+	}
+	
+	public string getEquippedItemName() {
+		return state.itemEquipped;
 	}
 	
 	void prepareToSleep() {
