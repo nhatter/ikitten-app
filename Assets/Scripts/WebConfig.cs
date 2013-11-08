@@ -9,7 +9,7 @@ public class WebConfig : MonoBehaviour {
 	public static string SUGGEST_URL;
 	
 	static WebConfig() {
-		string hostname = "gamerdevx.com";
+		string hostname = "www.gamerdevx.com";
 		#if UNITY_EDITOR
 			hostname = "localhost:8888";
 			Debug.Log("Using localhost for development");
