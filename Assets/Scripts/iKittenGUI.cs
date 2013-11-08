@@ -64,6 +64,10 @@ public class iKittenGUI : MonoBehaviour {
 		
 		featureButtonPos = generateStyleRect("FeatureButton");
 		
+		// Scale message font size to screen size
+		customSkin.GetStyle("Message").fontSize = Mathf.RoundToInt(0.08f * Screen.height);
+		
+		
 		use = this;
 	}
 	
