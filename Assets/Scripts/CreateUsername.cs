@@ -20,6 +20,8 @@ public class CreateUsername : MonoBehaviour {
 		use = this;
 	}
 	
+	bool isConnectionError = false;
+	
 	// remember to use StartCoroutine when calling this function!
     IEnumerator createUsername(string username)
     {
@@ -33,6 +35,8 @@ public class CreateUsername : MonoBehaviour {
  
         if (postUsername.error != null) {
             print("There was an error creating username: " + postUsername.error);
+			isConnectionError = true;
+			iKittenGUI.use.displayMessage("Couldn't connect to game server :( You can still play, but some (cool) features will not work.", "OK", loadAdoptionScene);
 		} else {
 			var resultJSON = JSONNode.Parse(postUsername.text);
 			Debug.Log("Status when creating username: "+resultJSON["status"]);
@@ -60,6 +64,10 @@ public class CreateUsername : MonoBehaviour {
         }
     }
 	
+	void loadAdoptionScene() {
+		Application.LoadLevel("Adoption");
+	}
+	
 	void OnGUI() {
 		if(!isCreatingUsername) {
 			return;
@@ -68,7 +76,9 @@ public class CreateUsername : MonoBehaviour {
 		GUI.skin = iKittenGUI.use.customSkin;
 		
 		iKittenGUI.use.drawMessage();
-		username = GUI.TextField(iKittenGUI.use.textFieldPos, username);
+		if(!isConnectionError) {
+			username = GUI.TextField(iKittenGUI.use.textFieldPos, username);
+		}
 		
 		if(statusMessage != "") {
 			GUI.Label(iKittenGUI.use.inputWarningPos, statusMessage, "InputWarning");
