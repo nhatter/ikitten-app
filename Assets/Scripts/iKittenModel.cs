@@ -213,7 +213,7 @@ public class iKittenModel : MonoBehaviour {
 				waypointController.clearWaypoints();
 				iTween.StopByName(this.gameObject, "WaypointController");
 			} else {
-				if(!isRunning) {
+				if(!isRunning && !isChasing) {
 					chase();
 				}
 			}
@@ -333,7 +333,9 @@ public class iKittenModel : MonoBehaviour {
 			originalTorchPos = torch.transform.position;
 		}
 		itemsBox = GameObject.Find("ItemsBox");
-		itemsBoxShader = itemsBox.GetComponentInChildren<Renderer>().sharedMaterial.shader;
+		if(itemsBox != null) {
+			itemsBoxShader = itemsBox.GetComponentInChildren<Renderer>().sharedMaterial.shader;
+		}
 	}
 	
 	public void setupNeeds() {
@@ -395,11 +397,18 @@ public class iKittenModel : MonoBehaviour {
 	public void beckon() {
 		if(!isBeckoning) {
 			isBeckoning = true;
-			chase(eatLocation);
 			MainSounds.use.audio.clip = MainSounds.use.beckonSound;
 			MainSounds.use.audio.Play();
+			isRunning = true;
+			waypointController.clearWaypoints();
+			iTween.StopByName(this.gameObject, "LookToCamera");
+			waypointController.setMoveSpeed(runSpeed);
+			waypointController.setLookTime(waypointLookTime);
+			waypointController.addWaypoint(eatLocation.transform.position);
+			waypointController.addWaypoint(eatLocation.transform.position);
 			waypointController.setOnCompleteAction(stopChasingObject);
 			waypointController.setFinalLookTarget(new Vector3(Camera.main.transform.position.x, transform.position.y, Camera.main.transform.position.z));
+			waypointController.MoveToWaypoint();
 		}
 	}
 	
@@ -410,8 +419,10 @@ public class iKittenModel : MonoBehaviour {
 	
 	public void chase() {
 		isChasing = true;
-		Debug.Log("Kiten is chasing ball");
+		Debug.Log("Kiten is chasing");
 		isRunning = true;
+		waypointController.clearWaypoints();
+		iTween.StopByName("LookToCamera");
 		waypointController.setMoveSpeed(runSpeed);
 		waypointController.setLookTime(waypointLookTime);
 		waypointController.addWaypoint(chaseObject.transform.position);
@@ -436,8 +447,8 @@ public class iKittenModel : MonoBehaviour {
 	}
 	
 	public void stopChasingObject() {
-		waypointController.clearWaypoints();
 		iTween.StopByName(this.gameObject, "WaypointController");
+		waypointController.clearWaypoints();
 		animator.SetBool("Run",false);
 		animator.SetBool("Idle",true);
 		ballState.isMoving = false;
