@@ -102,6 +102,10 @@ public class iKittenModel : MonoBehaviour {
 		setupNeeds();
 		passModelToState();
 		
+		if(state.itemEquipped != "") {
+			wearItem(state.itemEquipped);
+		}
+		
 		randomMeowTime = minRandomMeowTime + Random.value*maxRandomMeowTime;
 	}
 	
