@@ -31,6 +31,8 @@ public class iKittenModel : MonoBehaviour {
 	public bool isAtMainLocation = false;
 	GameObject bed;
 	GameObject sleepLocation;
+	public static GameObject itemsBox;
+	Shader itemsBoxShader;
 	public static GameObject torch;
 	public static GameObject chaseObject;
 	public static GameObject lightBlob;
@@ -330,6 +332,8 @@ public class iKittenModel : MonoBehaviour {
 		if(torch != null) {
 			originalTorchPos = torch.transform.position;
 		}
+		itemsBox = GameObject.Find("ItemsBox");
+		itemsBoxShader = itemsBox.GetComponentInChildren<Renderer>().sharedMaterial.shader;
 	}
 	
 	public void setupNeeds() {
@@ -487,6 +491,10 @@ public class iKittenModel : MonoBehaviour {
 		love.inc();
 	}
 	
+	void OnTriggerEnter(Collider other) {
+		
+	}
+	
 	void OnTriggerStay(Collider other) {
 		if(other.gameObject == eatLocation) {
 			isAtMainLocation = true;
@@ -505,6 +513,10 @@ public class iKittenModel : MonoBehaviour {
 			hasCaughtChaseObject = true;
 		}
 		
+		if(other.gameObject == itemsBox) {
+			itemsBox.GetComponentInChildren<Renderer>().sharedMaterial.shader = Shaders.transparentShader;
+		}
+		
 		satiation.checkIfHitNeedTrigger(other);
 		sleep.checkIfHitNeedTrigger(other);
 	}
@@ -515,6 +527,10 @@ public class iKittenModel : MonoBehaviour {
 		
 		if(other.gameObject == eatLocation) {
 			isAtMainLocation = false;
+		}
+		
+		if(other.gameObject == itemsBox) {
+			itemsBox.GetComponentInChildren<Renderer>().sharedMaterial.shader = itemsBoxShader;
 		}
 	}
 }
