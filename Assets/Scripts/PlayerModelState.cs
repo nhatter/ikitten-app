@@ -9,4 +9,5 @@ public class PlayerModelState {
 	public bool hasSelectedKitten = false;
 	public int happyPoints = 0;
 	public int money = 0;
+	public bool hasFinishedTutorial = false;
 }

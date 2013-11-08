@@ -25,8 +25,9 @@ public class iKittenModel : MonoBehaviour {
 	GameObject hats;
 	GameObject mouthObjectPlaceholder;
 	GameObject ballPlaceholder;
-	GameObject food;
+	public static GameObject food;
 	public static GameObject eatLocation;
+	public bool isAtMainLocation = false;
 	GameObject bed;
 	GameObject sleepLocation;
 	public static GameObject torch;
@@ -484,8 +485,12 @@ public class iKittenModel : MonoBehaviour {
 		PlayerModel.use.incStrokePoints();
 		love.inc();
 	}
-		
+	
 	void OnTriggerStay(Collider other) {
+		if(other.gameObject == eatLocation) {
+			isAtMainLocation = true;
+		}
+		
 		if(other.gameObject == ball && chaseObject == ball && isChasing && !isBallInMouth) {
 			waypointController.clearWaypoints();
 			catchBall();
@@ -506,5 +511,9 @@ public class iKittenModel : MonoBehaviour {
 	void OnTriggerExit(Collider other) {
 		satiation.checkIfLeftNeedTrigger(other);
 		sleep.checkIfLeftNeedTrigger(other);
+		
+		if(other.gameObject == eatLocation) {
+			isAtMainLocation = false;
+		}
 	}
 }

@@ -50,6 +50,11 @@ public class iKittenController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void LateUpdate () {
+		if(iKittenGUI.use != null) {
+			if(iKittenGUI.use.getMessageShowing()) {
+				return;
+			}
+		}
 		
 		if(iKittenModel.isTorchLit) {
 			moveLight();
@@ -147,67 +152,69 @@ public class iKittenController : MonoBehaviour {
 					model.stroke(inputY, false);
 				}
 				
-				if(touchedObject.tag == "Voter") {
-					Debug.Log ("Hit voter widget");
-					voter = touchedObject.GetComponent<Voter>();
-					Features.use.changeVote(voter.featureId, voter.voteCountToRepresent);
-				}
-				
-				if(touchedObject.name == "SubmitVotes") {
-					Debug.Log ("Hit SubmitVotes");
-					Features.use.submitVotes();
-				}
-				
-				if(touchedObject.name == "ReturnToGame") {
-					CameraManager.use.disableFeatureCamera();
-					suggestionBoard.collider.enabled = true;
-				}
-				
-				if(touchedObject.name == "SuggestionBoard") {
-					CameraManager.use.enableFeatureCamera();
-					suggestionBoard.collider.enabled = false;
-				}
-				
-				if(touchedObject.name == "SuggestionBox") {
-					SuggestionView.use.isActive = true;
-				}
-				
-				if(touchedObject.name == "ItemsBox") {
-					ShopView.use.enable();
-					
-					if(ShopView.use.isActive) {
-						ZoomFollowObject.use.useShopViewFOV();
-					} else {
-						ZoomFollowObject.use.useNormalFOV();
+				if(!iKittenModel.anyKitten.isStroking) {
+					if(touchedObject.tag == "Voter") {
+						Debug.Log ("Hit voter widget");
+						voter = touchedObject.GetComponent<Voter>();
+						Features.use.changeVote(voter.featureId, voter.voteCountToRepresent);
 					}
-				}
+					
+					if(touchedObject.name == "SubmitVotes") {
+						Debug.Log ("Hit SubmitVotes");
+						Features.use.submitVotes();
+					}
+					
+					if(touchedObject.name == "ReturnToGame") {
+						CameraManager.use.disableFeatureCamera();
+						suggestionBoard.collider.enabled = true;
+					}
+					
+					if(touchedObject.name == "SuggestionBoard") {
+						CameraManager.use.enableFeatureCamera();
+						suggestionBoard.collider.enabled = false;
+					}
+					
+					if(touchedObject.name == "SuggestionBox") {
+						SuggestionView.use.isActive = true;
+					}
+					
+					if(touchedObject.name == "ItemsBox") {
+						ShopView.use.enable();
+						
+						if(ShopView.use.isActive) {
+							ZoomFollowObject.use.useShopViewFOV();
+						} else {
+							ZoomFollowObject.use.useNormalFOV();
+						}
+					}
+					
+					if(touchedObject.name == "Torch") {
+						iKittenModel.isTorchLit = !iKittenModel.isTorchLit;
 				
-				if(touchedObject.name == "Torch") {
-					iKittenModel.isTorchLit = !iKittenModel.isTorchLit;
+						if(iKittenModel.isTorchLit) {
+							CameraManager.use.enableTorchCamera();
+							touchedObject.transform.LookAt(iKittenModel.lightBlob.transform.position);
+							touchedObject.transform.Rotate(0,180,0);
+							touchedObject.transform.GetComponent<FollowObject>().targetObject = iKittenModel.lightBlob;
+							iKittenModel.lightBlob.GetComponentInChildren<Projector>().enabled = true;
 			
-					if(iKittenModel.isTorchLit) {
-						CameraManager.use.enableTorchCamera();
-						touchedObject.transform.LookAt(iKittenModel.lightBlob.transform.position);
-						touchedObject.transform.Rotate(0,180,0);
-						touchedObject.transform.GetComponent<FollowObject>().targetObject = iKittenModel.lightBlob;
-						iKittenModel.lightBlob.GetComponentInChildren<Projector>().enabled = true;
-		
-						iKittenModel.chaseObject = iKittenModel.lightBlob;
-						foreach(iKittenModel model in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
-							animationInfo = iKittenModel.anyKitten.animator.GetCurrentAnimatorStateInfo(0);
-							
-							if(animationInfo.nameHash == Animator.StringToHash("Base.A_idle")) {
-								model.chase();
+							iKittenModel.chaseObject = iKittenModel.lightBlob;
+							foreach(iKittenModel kittenModel in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
+								animationInfo = iKittenModel.anyKitten.animator.GetCurrentAnimatorStateInfo(0);
+								
+								if(animationInfo.nameHash == Animator.StringToHash("Base.A_idle")) {
+									kittenModel.chase();
+								}
 							}
+						} else {
+							CameraManager.use.disableTorchCamera();
+							touchedObject.transform.GetComponent<FollowObject>().targetObject = null;
+							touchedObject.transform.position = iKittenModel.originalTorchPos;
+							foreach(iKittenModel kittenModel in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
+								kittenModel.stopChasingObject();
+							}
+							iKittenModel.lightBlob.GetComponentInChildren<Projector>().enabled = false;
 						}
-					} else {
-						CameraManager.use.disableTorchCamera();
-						touchedObject.transform.GetComponent<FollowObject>().targetObject = null;
-						touchedObject.transform.position = iKittenModel.originalTorchPos;
-						foreach(iKittenModel model in GameObject.FindObjectsOfType(typeof(iKittenModel)) ) {
-							model.stopChasingObject();
-						}
-						iKittenModel.lightBlob.GetComponentInChildren<Projector>().enabled = false;
 					}
 				}
 			}	

@@ -75,7 +75,6 @@ public class SaveDataModel : MonoBehaviour {
 			PlayerModel.use.loadSerialisedParty(saveData.stats);
 			PlayerModel.use.state = saveData.playerState;
 			InventoryModel.use.loadInventory(saveData.inventory);
-			//iKittenGUI.use.isActive = true;
 			if(saveData.sceneName != Application.loadedLevelName) {
 				SceneManager.loadScene(saveData.sceneName);
 			}

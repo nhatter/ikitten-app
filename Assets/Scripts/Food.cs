@@ -26,6 +26,12 @@ public class Food : MonoBehaviour {
 		}
 	}
 	
+	public void moveFoodDownToLevel() {
+		if(foodLevel > 0) {
+			this.transform.Translate(0, -foodPosYDecrements*(MAX_FOOD_LEVEL-foodLevel), 0);
+		}
+	}
+	
 	public void refillFood() {
 		foodLevel = MAX_FOOD_LEVEL;
 		this.transform.position = new Vector3(this.transform.position.x, ORIGINAL_FOOD_Y_POS, this.transform.position.z);

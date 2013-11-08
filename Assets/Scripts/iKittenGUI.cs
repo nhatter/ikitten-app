@@ -109,6 +109,10 @@ public class iKittenGUI : MonoBehaviour {
 		isHidingScore = true;
 	}
 	
+	public bool getMessageShowing() {
+		return isShowingMessage;
+	}
+	
 	void ResetScoreAnimation() {
 		hasAnimatedShowingScore = false;
 		hasAnimatedHidingScore = false;
