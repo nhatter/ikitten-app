@@ -8,6 +8,7 @@ public class MainSystem : MonoBehaviour {
 	void Start() {
 		DontDestroyOnLoad(this);
 		systemObject = this.gameObject;
+		Screen.orientation = ScreenOrientation.LandscapeLeft;
 	}
 
 	public static void load() {
