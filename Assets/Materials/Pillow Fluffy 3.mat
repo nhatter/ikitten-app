@@ -1,0 +1,116 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Pillow Fluffy 3
+  m_Shader: {fileID: 4800000, guid: 9d4bbdc784f40e746aa27b3ef50465b9, type: 3}
+  m_ShaderKeywords: []
+  m_SavedProperties:
+    serializedVersion: 2
+    m_TexEnvs:
+      data:
+        first:
+          name: _MainTex
+        second:
+          m_Texture: {fileID: 2800000, guid: b04443d9bbeb14ae0bf8737977f4e24a, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _NoiseTex
+        second:
+          m_Texture: {fileID: 2800000, guid: d655940120b0a7746b7de29a8c0ed630, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _FrontTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _BackTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _LeftTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _RightTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _UpTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _DownTex
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+    m_Floats:
+      data:
+        first:
+          name: _Shininess
+        second: 2.96190596
+      data:
+        first:
+          name: _FurLength
+        second: .375050008
+      data:
+        first:
+          name: _EdgeFade
+        second: .653846145
+      data:
+        first:
+          name: _HairHardness
+        second: .203846157
+      data:
+        first:
+          name: _HairThinness
+        second: 7.88673067
+      data:
+        first:
+          name: _HairShading
+        second: .115384631
+      data:
+        first:
+          name: _SkinAlpha
+        second: .403846145
+    m_Colors:
+      data:
+        first:
+          name: _Color
+        second: {r: .852941155, g: .852941155, b: .852941155, a: 1}
+      data:
+        first:
+          name: _SpecColor
+        second: {r: 1, g: 1, b: 1, a: 1}
+      data:
+        first:
+          name: _ForceGlobal
+        second: {r: 0, g: 0, b: 0, a: 0}
+      data:
+        first:
+          name: _ForceLocal
+        second: {r: 0, g: 0, b: 0, a: 0}
