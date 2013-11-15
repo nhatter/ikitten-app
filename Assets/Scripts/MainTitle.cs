@@ -10,7 +10,7 @@ public class MainTitle : MonoBehaviour {
 	bool isFadingToNextScreen = false;
 	
 	void Start() {
-		gdxLogoPos = new Rect(Screen.width/2-skin.GetStyle("GDXLogo").fixedWidth/2, Screen.height/2-skin.GetStyle("GDXLogo").fixedHeight/2, skin.GetStyle("GDXLogo").fixedWidth, skin.GetStyle("GDXLogo").fixedHeight);
+		gdxLogoPos = new Rect(MobileDisplay.width/2-skin.GetStyle("GDXLogo").fixedWidth/2, MobileDisplay.height/2-skin.GetStyle("GDXLogo").fixedHeight/2, skin.GetStyle("GDXLogo").fixedWidth, skin.GetStyle("GDXLogo").fixedHeight);
 		
 		Fader.use.setChangeSpeed(fadeSpeed);
 		Fader.use.InOutThen(delegate() {

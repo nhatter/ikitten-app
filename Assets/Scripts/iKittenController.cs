@@ -65,11 +65,17 @@ public class iKittenController : MonoBehaviour {
 			}
 		}
 		
+		if(ShopView.use.isActive) {
+			return;
+		}
+		
 		if(iKittenModel.isTorchLit) {
 			moveLight();
 		}
 		
-		cameraPos = Camera.main.transform.position;
+		if(Camera.main != null) {
+			cameraPos = Camera.main.transform.position;
+		}
 		
 		if(Input.GetKeyDown(KeyCode.Escape)) {
 			try {
@@ -112,7 +118,7 @@ public class iKittenController : MonoBehaviour {
 				}
 			}
 			
-			if(Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out touchHitInfo, touchDistance, touchLayerMask)) {
+			if(Input.mousePosition.x < MobileDisplay.width - 110 && Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out touchHitInfo, touchDistance, touchLayerMask)) {
 				Debug.Log("Touch hit "+touchHitInfo.collider.gameObject.name);
 				touchedObject = touchHitInfo.collider.gameObject;
 				
@@ -126,7 +132,6 @@ public class iKittenController : MonoBehaviour {
 					waypointController = touchediKitten.GetComponent<WaypointController>();
 					
 					if(!PlayerModel.use.state.hasSelectedKitten) {
-						iTween.AudioTo(this.gameObject, iTween.Hash("audioSource",GameObject.Find("Music").audio, "volume",0, "time", 4.0f));
 						MainSounds.use.audio.PlayOneShot(MainSounds.use.goodSound);
 						FXManager.use.sparkle(model.head.transform.position+new Vector3(0,0.4f,0));
 						Action adopt = delegate() { iKittenModel.adopt(touchediKitten); };

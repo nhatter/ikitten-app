@@ -28,11 +28,11 @@ public class ShopView : MonoBehaviour {
 		shopContainerStyle = customSkin.GetStyle("ShopContainer");
 		buyIconStyle = customSkin.GetStyle("BuyIcon");
 		shopScreenWidth = shopContainerStyle.fixedWidth;
-		shopContainerPos = new Rect(shopContainerStyle.margin.left, shopContainerStyle.margin.top, shopScreenWidth, Screen.height-(shopContainerStyle.margin.top*2));
+		shopContainerPos = new Rect(shopContainerStyle.margin.left, shopContainerStyle.margin.top, shopScreenWidth, MobileDisplay.height-(shopContainerStyle.margin.top*2));
 		shopScrollViewPos = new Rect(shopContainerPos.x, shopContainerPos.y+shopContainerStyle.fontSize*2, shopScreenWidth, shopContainerPos.height-shopContainerStyle.fontSize*2);
-		buyButtonPos = new Rect(Screen.width-buyIconStyle.fixedWidth, Screen.height-buyIconStyle.fixedHeight, buyIconStyle.fixedWidth, buyIconStyle.fixedHeight);
-		doneButtonPos = new Rect(Screen.width-48, 2, 48, 48);
-		tooExpensiveMessagePos = new Rect(shopContainerPos.x+shopScreenWidth, 50, Screen.width-(shopContainerPos.x+shopScreenWidth), Screen.height-50);
+		buyButtonPos = new Rect(MobileDisplay.width-buyIconStyle.fixedWidth, MobileDisplay.height-buyIconStyle.fixedHeight, buyIconStyle.fixedWidth, buyIconStyle.fixedHeight);
+		doneButtonPos = new Rect(MobileDisplay.width-100, 2, 100, 100);
+		tooExpensiveMessagePos = new Rect(shopContainerPos.x+shopScreenWidth, 50, MobileDisplay.width-(shopContainerPos.x+shopScreenWidth), MobileDisplay.height-50);
 		generateIcons();
 		use = this;
 	}
@@ -113,7 +113,7 @@ public class ShopView : MonoBehaviour {
 			}
 		}
 		
-		if(GUI.Button(doneButtonPos, "Done")) {
+		if(GUI.Button(doneButtonPos, "Done", "DoneButton")) {
 			disable();
 		}
 	}

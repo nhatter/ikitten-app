@@ -2,6 +2,7 @@ using UnityEngine;
 using System.IO;
 
 public class SaveDataModel : MonoBehaviour {
+	public bool autoLoad = true;
 #if UNITY_IPHONE
 	public static string SAVES_DIR = Application.dataPath + "/../../Documents/";
 #else
@@ -22,10 +23,12 @@ public class SaveDataModel : MonoBehaviour {
 #endif
 		
 		createSavesDir();
-		if(!SaveDataModel.load(SaveDataModel.SAVES_DIR+SaveDataModel.DEFAULT_SAVE_FILE)) {
-			if(PlayerModel.use.state.hasSelectedKitten) {
-				GameObject iKitten = (GameObject) GameObject.Instantiate((GameObject)Resources.Load("iKitten/iKitten"));
-				CameraManager.use.setCameraToFollow(iKitten);
+		if(autoLoad) {
+			if(!SaveDataModel.load(SaveDataModel.SAVES_DIR+SaveDataModel.DEFAULT_SAVE_FILE)) {
+				if(PlayerModel.use.state.hasSelectedKitten) {
+					GameObject iKitten = (GameObject) GameObject.Instantiate((GameObject)Resources.Load("iKitten/iKitten"));
+					CameraManager.use.setCameraToFollow(iKitten);
+				}
 			}
 		}
 	}

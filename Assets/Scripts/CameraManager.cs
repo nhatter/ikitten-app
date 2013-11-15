@@ -16,8 +16,11 @@ public class CameraManager : MonoBehaviour {
 	
 	Camera torchCamera;
 	Camera featureCamera;
+	Camera manualCamera;
 	
 	ZoomFollowObject followCameraSettings;
+	
+	public bool isManualCameraEnabled = false;
 
 	// Use this for initialization
 	void Start () {
@@ -27,8 +30,13 @@ public class CameraManager : MonoBehaviour {
 		
 		// Disable all other cameras
 		foreach(Camera cam in cameras) {
-			cam.enabled = false;
-			cam.GetComponent<AudioListener>().enabled = false;
+			if(cam.name != "GradientCam") {
+				cam.enabled = false;
+			}
+			
+			if(cam.GetComponent<AudioListener>() != null) {
+				cam.GetComponent<AudioListener>().enabled = false;
+			}
 			
 			switch(cam.name) {
 				case "TorchCamera":
@@ -38,15 +46,25 @@ public class CameraManager : MonoBehaviour {
 				case "FeatureCamera":
 					featureCamera = cam;
 				break;
+				
+				case "ManualCamera":
+					manualCamera = cam;
+				break;
 			}
 		}
 		
-		cameras[0].enabled = true;
-		cameras[0].GetComponent<AudioListener>().enabled = true;
+		
 		
 		followCamera = GameObject.Find("FollowCamera");
 		if(followCamera != null) {
 			followCameraSettings = followCamera.GetComponent<ZoomFollowObject>();
+			followCamera.camera.enabled = true;
+			followCamera.GetComponent<AudioListener>().enabled = true;
+		} else {
+			cameras[0].enabled = true;
+			if(cameras[0].GetComponent<AudioListener>() != null) {
+				cameras[0].GetComponent<AudioListener>().enabled = true;
+			}
 		}
 		setCameraToFollow(GameObject.Find("iKitten"));
 		use = this;
@@ -117,5 +135,19 @@ public class CameraManager : MonoBehaviour {
 	public void disableFeatureCamera() {
 		disableAllCameras();
 		followCamera.camera.enabled = true;
+	}
+	
+	public void toggleManualCamera() {
+		disableAllCameras();
+		isManualCameraEnabled = !isManualCameraEnabled;
+		manualCamera.camera.enabled = isManualCameraEnabled;
+
+		if(manualCamera.camera.enabled) {
+			manualCamera.GetComponent<GyroCamera>().setBaseCameraRotationOffset(SensorHelper.rotation.eulerAngles - followCamera.transform.eulerAngles);
+			manualCamera.transform.position = followCamera.transform.position;
+		} else {
+			followCamera.camera.enabled = true;
+		}
+	
 	}
 }

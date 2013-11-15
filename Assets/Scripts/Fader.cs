@@ -21,7 +21,7 @@ public class Fader : Changer {
 		if(isUsingCustomTexture) {
 			GUI.DrawTexture(new Rect(drawPosition.x, drawPosition.y, fadeOutTexture.width, fadeOutTexture.height), fadeOutTexture);
 		} else {
-			GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), fadeOutTexture);
+			GUI.DrawTexture(new Rect(0, 0, MobileDisplay.width, MobileDisplay.height), fadeOutTexture);
 		}
 	}
 	

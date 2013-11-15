@@ -359,7 +359,7 @@ public class iTween : MonoBehaviour{
 		CameraFadeAdd(Defaults.cameraFadeDepth);
 		
 		//rescale cameraFade just in case screen size has changed to ensure it takes up the full screen:
-		cameraFade.guiTexture.pixelInset=new Rect(0,0,Screen.width,Screen.height);
+		cameraFade.guiTexture.pixelInset=new Rect(0,0,MobileDisplay.width,MobileDisplay.height);
 		*/
 	
 		if(cameraFade){
@@ -5469,8 +5469,8 @@ public class iTween : MonoBehaviour{
 	/// Color
 	/// </param>
 	public static Texture2D CameraTexture(Color color){
-		Texture2D texture = new Texture2D(Screen.width,Screen.height,TextureFormat.ARGB32, false);
-		Color[] colors = new Color[Screen.width*Screen.height];
+		Texture2D texture = new Texture2D(MobileDisplay.width,MobileDisplay.height,TextureFormat.ARGB32, false);
+		Color[] colors = new Color[MobileDisplay.width*MobileDisplay.height];
 		for (int i = 0; i < colors.Length; i++) {
 			colors[i]=color;
 		}

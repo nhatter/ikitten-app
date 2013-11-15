@@ -17,22 +17,22 @@ public class SuggestionView : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		backgroundRect = new Rect(0,0,Screen.width, Screen.height);
-		suggestionRect = new Rect(Screen.width/16, Screen.height/16, Screen.width - Screen.width/16*2, Screen.height*0.75f);
+		backgroundRect = new Rect(0,0,MobileDisplay.width, MobileDisplay.height);
+		suggestionRect = new Rect(MobileDisplay.width/16, MobileDisplay.height/16, MobileDisplay.width - MobileDisplay.width/16*2, MobileDisplay.height*0.75f);
 		
-		customSkin.GetStyle("textarea").fontSize = Mathf.CeilToInt(Screen.height*0.075f);
+		customSkin.GetStyle("textarea").fontSize = Mathf.CeilToInt(MobileDisplay.height*0.075f);
 		
 		float submitSuggestionRatio = (float) customSkin.GetStyle("SendFeedback").normal.background.height / (float) customSkin.GetStyle("SendFeedback").normal.background.width;
-		float submitSuggestionWidth = Screen.width * 0.238f;
+		float submitSuggestionWidth = MobileDisplay.width * 0.238f;
 		submitSuggestionSize = new Vector2(submitSuggestionWidth, submitSuggestionWidth * submitSuggestionRatio);
-		submitSuggestionRect = new Rect(Screen.width/2 -submitSuggestionSize.x/2, Screen.height - submitSuggestionSize.y/2, submitSuggestionSize.x, submitSuggestionSize.y);
+		submitSuggestionRect = new Rect(MobileDisplay.width/2 -submitSuggestionSize.x/2, MobileDisplay.height - submitSuggestionSize.y/2, submitSuggestionSize.x, submitSuggestionSize.y);
 		
-		customSkin.GetStyle("SendFeedback").padding = new RectOffset(Mathf.CeilToInt(Screen.width * 0.05f), 0, Mathf.CeilToInt(Screen.height * 0.095f), 0);
-		customSkin.GetStyle("SendFeedback").fontSize = Mathf.CeilToInt(Screen.height*0.1f);
+		customSkin.GetStyle("SendFeedback").padding = new RectOffset(Mathf.CeilToInt(MobileDisplay.width * 0.05f), 0, Mathf.CeilToInt(MobileDisplay.height * 0.095f), 0);
+		customSkin.GetStyle("SendFeedback").fontSize = Mathf.CeilToInt(MobileDisplay.height*0.1f);
 		customSkin.GetStyle("CancelFeedback").fontSize = customSkin.GetStyle("SendFeedback").fontSize;
-		customSkin.GetStyle("CancelFeedback").padding = new RectOffset(Mathf.CeilToInt(Screen.width * 0.05f), 0, Mathf.CeilToInt(Screen.height * 0.08f), 0);
+		customSkin.GetStyle("CancelFeedback").padding = new RectOffset(Mathf.CeilToInt(MobileDisplay.width * 0.05f), 0, Mathf.CeilToInt(MobileDisplay.height * 0.08f), 0);
 		
-		cancelSuggestionRect = new Rect(Screen.width/20, Screen.height - submitSuggestionSize.y/2, submitSuggestionSize.x, submitSuggestionSize.y);
+		cancelSuggestionRect = new Rect(MobileDisplay.width/20, MobileDisplay.height - submitSuggestionSize.y/2, submitSuggestionSize.x, submitSuggestionSize.y);
 		
 		use = this;
 	}

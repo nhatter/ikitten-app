@@ -41,16 +41,16 @@ public class iKittenGUI : MonoBehaviour {
 		DontDestroyOnLoad(this);
 		int cameraButtonWidth = (int)customSkin.GetStyle("CameraButton").fixedWidth;
 		int cameraButtonHeight = (int)customSkin.GetStyle("CameraButton").fixedHeight;
-		cameraButtonPos = new Rect(Screen.width - cameraButtonWidth, 0, cameraButtonWidth, cameraButtonHeight);
-		torchButtonPos = new Rect(Screen.width - cameraButtonWidth, cameraButtonHeight+5, cameraButtonWidth, cameraButtonHeight);
+		cameraButtonPos = new Rect(MobileDisplay.width - cameraButtonWidth, MobileDisplay.height - cameraButtonHeight, cameraButtonWidth, cameraButtonHeight);
+		torchButtonPos = new Rect(MobileDisplay.width - cameraButtonWidth, cameraButtonHeight+5, cameraButtonWidth, cameraButtonHeight);
 		
 		messageStyle = customSkin.GetStyle("Message");
-		originalMessagePos = new Rect(messageStyle.margin.left, messageStyle.margin.top, Screen.width-(messageStyle.margin.left*2), Screen.height-(messageStyle.margin.top*2));
+		originalMessagePos = new Rect(messageStyle.margin.left, messageStyle.margin.top, MobileDisplay.width-(messageStyle.margin.left*2), MobileDisplay.height-(messageStyle.margin.top*2));
 		messagePos = originalMessagePos;
 		OKButtonStyle = customSkin.GetStyle("OKButton");
 		
 		GUIStyle textFieldStyle = customSkin.GetStyle("textfield");
-		textFieldPos = new Rect(messagePos.x+textFieldStyle.margin.left, messagePos.y+messageStyle.fontSize*2, messagePos.width-messagePos.x*2, textFieldStyle.fixedHeight);
+		textFieldPos = new Rect(MobileDisplay.width/4, MobileDisplay.height/2, MobileDisplay.width/2, textFieldStyle.fixedHeight);
 		
 		inputWarningPos = new Rect(textFieldPos.x, textFieldPos.y+textFieldPos.height, textFieldPos.width, textFieldPos.height);
 				
@@ -65,7 +65,7 @@ public class iKittenGUI : MonoBehaviour {
 		featureButtonPos = generateStyleRect("FeatureButton");
 		
 		// Scale message font size to screen size
-		customSkin.GetStyle("Message").fontSize = Mathf.RoundToInt(0.08f * Screen.height);
+		customSkin.GetStyle("Message").fontSize = Mathf.RoundToInt(0.08f * MobileDisplay.height);
 		
 		
 		use = this;
@@ -78,6 +78,12 @@ public class iKittenGUI : MonoBehaviour {
 		}
 		
 		GUI.skin = customSkin;
+		
+		if(iKittenModel.anyKitten != null) {
+			if(GUI.Button(cameraButtonPos, (CameraManager.use.isManualCameraEnabled? "MANUAL" : "AUTO"), "CameraButton")) {
+				CameraManager.use.toggleManualCamera();
+			}
+		}
 		
 		if(PlayerModel.use.isIncreasingPoints || isShowingScore) {
 			if(!hasAnimatedShowingScore) {

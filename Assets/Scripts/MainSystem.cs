@@ -4,11 +4,10 @@ using System.Collections;
 
 public class MainSystem : MonoBehaviour {
 	static GameObject systemObject = null;
-	
+
 	void Start() {
 		DontDestroyOnLoad(this);
 		systemObject = this.gameObject;
-		Screen.orientation = ScreenOrientation.LandscapeLeft;
 	}
 
 	public static void load() {

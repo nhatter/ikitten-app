@@ -7,7 +7,7 @@ Material:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Pillow Fluffy 3
-  m_Shader: {fileID: 4800000, guid: 9d4bbdc784f40e746aa27b3ef50465b9, type: 3}
+  m_Shader: {fileID: 10703, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: []
   m_SavedProperties:
     serializedVersion: 2
@@ -21,9 +21,23 @@ Material:
           m_Offset: {x: 0, y: 0}
       data:
         first:
+          name: _BumpMap
+        second:
+          m_Texture: {fileID: 0}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
           name: _NoiseTex
         second:
           m_Texture: {fileID: 2800000, guid: d655940120b0a7746b7de29a8c0ed630, type: 3}
+          m_Scale: {x: 1, y: 1}
+          m_Offset: {x: 0, y: 0}
+      data:
+        first:
+          name: _Cube
+        second:
+          m_Texture: {fileID: 0}
           m_Scale: {x: 1, y: 1}
           m_Offset: {x: 0, y: 0}
       data:
@@ -71,37 +85,49 @@ Material:
     m_Floats:
       data:
         first:
+          name: _Reflection
+        second: 1
+      data:
+        first:
+          name: _Cutoff
+        second: 0
+      data:
+        first:
           name: _Shininess
-        second: 2.96190596
+        second: .670013189
       data:
         first:
           name: _FurLength
-        second: .375050008
+        second: .5
       data:
         first:
           name: _EdgeFade
-        second: .653846145
+        second: .519230783
       data:
         first:
           name: _HairHardness
-        second: .203846157
+        second: .134615391
       data:
         first:
           name: _HairThinness
-        second: 7.88673067
+        second: 5.19711542
       data:
         first:
           name: _HairShading
-        second: .115384631
+        second: 0
       data:
         first:
           name: _SkinAlpha
-        second: .403846145
+        second: .173076928
+      data:
+        first:
+          name: _RimPower
+        second: 1.22115386
     m_Colors:
       data:
         first:
           name: _Color
-        second: {r: .852941155, g: .852941155, b: .852941155, a: 1}
+        second: {r: .735294104, g: .735294104, b: .735294104, a: 1}
       data:
         first:
           name: _SpecColor
@@ -113,4 +139,8 @@ Material:
       data:
         first:
           name: _ForceLocal
-        second: {r: 0, g: 0, b: 0, a: 0}
+        second: {r: -.200000003, g: .100000001, b: 0, a: 0}
+      data:
+        first:
+          name: _RimColor
+        second: {r: .375, g: .375, b: .375, a: 0}
